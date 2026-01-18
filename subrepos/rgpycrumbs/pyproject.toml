@@ -1,0 +1,149 @@
+[build-system]
+build-backend = "hatchling.build"
+requires      = [ "hatch-vcs", "hatchling" ]
+
+[tool.hatch.build.hooks.vcs]
+version-file = "_version.py"
+
+[tool.hatch.build]
+include = [ "rgpycrumbs/**/*.py", "rgpycrumbs/*.py", "/tests" ]
+
+
+[tool.pdm.dev-dependencies]
+lint = [ "ruff>=0.1.6" ]
+test = [
+  "pytest>=7.4.3",
+  "pytest-cov>=4.1.0",
+  "coverage[toml]>=7.3.2",
+  "pytest-datadir>=1.5.0",
+]
+nbdoc = [ "jupyterlab>=4.0.9", "jupytext>=1.15.2", "ase>=3.22.1" ]
+release_aid = [ "tbump>=6.11.0", "towncrier>=23.11.0" ]
+
+[tool.pdm.scripts]
+check_ruff  = "ruff ."
+ruff_fix    = "ruff --fix --unsafe-fixes ."
+ruff_format = "ruff format ."
+lint        = { composite = [ "ruff_fix", "ruff_format" ] }
+test        = "pytest --cov=rgpycrumbs tests"
+
+[project]
+name = "rgpycrumbs"
+description = "A dispatcher-based analytical and visualization suite for chemical physics"
+readme = "README.md"
+keywords = [ "plots", "parsers", "analysis" ]
+license = { text = "MIT" }
+authors = [ { name = "Rohit Goswami", email = "rgoswami@ieee.org" } ]
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+dynamic = [ "version" ]
+[project.urls]
+Documentation = "https://github.com/HaoZeke/rgpycrumbs#readme"
+Issues        = "https://github.com/HaoZeke/rgpycrumbs/issues"
+Source        = "https://github.com/HaoZeke/rgpycrumbs"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 90
+[tool.ruff.lint]
+select = [
+  "A",
+  "ARG",
+  "B",
+  "C",
+  "DTZ",
+  "E",
+  "EM",
+  "F",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = [
+  # Implicitly concatenated string literals on one line
+  "ISC001",
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105",
+  "S106",
+  "S107",
+  # Ignore complexity
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = [ "rgpycrumbs" ]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = [ "PLR2004", "S101", "TID252" ]
+# __init__.py can import without use
+"__init__.py" = [ "F401" ]
+
+[tool.coverage.run]
+source_pkgs = [ "rgpycrumbs" ]
+branch      = true
+parallel    = true
+omit        = [ "_version.py" ]
+
+[tool.coverage.paths]
+rgpycrumbs = [ "rgpycrumbs" ]
+tests    = [ "tests" ]
+
+[tool.coverage.report]
+exclude_lines = [ "no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:" ]
+
+[tool.pytest]
+minversion = "9.0"
+addopts = ["-ra", "-q"]
+testpaths = [
+    "tests",
+]
+markers = [
+    "fragments: mark a test as needing the fragments environment (run with '-m fragments').",
+    "pure: mark a test as needing only the test environment (run with '-m pure').",
+    "ptm: mark a test as needing only the ptm environment (run with '-m ptm').",
+    "eon: mark a test as needing only the eon environment (run with '-m eon').",
+    "align: mark a test as needing only the align environment (run with '-m align').",
+    "slow: mark tests as slow (deselect with '-m \"not slow\"').",
+]

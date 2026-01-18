@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:HaoZeke/rgpycrumbs
+	branch = eonMLFlow
+	commit = 53cb67761e97de5886a5299855e91305d639af94
+	parent = 5d84cdf5eb52824294e19c07d0e00b948399d0b7
+	method = merge
+	cmdver = 0.4.9
