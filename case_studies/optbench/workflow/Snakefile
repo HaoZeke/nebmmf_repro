@@ -1,0 +1,52 @@
+# -*- mode:snakemake; -*-
+from snakemake.utils import min_version
+
+min_version("6.0")
+
+
+configfile: "config/general_config.yml"
+
+
+def get_all_targets(wildcards):
+    """
+    Generates the list of desired PNG plots for all systems and methods.
+    """
+    targets = []
+    if "systems" in config and "methods" in config:
+        for sys in config["systems"]:
+            for method in config["methods"]:
+                targets.extend(
+                    [
+                        f"{config['paths']['plots']}/{sys}/{method}/1D_path.png",
+                        f"{config['paths']['plots']}/{sys}/{method}/1D_index.png",
+                    ]
+                )
+    return targets
+
+
+rule all:
+    input:
+        get_all_targets,
+
+
+# --- Modules ---
+
+
+module run_eon:
+    snakefile:
+        "rules/run_eon.smk"
+    config:
+        config
+
+
+module plotting:
+    snakefile:
+        "rules/plotting.smk"
+    config:
+        config
+
+
+use rule * from run_eon
+
+
+use rule * from plotting

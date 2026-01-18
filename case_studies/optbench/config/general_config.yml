@@ -1,0 +1,213 @@
+common:
+systems:
+  pt_prod_00:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_0.con
+  pt_prod_01:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_1.con
+  pt_prod_02:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_2.con
+  pt_prod_03:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_3.con
+  pt_prod_04:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_4.con
+  pt_prod_05:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_5.con
+  pt_prod_06:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_6.con
+  pt_prod_07:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_7.con
+  pt_prod_08:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_8.con
+  pt_prod_09:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_9.con
+  pt_prod_10:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_10.con
+  pt_prod_11:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_11.con
+  pt_prod_12:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_12.con
+  pt_prod_13:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_13.con
+  pt_prod_14:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_14.con
+  pt_prod_15:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_15.con
+  pt_prod_16:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_16.con
+  pt_prod_17:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_17.con
+  pt_prod_18:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_18.con
+  pt_prod_19:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_19.con
+  pt_prod_20:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_20.con
+  pt_prod_21:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_21.con
+  pt_prod_22:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_22.con
+  pt_prod_23:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_23.con
+  pt_prod_24:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_24.con
+  pt_prod_25:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_25.con
+  pt_prod_26:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_26.con
+  pt_prod_27:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_27.con
+  pt_prod_28:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_28.con
+  pt_prod_29:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_29.con
+  pt_prod_30:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_30.con
+  pt_prod_31:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_31.con
+  pt_prod_32:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_32.con
+  pt_prod_33:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_33.con
+  pt_prod_34:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_34.con
+  pt_prod_35:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_35.con
+  pt_prod_36:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_36.con
+  pt_prod_37:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_37.con
+  pt_prod_38:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_38.con
+  pt_prod_39:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_39.con
+  pt_prod_40:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_40.con
+  pt_prod_41:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_41.con
+  pt_prod_42:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_42.con
+  pt_prod_43:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_43.con
+  pt_prod_44:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_44.con
+  pt_prod_45:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_45.con
+  pt_prod_46:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_46.con
+  pt_prod_47:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_47.con
+  pt_prod_48:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_48.con
+  pt_prod_49:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_49.con
+  pt_prod_50:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_50.con
+  pt_prod_51:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_51.con
+  pt_prod_52:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_52.con
+  pt_prod_53:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_53.con
+  pt_prod_54:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_54.con
+  pt_prod_55:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_55.con
+  pt_prod_56:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_56.con
+  pt_prod_57:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_57.con
+  pt_prod_58:
+    reactant: resources/pt-island-con/reactant.con
+    product: resources/pt-island-con/product_58.con
+methods:
+  cineb: "resources/config_nebci.ini"
+  mmf: "resources/config_roneb.ini"
+paths:
+  endpoints: "results/01_endpoints"
+  idpp: "results/02_idpp"
+  neb: "results/03_neb"
+  plots: "results/04_plots"
+  cache: "results/_cache"
+eon:
+  config: "resources/config.ini"
+plotting:
+  plot_structures: "none"
+  facecolor: "white"
+  title: ""
+  aserot: "0x,90y,0z"
+  draw_reactant:
+    x: 30.0
+    y: 60.0
+    rad: 0.1
+  draw_product:
+    x: -1.0
+    y: 40.0
+    rad: 0.1
+  draw_saddle:
+    x: 25.0
+    y: 40.0
+    rad: 0.1
+  figure:
+    figsize: [5.37, 3.37]
+    dpi: 300
+    zoom_ratio: 0.25
+  fonts:
+    base: 12
