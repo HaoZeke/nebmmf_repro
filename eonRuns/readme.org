@@ -1,0 +1,215 @@
+* About
+Steps automated:
+- Get PET-MAD
+- Relax and align endpoints (EON+IRA)
+- Run NEBs in EON
+  - ewCI-NEB
+  - ewRONEB
+- Plot
+Conceptually similar to the reproduction done for [1, 2, 5, 6] on Github ([[https://github.com/TheochemUI/gpr_sella_repro][1]], [[https://github.com/HaoZeke/brms_idrot_repro][2]], [[https://github.com/theochemUI/otgpd_repro][5]], [[https://github.com/metatensor/ecosystem-article/tree/main/eon][6]]). We
+use ~snakemake~ for this section[fn:: Some of these are inspired by the
+workflows of [[https://github.com/amritagos][amritagos]]].
+
+#+caption: DAG for the workflow
+[[file:resources/dag.svg]]
+
+Essentially this is as implemented from [3] [[https://github.com/TheochemUI/eOn/pull/77][in EON]] (also [[https://github.com/TheochemUI/eOn/pull/230][here]]) discussed in [4].
+** Build errors
+Sometimes, within the ~pixi~ enviroment, multiple ~torch~ includes can clog the build. In this case:
+#+begin_src bash
+rm -rf .pixi/envs/eon/include/torch/
+#+end_src
+will fix the build.
+** Setup
+Everything is part of the repository, but ~eOn~ needs to be installed.
+#+begin_src bash
+pixi s
+#+end_src
+*** Development
+~git-subrepo~ handles vendored dependencies.
+** Usage
+#+begin_src bash
+pixi s
+snakemake -c4 # or c1
+# View results/plots/04_plots/cineb.png
+#+end_src
+For faster experimental visualization compared to editing the ~config/general_config.yaml~, use ~results~ directly:
+#+begin_src bash
+cd results/03_neb
+python -m rgpycrumbs.cli eon plt_neb --con-file neb.con --plot-structures "crit_points" --facecolor "floralwhite"
+#+end_src
+*** CUDA throughput
+For ~snakemake~ workflows consider using ~MPS~ with the ~cuda~ device:
+#+begin_src bash
+# persistence mode
+sudo nvidia-smi -pm 1
+# setup MPS
+export CUDA_VISIBLE_DEVICES=0
+nvidia-cuda-mps-control -d
+# now run snakemake stuff
+pixi s -e eongpu
+snakemake -c12
+#+end_src
+** Quick analysis
+To see the relative gain in terms of force calculations.
+#+begin_src bash
+rg -u "destroyed after (\d+) calls" -H | awk -F'[:/]' '
+{
+    # Extract the call count from the end of the line
+    match($0, /([0-9]+) calls/, arr);
+    val = arr[1];
+    
+    # Identify system and method by searching the path segments
+    sys = "Unknown"; method = "Unknown";
+    for (i=1; i<=NF; i++) {
+        if ($i ~ /^[0-9]{2}_/) sys = $i;
+        if ($i == "cineb" || $i == "mmf") method = $i;
+    }
+    
+    if (method == "cineb") { cineb[sys] = val; c_sum += val; c_count++; }
+    if (method == "mmf") { mmf[sys] = val; m_sum += val; m_count++; }
+    systems[sys];
+}
+END {
+    printf "%-25s | %-10s | %-10s | %-10s\n", "System", "CINEB", "MMF", "Diff";
+    print "------------------------------------------------------------------";
+    for (s in systems) {
+        if (s == "Unknown") continue;
+        c = cineb[s] ? cineb[s] : 0;
+        m = mmf[s] ? mmf[s] : 0;
+        diff = (c && m) ? c - m : "N/A";
+        printf "%-25s | %-10s | %-10s | %-10s\n", s, (c?c:"N/A"), (m?m:"N/A"), diff;
+    }
+    print "------------------------------------------------------------------";
+    
+    avg_c = c_count ? c_sum / c_count : 0;
+    avg_m = m_count ? m_sum / m_count : 0;
+    
+    printf "%-25s | %-10.1f | %-10.1f | %-10.1f\n", "AVERAGE", avg_c, avg_m, avg_c - avg_m;
+}' | sort
+#+end_src
+To see the number of failures
+#+begin_src bash
+rg -u "termination_reason" | grep "2 termination" | sort 
+#+end_src
+For the improvement in time, use:
+#+begin_src bash
+rg -u "time_seconds" -H | awk -F'[:/]' '
+{
+    split($NF, time_parts, " ");
+    val = time_parts[2];
+
+    sys = "Unknown"; method = "Unknown";
+    for (i=1; i<=NF; i++) {
+        if ($i ~ /^[0-9]{2}_/) sys = $i;
+        if ($i == "cineb" || $i == "mmf") method = $i;
+    }
+
+    if (method == "cineb") { cineb[sys] = val; c_sum += val; c_count++; }
+    if (method == "mmf") { mmf[sys] = val; m_sum += val; m_count++; }
+    systems[sys];
+}
+END {
+    printf "%-25s | %-12s | %-12s | %-12s\n", "System", "CINEB (s)", "MMF (s)", "Diff (s)";
+    print "-------------------------------------------------------------------------";
+    for (s in systems) {
+        if (s == "Unknown") continue;
+        c = cineb[s] ? cineb[s] : 0;
+        m = mmf[s] ? mmf[s] : 0;
+        diff = (c && m) ? sprintf("%.4f", c - m) : "N/A";
+        printf "%-25s | %-12s | %-12s | %-12s\n", s, (c?c:"N/A"), (m?m:"N/A"), diff;
+    }
+    print "-------------------------------------------------------------------------";
+    
+    avg_c = c_count ? c_sum / c_count : 0;
+    avg_m = m_count ? m_sum / m_count : 0;
+    avg_diff = avg_c - avg_m;
+
+    printf "%-25s | %-12.4f | %-12.4f | %-12.4f\n", "AVERAGE", avg_c, avg_m, avg_diff;
+}' | sort
+#+end_src
+All together we can track the total improvement via:
+#+begin_src bash
+rg -u -e "destroyed after ([0-9]+) calls" -e "time_seconds ([0-9.]+)" -H | awk -F'[:/]' '
+{
+    # Identify system and method from path segments
+    sys = "Unknown"; method = "Unknown";
+    for (i=1; i<=NF; i++) {
+        if ($i ~ /^[0-9]{2}_/) sys = $i;
+        if ($i == "cineb" || $i == "mmf") method = $i;
+    }
+    if (sys == "Unknown") next;
+    systems[sys];
+
+    # Distinguish between the "calls" line and the "time" line
+    if ($0 ~ /calls/) {
+        match($0, /([0-9]+) calls/, arr);
+        val = arr[1];
+        if (method == "cineb") { c_calls[sys] = val; cc_sum += val; cc_cnt++; }
+        if (method == "mmf")   { m_calls[sys] = val; mc_sum += val; mc_cnt++; }
+    } else if ($0 ~ /time_seconds/) {
+        split($NF, time_parts, " ");
+        val = time_parts[2];
+        if (method == "cineb") { c_time[sys] = val; ct_sum += val; ct_cnt++; }
+        if (method == "mmf")   { m_time[sys] = val; mt_sum += val; mt_cnt++; }
+    }
+}
+END {
+    printf "%-25s | %-15s | %-15s\n", "System", "Diff (Calls)", "Diff (Seconds)";
+    print "-------------------------------------------------------------------------";
+    for (s in systems) {
+        # Calculate differences only if both methods provided data
+        d_calls = (c_calls[s] && m_calls[s]) ? (c_calls[s] - m_calls[s]) : "N/A";
+        d_time  = (c_time[s] && m_time[s])   ? sprintf("%.4f", c_time[s] - m_time[s]) : "N/A";
+        
+        printf "%-25s | %-15s | %-15s\n", s, d_calls, d_time;
+    }
+    print "-------------------------------------------------------------------------";
+    
+    # Calculate global averages for the differences
+    avg_c_calls = cc_cnt ? cc_sum / cc_cnt : 0;
+    avg_m_calls = mc_cnt ? mc_sum / mc_cnt : 0;
+    avg_c_time  = ct_cnt ? ct_sum / ct_cnt : 0;
+    avg_m_time  = mt_cnt ? mt_sum / mt_cnt : 0;
+
+    printf "%-25s | %-15.1f | %-15.4f\n", "AVERAGE DIFF", (avg_c_calls - avg_m_calls), (avg_c_time - avg_m_time);
+}' | sort
+#+end_src
+** Data generation
+#+begin_src bash
+# from within the mlFCI or icFCI
+find . -name "initial.xyz" -execdir python -m rgpycrumbs.cli eon con-splitter \
+    --images-per-path 2 \
+    initial.xyz \
+    --output-dir initial \
+    --box-diagonal 25 25 25 \
+    --center \
+    --align-type endpoints \;
+# Don't use IRA for this!
+    # --use-ira \
+    # --ira-kmax 1.8 \;
+#+end_src
+** References
+#+begin_quote
+[1] R. Goswami, M. Masterov, S. Kamath, A. Pena-Torres, and H. Jónsson, “Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions,” J. Chem. Theory Comput., Jul. 2025, doi: 10.1021/acs.jctc.5c00866.
+
+[2] R. Goswami, “Bayesian hierarchical models for quantitative estimates for performance metrics applied to saddle search algorithms,” AIP Adv., vol. 15, no. 8, p. 85210, Aug. 2025, doi: 10.1063/5.0283639.
+
+[3] V. Ásgeirsson et al., “Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following,” J. Chem. Theory Comput., vol. 17, no. 8, pp. 4929–4945, Aug. 2021, doi: 10.1021/acs.jctc.1c00462.
+
+[4] R. Goswami, “Efficient exploration of chemical kinetics,” Oct. 24, 2025, arXiv: arXiv:2510.21368. doi: 10.48550/arXiv.2510.21368.
+
+[5] R. Goswami and H. Jónsson, “Adaptive pruning for increased robustness and reduced computational overhead in gaussian process accelerated saddle point searches,” Oct. 07, 2025, arXiv: arXiv:2510.06030. doi: 10.48550/arXiv.2510.06030.
+
+[6] F. Bigi et al., “Metatensor and metatomic: foundational libraries for interoperable atomistic machine learning,” Aug. 21, 2025, arXiv: arXiv:2508.15704. doi: 10.48550/arXiv.2508.15704.
+#+end_quote
+
+** More visual aids
+Re-generate all graphs via:
+#+begin_src bash
+pixi r all-graphs
+#+end_src
+*** Filegraph
+[[file:resources/filegraph.svg]]
+*** Rulegraph
+[[file:resources/rulegraph.svg]]

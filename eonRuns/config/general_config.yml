@@ -1,0 +1,166 @@
+common:
+  number_of_intermediate_imgs: 8
+systems:
+
+  ###############
+  # icFSM Baker #
+  ###############
+
+  01_hcn:
+    reactant: resources/icFSM/baker/01_hcn/initial/ipath_000.con
+    product: resources/icFSM/baker/01_hcn/initial/ipath_001.con
+    saddle: resources/icFSM/baker/01_hcn/ts.xyz
+    use_ira: False
+  02_hcch:
+    reactant: resources/icFSM/baker/02_hcch/initial/ipath_000.con
+    product: resources/icFSM/baker/02_hcch/initial/ipath_001.con
+    saddle: resources/icFSM/baker/02_hcch/ts.xyz
+    use_ira: False
+  03_h2co:
+    reactant: resources/icFSM/baker/03_h2co/initial/ipath_000.con
+    product: resources/icFSM/baker/03_h2co/initial/ipath_001.con
+    saddle: resources/icFSM/baker/03_h2co/ts.xyz
+    use_ira: False
+  04_ch3o:
+    reactant: resources/icFSM/baker/04_ch3o/initial/ipath_000.con
+    product: resources/icFSM/baker/04_ch3o/initial/ipath_001.con
+    saddle: resources/icFSM/baker/04_ch3o/ts.xyz
+    use_ira: False
+  05_cyclopropyl:
+    reactant: resources/icFSM/baker/05_cyclopropyl/initial/ipath_000.con
+    product: resources/icFSM/baker/05_cyclopropyl/initial/ipath_001.con
+    saddle: resources/icFSM/baker/05_cyclopropyl/ts.xyz
+    use_ira: False
+  06_bicyclobutane:
+    reactant: resources/icFSM/baker/06_bicyclobutane/initial/ipath_000.con
+    product: resources/icFSM/baker/06_bicyclobutane/initial/ipath_001.con
+    saddle: resources/icFSM/baker/06_bicyclobutane/ts.xyz
+    use_ira: False
+  08_formyloxyethyl:
+    reactant: resources/icFSM/baker/08_formyloxyethyl/initial/ipath_000.con
+    product: resources/icFSM/baker/08_formyloxyethyl/initial/ipath_001.con
+    saddle: resources/icFSM/baker/08_formyloxyethyl/ts.xyz
+    use_ira: False
+  09_parentdielsalder:
+    reactant: resources/icFSM/baker/09_parentdielsalder/initial/ipath_000.con
+    product: resources/icFSM/baker/09_parentdielsalder/initial/ipath_001.con
+    saddle: resources/icFSM/baker/09_parentdielsalder/ts.xyz
+    use_ira: False
+  10_tetrazine:
+    reactant: resources/icFSM/baker/10_tetrazine/initial/ipath_000.con
+    product: resources/icFSM/baker/10_tetrazine/initial/ipath_001.con
+    saddle: resources/icFSM/baker/10_tetrazine/ts.xyz
+    use_ira: False
+  11_trans_butadiene:
+    reactant: resources/icFSM/baker/11_trans_butadiene/initial/ipath_000.con
+    product: resources/icFSM/baker/11_trans_butadiene/initial/ipath_001.con
+    saddle: resources/icFSM/baker/11_trans_butadiene/ts.xyz
+    use_ira: False
+  12_ethane_h2_abstraction:
+    reactant: resources/icFSM/baker/12_ethane_h2_abstraction/initial/ipath_000.con
+    product: resources/icFSM/baker/12_ethane_h2_abstraction/initial/ipath_001.con
+    saddle: resources/icFSM/baker/12_ethane_h2_abstraction/ts.xyz
+    use_ira: False
+  13_hf_abstraction:
+    reactant: resources/icFSM/baker/13_hf_abstraction/initial/ipath_000.con
+    product: resources/icFSM/baker/13_hf_abstraction/initial/ipath_001.con
+    saddle: resources/icFSM/baker/13_hf_abstraction/ts.xyz
+    use_ira: False
+  14_vinyl_alcohol:
+    reactant: resources/icFSM/baker/14_vinyl_alcohol/initial/ipath_000.con
+    product: resources/icFSM/baker/14_vinyl_alcohol/initial/ipath_001.con
+    saddle: resources/icFSM/baker/14_vinyl_alcohol/ts.xyz
+    use_ira: False
+  15_hocl:
+    reactant: resources/icFSM/baker/15_hocl/initial/ipath_000.con
+    product: resources/icFSM/baker/15_hocl/initial/ipath_001.con
+    saddle: resources/icFSM/baker/15_hocl/ts.xyz
+    use_ira: False
+  16_h2po4_anion:
+    reactant: resources/icFSM/baker/16_h2po4_anion/initial/ipath_000.con
+    product: resources/icFSM/baker/16_h2po4_anion/initial/ipath_001.con
+    saddle: resources/icFSM/baker/16_h2po4_anion/ts.xyz
+    use_ira: False
+  17_claisen:
+    reactant: resources/icFSM/baker/17_claisen/initial/ipath_000.con
+    product: resources/icFSM/baker/17_claisen/initial/ipath_001.con
+    saddle: resources/icFSM/baker/17_claisen/ts.xyz
+    use_ira: False
+  18_silylene_insertion:
+    reactant: resources/icFSM/baker/18_silylene_insertion/initial/ipath_000.con
+    product: resources/icFSM/baker/18_silylene_insertion/initial/ipath_001.con
+    saddle: resources/icFSM/baker/18_silylene_insertion/ts.xyz
+    use_ira: False
+  19_hnccs:
+    reactant: resources/icFSM/baker/19_hnccs/initial/ipath_000.con
+    product: resources/icFSM/baker/19_hnccs/initial/ipath_001.con
+    saddle: resources/icFSM/baker/19_hnccs/ts.xyz
+    use_ira: False
+  20_hconh3_cation:
+    reactant: resources/icFSM/baker/20_hconh3_cation/initial/ipath_000.con
+    product: resources/icFSM/baker/20_hconh3_cation/initial/ipath_001.con
+    saddle: resources/icFSM/baker/20_hconh3_cation/ts.xyz
+    use_ira: False
+  21_acrolein_rot:
+    reactant: resources/icFSM/baker/21_acrolein_rot/initial/ipath_000.con
+    product: resources/icFSM/baker/21_acrolein_rot/initial/ipath_001.con
+    saddle: resources/icFSM/baker/21_acrolein_rot/ts.xyz
+    use_ira: False
+  22_hconhoh:
+    reactant: resources/icFSM/baker/22_hconhoh/initial/ipath_000.con
+    product: resources/icFSM/baker/22_hconhoh/initial/ipath_001.con
+    saddle: resources/icFSM/baker/22_hconhoh/ts.xyz
+    use_ira: False
+  23_hcn_h2:
+    reactant: resources/icFSM/baker/23_hcn_h2/initial/ipath_000.con
+    product: resources/icFSM/baker/23_hcn_h2/initial/ipath_001.con
+    saddle: resources/icFSM/baker/23_hcn_h2/ts.xyz
+    use_ira: False
+  24_h2cnh:
+    reactant: resources/icFSM/baker/24_h2cnh/initial/ipath_000.con
+    product: resources/icFSM/baker/24_h2cnh/initial/ipath_001.con
+    saddle: resources/icFSM/baker/24_h2cnh/ts.xyz
+    use_ira: False
+  25_hcnh2:
+    reactant: resources/icFSM/baker/25_hcnh2/initial/ipath_000.con
+    product: resources/icFSM/baker/25_hcnh2/initial/ipath_001.con
+    saddle: resources/icFSM/baker/25_hcnh2/ts.xyz
+    use_ira: False
+
+methods:
+  cineb: "resources/config_nebci.ini"
+  mmf: "resources/config_roneb.ini"
+paths:
+  models: "results/00_models"
+  endpoints: "results/01_endpoints"
+  idpp: "results/02_idpp"
+  neb: "results/03_neb"
+  plots: "results/04_plots"
+  cache: "results/_cache"
+eon:
+  config: "resources/config.ini"
+pet_mad:
+  version: "v1.1.0"
+plotting:
+  plot_structures: "crit_points"
+  facecolor: "white"
+  title: ""
+  aserot: "0x,90y,0z"
+  draw_reactant:
+    x: 30.0
+    y: 60.0
+    rad: 0.1
+  draw_product:
+    x: -1.0
+    y: 40.0
+    rad: 0.1
+  draw_saddle:
+    x: 25.0
+    y: 40.0
+    rad: 0.1
+  figure:
+    figsize: [5.37, 3.37]
+    dpi: 300
+    zoom_ratio: 0.25
+  fonts:
+    base: 12
