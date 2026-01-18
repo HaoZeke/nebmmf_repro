@@ -1,0 +1,260 @@
+# -*- org-src-preserve-indentation: t; org-edit-src-content: 0; -*-
+#+TITLE: Supplementary III: System Visualizations
+#+AUTHOR: Rohit Goswami
+#+EMAIL: rohit.goswami@epfl.ch
+# This should not be altered
+#+OPTIONS: toc:nil title:nil todo:nil
+# I need the footnotes to be inlined
+#+STARTUP: fninline
+
+* Configuration :ignoreheading:ignore:noexport:
+  :PROPERTIES:
+  :VISIBILITY: folded
+  :END:
+#+BEGIN_SRC emacs-lisp :exports none :eval always :results none
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+;; Optional, should probably be in the user config
+(setq 'org-hide-emphasis-markers t)
+#+END_SRC
+** Theme :ignoreheading:ignore:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+#+BEGIN_SRC emacs-lisp :exports none :results none :eval always
+(setq org-html-head-include-default-style nil)
+(setq org-html-htmlize-output-type 'css)
+#+END_SRC
+
+* Start Here :ignoreheading:ignore:
+* Baseline variables
+We need some directories to ground the analysis.
+#+begin_src bash :session vizSH :results value none :async yes
+export PIXI_NO_PROGRESS=true
+export GITROOT=$(git rev-parse --show-toplevel)
+export RESDIR="${GITROOT}/eonRuns/results"
+export CACHERES="${RESDIR}/_cache"
+export NEBRES="${RESDIR}/03_neb"
+export OUTDIR="${GITROOT}/imgs/gen/scripted/"
+#+end_src
+Worth setting up the environment once, saves some time.
+#+begin_src bash :session vizSH :results value none :async yes
+pixi s -e eon
+#+end_src
+* Plots
+The supplementary includes figures from the ~results/04_plots~, for improved
+visual acuity, we re-plot the results from the ~03_neb~ for the systems
+discussed in the manuscript.
+* HNCCS
+:PROPERTIES:
+:header-args:bash: :session vizSH :results discard :exports none :cache yes :tangle 01_plotter.sh
+:END:
+** 2D visualization
+*** CINEB
+# TODO(rg): take more data for the interpolation
+Since this has more points, we choose to plot it for the surface over the RONEB.
+#+begin_src bash :results discard :exports none
+python -m rgpycrumbs.cli eon plt_neb \
+            --con-file "${NEBRES}/19_hnccs/cineb/neb.con" \
+            --output-file "${OUTDIR}/hnccs_cineb_2D.png" \
+            --plot-type "landscape" \
+            --rc-mode "rmsd" \
+            --show-pts \
+            --landscape-path "all" \
+            --plot-structures "crit_points" \
+            --facecolor "white" \
+            --input-dat-pattern "${NEBRES}/19_hnccs/cineb/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/19_hnccs/cineb/neb_path*.con" \
+            --figsize 5.37 5.37 \
+            --dpi 300 \
+            --zoom-ratio 0.25 \
+            --fontsize-base 12 \
+            --title "" \
+            --cache-file "${CACHERES}/19_hnccs/cineb/2dcache.parquet" \
+            --ase-rotation 0x,0y,0z \
+            --ira-kmax 14 \
+            --additional-con "${NEBRES}/19_hnccs/mmf/sp.con" "RONEB" \
+            --show-legend
+            # --additional-con "resources/icFSM/baker/19_hnccs/ts.xyz" "Baker" \
+#+end_src
+
+#+RESULTS:
+
+
+file:../imgs/gen/scripted/hnccs_cineb_2D.png
+** 1D visualization
+*** CINEB
+#+begin_src bash :results discard :exports none
+python -m rgpycrumbs.cli eon plt_neb \
+            --con-file "${NEBRES}/19_hnccs/cineb/neb.con" \
+            --output-file "${OUTDIR}/hnccs_cineb_1D_path.png" \
+            --plot-type "profile" \
+            --rc-mode "path" \
+            --show-pts \
+            --plot-structures "crit_points" \
+            --facecolor "white" \
+            --input-dat-pattern "${NEBRES}/19_hnccs/cineb/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/19_hnccs/cineb/neb_path*.con" \
+            --figsize 5.37 3.37 \
+            --dpi 300 \
+            --zoom-ratio 0.25 \
+            --fontsize-base 16 \
+            --draw-product 30.0 -30.0 0.1 \
+            --draw-reactant 30.0 -30.0 0.1 \
+            --draw-saddle -25.0 40.0 0.1 \
+            --title "CINEB" \
+            --cache-file "${CACHERES}/19_hnccs/cineb/1dcache.parquet" \
+            --ase-rotation 0x,0y,0z
+#+end_src
+
+#+RESULTS:
+
+file:../imgs/gen/scripted/hnccs_cineb_1D_path.png
+
+*** RONEB
+#+begin_src bash :results discard :exports none
+python -m rgpycrumbs.cli eon plt_neb \
+            --con-file "${NEBRES}/19_hnccs/mmf/neb.con" \
+            --output-file "${OUTDIR}/hnccs_mmf_1D_path.png" \
+            --plot-type "profile" \
+            --rc-mode "path" \
+            --show-pts \
+            --plot-structures "crit_points" \
+            --facecolor "white" \
+            --input-dat-pattern "${NEBRES}/19_hnccs/mmf/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/19_hnccs/mmf/neb_path*.con" \
+            --figsize 5.37 3.37 \
+            --dpi 300 \
+            --zoom-ratio 0.25 \
+            --fontsize-base 16 \
+            --title "RONEB" \
+            --cache-file "${CACHERES}/19_hnccs/mmf/1dcache.parquet" \
+            --ase-rotation 0x,0y,0z
+#+end_src
+
+#+RESULTS:
+
+file:../imgs/gen/scripted/hnccs_mmf_1D_path.png
+
+* HCONH3 cation
+:PROPERTIES:
+:header-args:bash: :session vizSH :results discard :exports none :cache yes :tangle 01_plotter.sh
+:END:
+** 2D visualization
+*** CINEB
+# TODO(rg): take more data for the interpolation
+Since this has more points, we choose to plot it for the surface over the RONEB.
+#+begin_src bash :results discard :exports none
+export RESDIR="${GITROOT}/case_studies/molecular_systems/results"
+export CACHERES="${RESDIR}/_cache"
+export NEBRES="${RESDIR}/03_neb"
+export OUTDIR="${GITROOT}/imgs/gen/scripted/cases/"
+
+python -m rgpycrumbs.cli eon plt_neb \
+            --con-file "${NEBRES}/20_hconh3_cation/cineb/neb.con" \
+            --output-file "${OUTDIR}/hconh3cat_cineb_2D.png" \
+            --plot-type "landscape" \
+            --rc-mode "rmsd" \
+            --show-pts \
+            --landscape-path "all" \
+            --plot-structures "crit_points" \
+            --facecolor "white" \
+            --input-dat-pattern "${NEBRES}/20_hconh3_cation/cineb/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/20_hconh3_cation/cineb/neb_path*.con" \
+            --figsize 5.37 5.37 \
+            --dpi 300 \
+            --zoom-ratio 0.25 \
+            --fontsize-base 12 \
+            --title "" \
+            --cache-file "${CACHERES}/20_hconh3_cation/cineb/2dcache.parquet" \
+            --ase-rotation 0x,0y,0z \
+            --ira-kmax 14 \
+            --additional-con "${NEBRES}/20_hconh3_cation/mmf/sp.con" "RONEB" \
+            --show-legend
+#+end_src
+
+#+RESULTS:
+
+file:../imgs/gen/scripted/cases/hconh3cat_cineb_2D.png
+** 1D visualization
+*** CINEB
+#+begin_src bash :results discard :exports none
+python -m rgpycrumbs.cli eon plt_neb \
+            --con-file "${NEBRES}/20_hconh3_cation/cineb/neb.con" \
+            --output-file "${OUTDIR}/hconh3cat_cineb_1D_path.png" \
+            --plot-type "profile" \
+            --rc-mode "path" \
+            --show-pts \
+            --plot-structures "crit_points" \
+            --facecolor "white" \
+            --input-dat-pattern "${NEBRES}/20_hconh3_cation/cineb/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/20_hconh3_cation/cineb/neb_path*.con" \
+            --figsize 5.37 3.37 \
+            --dpi 300 \
+            --zoom-ratio 0.25 \
+            --fontsize-base 16 \
+            --draw-product 30.0 -30.0 0.1 \
+            --draw-reactant 30.0 -30.0 0.1 \
+            --draw-saddle -25.0 40.0 0.1 \
+            --title "CINEB" \
+            --cache-file "${CACHERES}/20_hconh3_cation/cineb/1dcache.parquet" \
+            --ase-rotation 0x,0y,0z
+#+end_src
+
+#+RESULTS:
+
+file:../imgs/gen/scripted/cases/hconh3cat_cineb_1D_path.png
+
+*** RONEB -- Aggressive
+#+begin_src bash :results discard :exports none
+python -m rgpycrumbs.cli eon plt_neb \
+            --con-file "${NEBRES}/20_hconh3_cation/mmf/neb.con" \
+            --output-file "${OUTDIR}/hconh3cat_mmf_agg_1D_path.png" \
+            --plot-type "profile" \
+            --rc-mode "path" \
+            --show-pts \
+            --plot-structures "crit_points" \
+            --facecolor "white" \
+            --input-dat-pattern "${NEBRES}/20_hconh3_cation/mmf/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/20_hconh3_cation/mmf/neb_path*.con" \
+            --figsize 5.37 3.37 \
+            --dpi 300 \
+            --zoom-ratio 0.25 \
+            --fontsize-base 16 \
+            --draw-product 30.0 -30.0 0.1 \
+            --draw-reactant 30.0 -30.0 0.1 \
+            --draw-saddle -25.0 40.0 0.1 \
+            --title "RONEB -- Loose" \
+            --cache-file "${CACHERES}/20_hconh3_cation/mmf/1dcache.parquet" \
+            --ase-rotation 0x,0y,0z
+#+end_src
+
+#+RESULTS:
+
+file:../imgs/gen/scripted/cases/hconh3cat_mmf_agg_1D_path.png
+
+*** RONEB -- Strict
+#+begin_src bash :results discard :exports none
+python -m rgpycrumbs.cli eon plt_neb \
+            --con-file "${NEBRES}/20_hconh3_cation/strict/neb.con" \
+            --output-file "${OUTDIR}/hconh3cat_mmf_strict_1D_path.png" \
+            --plot-type "profile" \
+            --rc-mode "path" \
+            --show-pts \
+            --plot-structures "crit_points" \
+            --facecolor "white" \
+            --input-dat-pattern "${NEBRES}/20_hconh3_cation/strict/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/20_hconh3_cation/strict/neb_path*.con" \
+            --figsize 5.37 3.37 \
+            --dpi 300 \
+            --zoom-ratio 0.25 \
+            --fontsize-base 16 \
+            --draw-product 30.0 -30.0 0.1 \
+            --draw-reactant 30.0 -30.0 0.1 \
+            --draw-saddle -25.0 40.0 0.1 \
+            --title "RONEB -- Strict" \
+            --cache-file "${CACHERES}/20_hconh3_cation/strict/1dcache.parquet" \
+            --ase-rotation 0x,0y,0z
+#+end_src
+
+#+RESULTS:
+
+file:../imgs/gen/scripted/cases/hconh3cat_mmf_strict_1D_path.png

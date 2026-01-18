@@ -1,0 +1,798 @@
+# -*- org-src-preserve-indentation: t; org-edit-src-content: 0; -*-
+#+TITLE: Result Visualization
+#+AUTHOR: Rohit Goswami
+#+EMAIL: rohit.goswami@epfl.ch
+# This should not be altered
+#+OPTIONS: toc:nil title:nil todo:nil
+# I need the footnotes to be inlined
+#+STARTUP: fninline
+
+* Configuration :ignoreheading:ignore:noexport:
+  :PROPERTIES:
+  :VISIBILITY: folded
+  :END:
+#+BEGIN_SRC emacs-lisp :exports none :eval always :results none
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+;; Optional, should probably be in the user config
+(setq 'org-hide-emphasis-markers t)
+#+END_SRC
+** Theme :ignoreheading:ignore:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+#+BEGIN_SRC emacs-lisp :exports none :results none :eval always
+(setq org-html-head-include-default-style nil)
+(setq org-html-htmlize-output-type 'css)
+#+END_SRC
+** Code Properties :ignoreheading:ignore:
+# Set headers everywhere
+# #+PROPERTY: header-args:R :session oneR :results output :exports both :cache yes :tangle rcode.R
+There's no need to expand the ~noweb~ bits while exporting, but it can be useful to debug:
+#+property: header-args :noweb no-export
+*** Formatting R dataframes
+#+NAME: round-tbl
+#+BEGIN_SRC emacs-lisp :var tbl="" :var fmt="%.1f"
+;; Kanged from https://brettpresnell.com/post/orgmode/
+  (mapcar (lambda (row)
+	    (mapcar (lambda (cell)
+		      (if (floatp cell)
+			  (format fmt cell)
+			cell))
+		    row))
+	  tbl)
+#+end_src
+
+#+RESULTS: round-tbl
+
+* Start Here :ignoreheading:ignore:
+* Baseline variables
+We need some directories to ground the analysis.
+#+begin_src bash :session shared :results value none :async yes
+export PIXI_NO_PROGRESS=true
+#+end_src
+Always start the interpreters from the same directory as the file.
+* R wrangling
+:PROPERTIES:
+:header-args:R: :session oneR :results value :exports both :cache yes :tangle 00_sviz_rcode.R
+:END:
+
+We set the results to ~value~ so as to get the ~print()~ output instead of the mangled output.
+
+#+begin_src emacs-lisp :results none
+(let ((git-root-path (replace-regexp-in-string "\n" "" (shell-command-to-string "git rev-parse --show-toplevel"))))
+  ;; make-local-variable ensures the change stays within this buffer
+  (setq-local inferior-R-program
+              (concat git-root-path "/.pixi/envs/rviz/bin/R")))
+#+end_src
+
+#+begin_src R :results none
+## install.packages("khroma")
+library("httpgd")
+library("khroma")
+library("scales")
+library("patchwork")
+library("tidyverse")
+library("ragg")
+library("ggnewscale")
+library("ggthemes")
+library("ggridges")
+# Sometimes needs to be killed with lsof -i tcp:$PORT and kill -9 $PID
+## hgd(port=9890)
+#+end_src
+** Ruhi colors
+As donated kindly by Ruhila Goswami.
+#+begin_src R :results discard
+# ruhiColorScheme
+# "#FF655D", "#F1DB4B", "#004D40", "#1E88E5", "#D81B60"
+
+# Named discrete palette
+ruhi_colors <- c(
+  # Follows a logical "spectral" path for continuous scales
+  teal      = "#004D40",  # Dark green/blue
+  green     = "#009E73",  # Medium green # ADDED
+  sky       = "#1E88E5",  # Blue
+  purple    = "#5E35B1",  # Purple # ADDED
+  magenta   = "#D81B60",  # Pink
+  coral     = "#FF655D",  # Red-pink
+  orange    = "#E69F00",  # Orange # ADDED
+  sunshine  = "#F1DB4B"   # Yellow
+)
+
+ruhi_colors_d <- c(
+  coral     = "#FF655D",  # 1. Red-pink
+  sky       = "#1E88E5",  # 2. Blue
+  green     = "#009E73",  # 3. Green
+  sunshine  = "#F1DB4B",  # 4. Yellow
+  purple    = "#5E35B1",  # 5. Purple
+  orange    = "#E69F00",  # 6. Orange
+  magenta   = "#D81B60",  # 7. Pink
+  teal      = "#004D40"   # 8. Dark Teal
+)
+
+# Helper to fetch named colors or all
+ruhi_cols <- function(..., type = "discrete") {
+  cols <- c(...)
+  palette <- if (type == "discrete") ruhi_colors_d else ruhi_colors_c
+  
+  if (length(cols) == 0) return(unname(palette))
+  unname(palette[cols])
+}
+
+# Discrete palette function (optionally reverse or recycle)
+ruhi_pal_discrete <- function(reverse = FALSE, recycle = TRUE) {
+  cols <- unname(ruhi_colors)
+  if (reverse) cols <- rev(cols)
+  function(n) {
+    if (recycle) {
+      rep(cols, length.out = n)
+    } else {
+      if (n > length(cols)) {
+        stop("ruhi palette supports up to ", length(cols),
+             " discrete values when recycle = FALSE.")
+      }
+      cols[seq_len(n)]
+    }
+  }
+}
+
+# Discrete palette function (NOW uses the 'd' palette)
+ruhi_pal_discrete <- function(reverse = FALSE, recycle = TRUE) {
+  cols <- unname(ruhi_colors_d)
+  if (reverse) cols <- rev(cols)
+  function(n) {
+    if (recycle) {
+      rep(cols, length.out = n)
+    } else {
+      if (n > length(cols)) {
+        stop("ruhi discrete palette supports up to ", length(cols),
+             " discrete values when recycle = FALSE.")
+      }
+      cols[seq_len(n)]
+    }
+  }
+}
+
+# Continuous palette (NOW uses the 'c' palette)
+ruhi_pal_continuous <- function(reverse = FALSE, n = 256) {
+  cols <- unname(ruhi_colors_c)
+  if (reverse) cols <- rev(cols)
+  grDevices::colorRampPalette(cols, space = "Lab")(n)
+}
+
+scale_color_ruhi <- function(..., reverse = FALSE, recycle = TRUE) {
+  ggplot2::discrete_scale(
+    aesthetics = "colour",
+    scale_name = "ruhi",
+    palette = ruhi_pal_discrete(reverse = reverse, recycle = recycle),
+    ...
+  )
+}
+
+# Alias for UK spelling
+scale_colour_ruhi <- scale_color_ruhi # Alias for UK spelling
+
+scale_fill_ruhi <- function(..., reverse = FALSE, recycle = TRUE) {
+  ggplot2::discrete_scale(
+    aesthetics = "fill",
+    scale_name = "ruhi",
+    palette = ruhi_pal_discrete(reverse = reverse, recycle = recycle),
+    ...
+  )
+}
+
+# Continuous scales (multi-stop gradient)
+scale_color_ruhi_c <- function(..., reverse = FALSE) {
+  ggplot2::scale_color_gradientn(
+    colours = ruhi_pal_continuous(reverse = reverse),
+    ...
+  )
+}
+scale_fill_ruhi_c <- function(..., reverse = FALSE) {
+  ggplot2::scale_fill_gradientn(
+    colours = ruhi_pal_continuous(reverse = reverse),
+    ...
+  )
+}
+
+# Binned (steps) scales using same gradient
+scale_color_ruhi_b <- function(..., reverse = FALSE) {
+  ggplot2::scale_color_stepsn(
+    colours = ruhi_pal_continuous(reverse = reverse),
+    ...
+  )
+}
+scale_fill_ruhi_b <- function(..., reverse = FALSE) {
+  ggplot2::scale_fill_stepsn(
+    colours = ruhi_pal_continuous(reverse = reverse),
+    ...
+  )
+}
+#+end_src
+
+#+RESULTS:
+
+** Fonts
+We'd like to use more of the hyperlegible fonts.
+#+begin_src R :results discard
+library('showtext')
+font_add_google("Atkinson Hyperlegible", "Atkinson")
+showtext_auto()
+#+end_src
+
+#+RESULTS:
+
+** Theme
+#+begin_src R :results discard
+theme_Publication <- function(base_size = 36, base_family = "Atkinson") {
+  (theme_foundation(base_size = base_size, base_family = base_family)
+   + theme(
+     plot.title = element_text(
+       face = "bold",
+       size = rel(2.2), hjust = 0.5
+     ),
+     text = element_text(),
+     panel.background = element_rect(colour = NA, fill = "#FFFFFF"),
+     plot.background = element_rect(colour = NA, fill = "#FFFFFF"),
+     plot.tag = element_text(face = "bold"),
+     panel.border = element_rect(colour = "black", fill = NA, linewidth = 1),
+     axis.title = element_text(face = "bold", size = rel(1.8)),
+     axis.title.y = element_text(angle = 90, vjust = 2),
+     axis.title.x = element_text(vjust = -0.2),
+     axis.text = element_text(size = rel(1.8)),
+     axis.line = element_line(colour = "black"),
+     axis.ticks = element_line(),
+     panel.grid.major = element_line(colour = "#e6e3dd"),
+     panel.grid.minor = element_blank(),
+     legend.background = element_rect(fill = "#FFFFFF", colour = NA),
+     legend.key = element_rect(colour = NA, fill = "#FFFFFF"),
+     legend.position = "right",
+     legend.direction = "vertical",
+     legend.key.size = unit(0.8, "cm"),
+     legend.margin = margin(unit(0, "cm")),
+     legend.title = element_text(face = "italic", size = rel(1.6)),
+     legend.text = element_text(size = rel(1.8)),
+     plot.margin = unit(c(10, 5, 5, 5), "mm"),
+     strip.background = element_rect(colour = "#FFFFFF", fill = "#FFFFFF"),
+     strip.text = element_text(face = "bold", size = rel(1.5))
+   ))
+}
+#+end_src
+
+#+RESULTS:
+
+** Performance plot aids
+
+Using the Dolan and Moré 2001 style performance plot.
+
+#+begin_src R :results none
+#' Create a Publication-Quality Performance Profile Plot
+#'
+#' This function generates a formal performance profile to benchmark a set of
+#' solvers. It correctly handles failures by creating plateaus at a solver's
+#' success rate and allows for both linear and log-scaled axes.
+#'
+#' @param df A dataframe containing the benchmark results.
+#' @param problem_cols A character vector of column names that uniquely identify a problem (e.g., c("mol_id", "spin")).
+#' @param method_col The unquoted name of the column containing the solver/method names.
+#' @param time_col The unquoted name of the column with the performance metric (e.g., tot_time).
+#' @param success_col The unquoted name of the column indicating success (must be TRUE/FALSE).
+#' @param log_scale A logical value. If TRUE (default), the x-axis is on a log2 scale. If FALSE, it's linear.
+#' @param x_limit A numeric value setting the upper limit for the x-axis.
+#' @param title An optional title for the plot.
+#'
+#' @return A ggplot object representing the performance profile.
+#' @import ggplot2
+#' @import dplyr
+
+
+create_performance_profile <- function(df,
+                                       problem_cols,
+                                       method_col,
+                                       metric_col,
+                                       success_col,
+                                       log_scale = TRUE,
+                                       x_limit = NULL,
+                                       metric_name = "Time",
+                                       title = "Performance Profile") {
+  # Ensure columns are treated as symbols for tidy evaluation
+  method_col_sym <- rlang::ensym(method_col)
+  metric_col_sym <- rlang::ensym(metric_col)
+  success_col_sym <- rlang::ensym(success_col)
+
+  # --- 1. Data Processing ---
+  all_problems <- df %>% dplyr::distinct(dplyr::across(dplyr::all_of(problem_cols)))
+
+  performance_ratios <- df %>%
+    dplyr::select(!!method_col_sym, dplyr::all_of(problem_cols), !!metric_col_sym, !!success_col_sym) %>%
+    tidyr::complete(!!method_col_sym, all_problems) %>%
+    dplyr::mutate(time_val = dplyr::if_else(is.na(!!success_col_sym) | !!success_col_sym == FALSE, Inf, !!metric_col_sym))
+
+  best_times <- performance_ratios %>%
+    dplyr::filter(is.finite(time_val)) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(problem_cols))) %>%
+    dplyr::summarise(best_time = min(time_val, na.rm = TRUE), .groups = "drop")
+
+  ## Calculate the performance ratio (tau) for each method on each problem.
+  plot_data <- performance_ratios %>%
+    dplyr::left_join(best_times, by = problem_cols) %>%
+    dplyr::mutate(ratio = time_val / best_time)
+
+  # --- 2. Manually Calculate ECDF for Plotting ---
+  plot_data_ecdf <- plot_data %>%
+    dplyr::group_by(!!method_col_sym) %>%
+    dplyr::arrange(ratio) %>%
+    dplyr::mutate(proportion = (1:dplyr::n()) / dplyr::n()) %>%
+    dplyr::ungroup()
+
+  # --- 3. Prepare Final Data for Clean Geom_step ---
+  ## Create a clean dataset that has exactly one point at ratio = 1 representing
+  ## the win rate.
+  ##
+  ## Find the maximum proportion for methods that were the best
+  ## (ratio = 1). This is the win rate.
+  wins <- plot_data_ecdf %>%
+    dplyr::filter(ratio == 1) %>%
+    dplyr::group_by(!!method_col_sym) %>%
+    dplyr::summarise(proportion = max(proportion), .groups = "drop") %>%
+    dplyr::mutate(ratio = 1)
+  others <- plot_data_ecdf %>% dplyr::filter(ratio > 1, is.finite(ratio))
+
+  plot_data_final <- dplyr::bind_rows(wins, others) %>%
+    dplyr::arrange(!!method_col_sym, ratio)
+
+  # --- 4. Create Summary Dataframe for Caption ---
+  # a) Total and solvable problems for each method
+  total_counts <- plot_data_ecdf %>%
+    dplyr::group_by(!!method_col_sym) %>%
+    dplyr::summarise(n_total = dplyr::n(), .groups = "drop")
+
+  solvable_counts <- df %>%
+    dplyr::filter(!!success_col_sym == TRUE) %>%
+    dplyr::count(!!method_col_sym, name = "n_solvable")
+
+  # b) Win rate (proportion of times a method was the fastest)
+  win_summary <- wins %>%
+    dplyr::select(!!method_col_sym, win_rate = proportion) %>%
+    dplyr::mutate(win_rate = win_rate * 100) # Convert to percentage
+
+  # c) Tau at 90% of solvable problems
+  tau_90 <- plot_data_ecdf %>%
+    dplyr::left_join(solvable_counts, by = rlang::as_name(method_col_sym)) %>%
+    dplyr::filter(!is.na(n_solvable), n_solvable > 0) %>%
+    dplyr::mutate(proportion_of_solvable = (dplyr::row_number() / n_solvable)) %>%
+    dplyr::filter(proportion_of_solvable >= 0.9) %>%
+    dplyr::group_by(!!method_col_sym) %>%
+    dplyr::summarise(tau_at_90_percent = min(ratio), .groups = "drop")
+
+  # d) Median and Mean Tau for successful runs
+  tau_stats <- plot_data %>%
+    dplyr::filter(is.finite(ratio)) %>% # Only for successful runs
+    dplyr::group_by(!!method_col_sym) %>%
+    dplyr::summarise(
+      median_tau = median(ratio, na.rm = TRUE),
+      mean_tau = mean(ratio, na.rm = TRUE),
+      .groups = "drop"
+    )
+
+  # e) Combine all summary metrics into a single dataframe
+  all_methods <- df %>% dplyr::distinct(!!method_col_sym)
+
+  caption_data <- all_methods %>%
+    dplyr::left_join(total_counts, by = rlang::as_name(method_col_sym)) %>%
+    dplyr::left_join(solvable_counts, by = rlang::as_name(method_col_sym)) %>%
+    dplyr::left_join(win_summary, by = rlang::as_name(method_col_sym)) %>%
+    dplyr::left_join(tau_90, by = rlang::as_name(method_col_sym)) %>%
+    dplyr::left_join(tau_stats, by = rlang::as_name(method_col_sym)) %>%
+    dplyr::mutate(win_rate = tidyr::replace_na(win_rate, 0)) # Clean up NAs for methods that never won
+
+  # --- 5. Create Plot ---
+  p <- ggplot(plot_data_final, aes(x = ratio, y = proportion, color = !!method_col_sym)) +
+    geom_step(linewidth = 1.5, na.rm = TRUE) +
+    ## Add a distinct point at ratio=1 to highlight the win rate.
+    geom_point(data = wins, aes(x = 1), size = 4, shape = 21, fill = "white", stroke = 1.5) +
+    labs(title = title, y = "Proportion of Problems Solved", color = "Method") +
+    scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0.01, 0.01)))
+  # Apply scaling to the x-axis based on user preference.
+  if (log_scale) {
+    if (is.null(x_limit)) x_limit <- 8
+    p <- p +
+      scale_x_continuous(trans = "log2", breaks = c(1, 2, 4, 8, 16, 32, 64), expand = expansion(mult = c(0.01, 0.01))) +
+      coord_cartesian(xlim = c(1, x_limit), ylim = c(0, 1.01)) +
+      labs(x = bquote(paste("Performance Ratio (", tau, " = ", .(metric_name), " / Best ", .(metric_name), ", ", log[2], " scale)")))
+  } else {
+    if (is.null(x_limit)) x_limit <- 25
+    p <- p +
+      scale_x_continuous(breaks = seq(0, x_limit, by = 5), expand = expansion(mult = c(0.01, 0.01))) +
+      coord_cartesian(xlim = c(1, x_limit), ylim = c(0, 1.01)) +
+      labs(x = paste0("Performance Ratio (τ = ", metric_name, " / Best ", metric_name, ")"))
+  }
+
+  p <- p + theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 18),
+      axis.title.x = element_text(face = "bold", margin = margin(t = 10)),
+      axis.title.y = element_text(face = "bold", margin = margin(r = 10)),
+      legend.position = "inside",
+      legend.position.inside = c(0.8, 0.4),
+      panel.grid.major = element_line(color = "gray90", linetype = "dotted"),
+      panel.grid.minor = element_line(color = "gray95", linetype = "dotted")
+    )
+
+  return(list(plot = p, caption_data = caption_data))
+}
+#+end_src
+
+The results of the RONEB are too good for the CINEB on a plot like this.
+** Data
+
+#+begin_src R :results none
+process_transition_state_data <- function(file_path) {
+  # Load the raw CSV data
+  raw_data <- read_csv(file_path, show_col_types = FALSE)
+  colnames(raw_data) <- gsub("_MMF$", "_RONEB", colnames(raw_data))
+  
+  # Transform and clean the data
+  processed_data <- raw_data %>%
+    mutate(
+      # Convert System to a factor for categorical analysis
+      System = as.factor(System),
+      
+      # Retain termination status as factors
+      Term_CINEB = as.factor(Term_CINEB),
+      Term_RONEB = as.factor(Term_RONEB)
+    ) %>%
+    # Organize columns to prioritize physical chemistry metrics and performance
+    dplyr::relocate(
+      System, 
+      Formula, 
+      N_Atoms, 
+      E_Diff, 
+      RMSD_Saddle,
+      starts_with("Time_"),
+      starts_with("Calls_"),
+      everything()
+    )
+  
+  return(processed_data)
+}
+#+end_src
+
+#+begin_src R :results discard
+data_raw <- process_transition_state_data("../benchmark_results.csv")
+#+end_src
+
+#+RESULTS:
+
+We need a long set.
+
+#+begin_src R :results discard
+# Process raw data to long format in ONE step
+df_long <- data_raw %>%
+  # Pivot all method-specific columns at once
+  pivot_longer(
+    cols = matches("_(CINEB|RONEB)$"),
+    names_to = c(".value", "Method"),
+    names_pattern = "(.*)_(CINEB|RONEB)"
+  ) %>%
+  # Rename for clarity (optional, but matches your brms code)
+  rename(
+    tot_time = Time,
+    pes_calls = Calls,
+    term_reason = Term
+  ) %>%
+  # Add logical flags and factors
+  mutate(
+    # Create distinct Success flag (TRUE only if strictly "GOOD")
+    success = term_reason == "GOOD",
+    # Ensure Method is a factor with CINEB as the baseline (first level)
+    Method = factor(Method, levels = c("CINEB", "RONEB")),
+    
+    # Log-transform calls for the spline model (avoid log(0) if any)
+    log_pes_calls = log(ifelse(pes_calls == 0, 1, pes_calls)),
+    
+    # Factorize System for random effects
+    System = as.factor(System)
+  )
+
+# Verify the structure
+glimpse(df_long)
+#+end_src
+
+#+RESULTS:
+
+*** Summaries
+#+begin_src R :results value :colnames yes :post round-tbl[:colnames yes](*this*)
+df_long %>%
+  group_by(Method) %>%
+  summarise(
+    mean_rmsd   = mean(RMSD_Saddle, na.rm = TRUE),
+    median_rmsd = median(RMSD_Saddle, na.rm = TRUE),
+    max_rmsd    = max(RMSD_Saddle, na.rm = TRUE),
+    n_systems   = n()
+  )
+#+end_src
+
+#+RESULTS[5811b43be79ef5469f029e803e19c7240a85ce0f]:
+| Method | mean_rmsd | median_rmsd | max_rmsd | n_systems |
+|--------+-----------+-------------+----------+-----------|
+| CINEB  |       0.0 |         0.0 |      0.3 |        24 |
+| RONEB  |       0.0 |         0.0 |      0.3 |        24 |
+
+
+#+begin_src R :results value :colnames yes :post round-tbl[:colnames yes](*this*)
+df_long %>%
+  group_by(Method) %>%
+  summarize(n=n(), mean=mean(pes_calls), median=median(pes_calls))
+#+end_src
+
+#+RESULTS[0cf46f5e8a4fe08ac381870960cf97687de3cd09]:
+| Method |  n |  mean | median |
+|--------+----+-------+--------|
+| CINEB  | 24 | 790.7 |    482 |
+| RONEB  | 24 | 445.9 |  230.5 |
+
+** Performance Plots
+*** Dumbbell
+#+begin_src R :results graphics file :file ../imgs/gen/R/dumbbell_plot.png
+# --- 1. Prepare Data for Faceted Dumbbell ---
+df_dumbbell <- data_raw %>%
+  # Cap values for failures to keep plot readable
+  mutate(
+    Calls_CINEB_Plot = ifelse(Term_CINEB == "BAD_MAX_ITERATIONS", 8000, Calls_CINEB),
+    Calls_RONEB_Plot = Calls_RONEB,
+    Time_CINEB_Plot = Time_CINEB,
+    Time_RONEB_Plot = Time_RONEB
+  ) %>%
+  pivot_longer(
+    cols = c(Calls_CINEB_Plot, Calls_RONEB_Plot, Time_CINEB_Plot, Time_RONEB_Plot),
+    names_to = c("Metric", "Method"),
+    names_pattern = "(.*)_(.*)_Plot", 
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Method = factor(Method, levels = c("CINEB", "RONEB")),
+    Metric_Label = case_when(
+      Metric == "Calls" ~ "Gradient Evaluations",
+      Metric == "Time" ~ "Wall Time (s)"
+    ),
+    Status_Point = case_when(
+      Method == "CINEB" & Term_CINEB == "BAD_MAX_ITERATIONS" ~ "Failed",
+      TRUE ~ "Converged"
+    )
+  )
+
+df_avg <- df_dumbbell %>% group_by(Metric_Label, Method) %>%
+  summarise(
+  Value = mean(Value, na.rm=TRUE),
+  Status_Point = "Converged",
+  Reaction = "bold('AVERAGE CHANGE')",
+  .groups = "drop"
+  )
+
+
+df_median <- df_dumbbell %>% group_by(Metric_Label, Method) %>%
+  summarise(
+  Value = median(Value, na.rm=TRUE),
+  Status_Point = "Converged",
+  Reaction = "bold('MEDIAN CHANGE')",
+  .groups = "drop"
+  )
+
+df_combined <- bind_rows(df_dumbbell, df_avg, df_median)
+
+# --- 2. Calculate Segments and Differences ---
+df_segments <- df_combined %>%
+  pivot_wider(names_from = Method, values_from = c(Value, Status_Point)) %>%
+  filter(!is.na(Value_CINEB) & !is.na(Value_RONEB)) %>%
+  # Group by Metric to find the local maximum for each facet
+  group_by(Metric_Label) %>%
+  mutate(
+    Improvement = Value_CINEB - Value_RONEB,
+    Diff_Value = Value_RONEB - Value_CINEB,
+    Diff_Label = case_when(
+      Metric_Label == "Gradient Evaluations" ~ sprintf("%+d", as.integer(Diff_Value)),
+      Metric_Label == "Wall Time (s)" ~ sprintf("%+.1fs", Diff_Value)
+    ),
+    # Use a localized maximum for each facet to keep labels near the data
+    Right_Pos = max(c(Value_CINEB, Value_RONEB), na.rm = TRUE) * 1.8
+  ) %>%
+  ungroup()
+
+rank_order <- df_segments %>%
+  filter(Metric_Label == "Gradient Evaluations") %>%
+  arrange(Improvement) %>% 
+  pull(Reaction)
+
+df_combined$Reaction <- factor(df_combined$Reaction, levels = rank_order)
+df_segments$Reaction <- factor(df_segments$Reaction, levels = rank_order)
+
+# --- 3. Plot ---
+p_dumbbell <- ggplot() +
+  # A. The Connector Line
+  geom_segment(
+    data = df_segments,
+    aes(y = Reaction, yend = Reaction, x = Value_RONEB, xend = Value_CINEB),
+    color = "grey70", linewidth = 0.8
+  ) +
+  
+  # B. The Difference Labels
+  geom_text(
+    data = df_segments,
+    aes(y = Reaction, x = Right_Pos, label = Diff_Label),
+    vjust = -0.0, size = 12, color = "grey40", family = "Atkinson"
+  ) +
+  
+  # C. The Points
+  geom_point(
+    data = df_combined,
+    aes(y = Reaction, x = Value, color = Method, shape = Status_Point),
+    size = 4, alpha = 0.9
+  ) +
+  
+  facet_wrap(~Metric_Label, scales = "free_x", ncol = 2) +
+ scale_y_discrete(labels = scales::label_parse(), expand = expansion(mult = c(0.05, 0.05))) + 
+  scale_color_manual(
+    values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])
+  ) +
+  scale_shape_manual(
+    values = c("Converged" = 19, "Failed" = 4)
+  ) +
+  
+scale_x_log10(
+    labels = label_number(scale_cut = cut_short_scale()),
+    expand = expansion(mult = c(0.1, 0.2))
+  ) +
+  
+  labs(
+    ## title = "Performance Gap: RONEB vs. CINEB",
+    ## subtitle = "Labels indicate savings (negative values = RONEB faster).",
+    x = "Log Scale Value",
+    y = NULL,
+    color = "Method",
+    shape = "Status"
+  ) +
+  theme_Publication(base_size=22) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    legend.position = "top",
+    legend.box = "horizontal",
+    legend.direction = "horizontal",
+  )
+
+ggsave(
+  "../imgs/gen/R/dumbbell_plot.png", 
+  p_dumbbell, 
+  width = 12, 
+  height = 8,
+  dpi = 300
+)
+#+end_src
+
+#+RESULTS[5d2d6c69231b609d5d79b368797eaefbb9119a85]:
+[[file:../imgs/gen/R/dumbbell_plot.png]]
+
+
+*** Cactus
+#+begin_src R :results graphics file :file ../imgs/gen/R/suppl/cactus_violin.png
+df_plot_ready <- df_long %>%
+  filter(Method %in% c("CINEB", "RONEB"), success == TRUE)
+
+# Panel A: Cactus Plot
+cactus_data <- df_plot_ready %>%
+  group_by(Method) %>%
+  arrange(tot_time) %>%
+  mutate(solved_count = row_number()) %>%
+  ungroup()
+
+panel_a <- ggplot(cactus_data, aes(x = tot_time, y = solved_count, color = Method)) +
+  geom_step(linewidth = 1.5) +
+  scale_x_log10(
+    breaks = c(1, 10, 100, 500),
+    labels = scales::comma
+  ) +
+  labs(
+    title = "A",
+    x = "Time (s, log10)",
+    y = "Cumulative Problems Solved"
+  ) +
+  theme_Publication(base_size=22) +
+  scale_color_ruhi() +
+  theme(legend.position = "inside", 
+        legend.position.inside = c(0.8, 0.2))
+
+# Panel B: Violin plot of HF calls
+# Use df_plot_ready instead of dfff to find the 'Method' and 'Calls' columns
+panel_b <- df_plot_ready %>%
+  ggplot(aes(x = Method, y = pes_calls, fill = Method)) +
+  geom_violin(alpha = 0.7, scale = "width") +
+  geom_boxplot(width = 0.15, alpha = 0.5, fill = "white") +
+  scale_y_log10(
+    breaks = c(10, 30, 100, 300, 1000, 3000),
+    labels = scales::comma
+  ) +
+  labs(
+    title = "B",
+    x = "Method",
+    y = "Grad. Evals (log10)"
+  ) +
+  theme_Publication(base_size=22) +
+  scale_fill_ruhi() +
+  theme(legend.position = "none")
+
+# Combine panels using patchwork
+combined <- panel_a + panel_b +
+  plot_layout(ncol = 2, widths = c(1.2, 0.8))
+
+ggsave(
+  "../imgs/gen/R/suppl/cactus_violin.png", 
+  combined, 
+  width = 12, 
+  height = 8,
+  dpi = 300
+)
+#+end_src
+
+#+RESULTS[b3a70475ff8813bb29ea92c322b59c5ef1bb1616]:
+[[file:../imgs/gen/R/suppl/cactus_violin.png]]
+
+** Distributional visualization
+#+begin_src R :results graphics file :file ../imgs/gen/R/suppl/dataset_characterization.png
+# Filter for successful runs to analyze physical properties
+df_phys <- df_long %>% filter(success == TRUE)
+
+# Panel A: Barrier Height Distribution (How hard is the test set?)
+p_barrier <- ggplot(df_phys, aes(x = Barrier, fill = Method)) +
+  geom_histogram(alpha = 0.6, position = "identity", bins = 15, color = "white") +
+  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+  labs(
+    title = "A. Reaction Barrier Distribution",
+    subtitle = "Range of activation energies in the Baker set",
+    x = "Barrier Height (eV)",
+    y = "Count"
+  ) +
+  theme_Publication() +
+  theme(legend.position = "none")
+
+# Panel B: Accuracy Check (RMSD to Reference Saddle)
+# This validates that RONEB isn't just 'fast' because it's finding wrong/lazy saddles.
+p_accuracy <- ggplot(df_phys, aes(x = RMSD_Saddle, fill = Method)) +
+  geom_density(alpha = 0.5, color = NA) +
+  geom_vline(xintercept = 0.1, linetype = "dashed", color = "grey50") +
+  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+  labs(
+    title = "B. Saddle Point Accuracy",
+    subtitle = "Structural deviation from CINEB transition states",
+    x = expression("RMSD to Benchmark Saddle (" * ring(A) * ")"),
+    y = "Density"
+  ) +
+  theme_Publication() +
+  theme(legend.position = "inside", legend.position.inside = c(0.7, 0.8))
+
+# Panel C: Cost vs Barrier (Does higher barrier = higher cost?)
+p_correlation <- ggplot(df_phys, aes(x = Barrier, y = pes_calls, color = Method)) +
+  geom_point(size = 3, alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", alpha = 0.5) +
+  scale_y_log10() +
+  scale_color_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+  labs(
+    title = "C. Scaling with Barrier Height",
+    subtitle = "Computational cost vs. Activation Energy",
+    x = "Barrier Height (eV)",
+    y = "Gradient Calls (log10)"
+  ) +
+  theme_Publication() +
+  theme(legend.position = "none")
+
+# Combine
+library(patchwork)
+p_combined <- (p_barrier | p_accuracy) / p_correlation +
+  plot_annotation(tag_levels = 'A')
+
+ggsave("../imgs/gen/R/suppl/dataset_characterization.png",
+       p_combined,
+       width = 14,
+       height = 12,
+       dpi=300)
+#+end_src
+
+#+RESULTS[5a986014d0fac5ed9a440b1398dace18b4917596]:
+[[file:../imgs/gen/R/suppl/dataset_characterization.png]]

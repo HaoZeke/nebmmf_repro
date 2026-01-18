@@ -1,0 +1,769 @@
+# -*- org-src-preserve-indentation: t; org-edit-src-content: 0; -*-
+#+TITLE: Supplementary II: Bayesian Model
+#+AUTHOR: Rohit Goswami
+#+EMAIL: rohit.goswami@epfl.ch
+# This should not be altered
+#+OPTIONS: toc:nil title:nil todo:nil
+# I need the footnotes to be inlined
+#+STARTUP: fninline
+
+* Configuration :ignoreheading:ignore:noexport:
+  :PROPERTIES:
+  :VISIBILITY: folded
+  :END:
+#+BEGIN_SRC emacs-lisp :exports none :eval always :results none
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+;; Optional, should probably be in the user config
+(setq 'org-hide-emphasis-markers t)
+#+END_SRC
+** Theme :ignoreheading:ignore:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+#+BEGIN_SRC emacs-lisp :exports none :results none :eval always
+(setq org-html-head-include-default-style nil)
+(setq org-html-htmlize-output-type 'css)
+#+END_SRC
+** Code Properties :ignoreheading:ignore:
+# Set headers everywhere
+# #+PROPERTY: header-args:R :session oneR :results output :exports both :cache yes :tangle rcode.R
+There's no need to expand the ~noweb~ bits while exporting, but it can be useful to debug:
+#+property: header-args :noweb no-export
+*** Formatting R dataframes
+#+NAME: round-tbl
+#+BEGIN_SRC emacs-lisp :var tbl="" :var fmt="%.1f"
+;; Kanged from https://brettpresnell.com/post/orgmode/
+  (mapcar (lambda (row)
+	    (mapcar (lambda (cell)
+		      (if (floatp cell)
+			  (format fmt cell)
+			cell))
+		    row))
+	  tbl)
+#+end_src
+
+#+RESULTS: round-tbl
+
+* Start Here :ignoreheading:ignore:
+* TODO Integrate with ~analysis~
+At the moment the environment is different since ~brms~ cannot use the latest and greatest ~R~.
+* Baseline variables
+We need some directories to ground the analysis.
+#+begin_src bash :session shared :results value none :async yes
+export PIXI_NO_PROGRESS=true
+#+end_src
+
+* R wrangling
+:PROPERTIES:
+:header-args:R: :session modelR :results value :exports both :cache yes :tangle 01_model_rcode.R
+:END:
+
+#+begin_src emacs-lisp :results none
+(let ((git-root-path (replace-regexp-in-string "\n" "" (shell-command-to-string "git rev-parse --show-toplevel"))))
+  ;; make-local-variable ensures the change stays within this buffer
+  (setq-local inferior-R-program
+              (concat git-root-path "/.pixi/envs/brms/bin/R")))
+#+end_src
+
+#+begin_src R :results none
+library('httpgd')
+library('ragg')
+library('tidybayes')
+library('bayesplot')
+library('ggthemes')
+library('tidyverse')
+library('brms')
+# Sometimes needs to be killed with lsof -i tcp:$PORT and kill -9 $PID
+## hgd(port=9890)
+#+end_src
+
+** Ruhi colors
+As donated kindly by Ruhila Goswami.
+#+begin_src R :results discard
+# ruhiColorScheme
+# "#FF655D", "#F1DB4B", "#004D40", "#1E88E5", "#D81B60"
+
+# Named discrete palette
+ruhi_colors <- c(
+  # Follows a logical "spectral" path for continuous scales
+  teal      = "#004D40",  # Dark green/blue
+  green     = "#009E73",  # Medium green # ADDED
+  sky       = "#1E88E5",  # Blue
+  purple    = "#5E35B1",  # Purple # ADDED
+  magenta   = "#D81B60",  # Pink
+  coral     = "#FF655D",  # Red-pink
+  orange    = "#E69F00",  # Orange # ADDED
+  sunshine  = "#F1DB4B"   # Yellow
+)
+
+ruhi_colors_d <- c(
+  coral     = "#FF655D",  # 1. Red-pink
+  sky       = "#1E88E5",  # 2. Blue
+  green     = "#009E73",  # 3. Green
+  sunshine  = "#F1DB4B",  # 4. Yellow
+  purple    = "#5E35B1",  # 5. Purple
+  orange    = "#E69F00",  # 6. Orange
+  magenta   = "#D81B60",  # 7. Pink
+  teal      = "#004D40"   # 8. Dark Teal
+)
+
+# Helper to fetch named colors or all
+ruhi_cols <- function(..., type = "discrete") {
+  cols <- c(...)
+  palette <- if (type == "discrete") ruhi_colors_d else ruhi_colors_c
+  
+  if (length(cols) == 0) return(unname(palette))
+  unname(palette[cols])
+}
+
+# Discrete palette function (optionally reverse or recycle)
+ruhi_pal_discrete <- function(reverse = FALSE, recycle = TRUE) {
+  cols <- unname(ruhi_colors)
+  if (reverse) cols <- rev(cols)
+  function(n) {
+    if (recycle) {
+      rep(cols, length.out = n)
+    } else {
+      if (n > length(cols)) {
+        stop("ruhi palette supports up to ", length(cols),
+             " discrete values when recycle = FALSE.")
+      }
+      cols[seq_len(n)]
+    }
+  }
+}
+
+# Discrete palette function (NOW uses the 'd' palette)
+ruhi_pal_discrete <- function(reverse = FALSE, recycle = TRUE) {
+  cols <- unname(ruhi_colors_d)
+  if (reverse) cols <- rev(cols)
+  function(n) {
+    if (recycle) {
+      rep(cols, length.out = n)
+    } else {
+      if (n > length(cols)) {
+        stop("ruhi discrete palette supports up to ", length(cols),
+             " discrete values when recycle = FALSE.")
+      }
+      cols[seq_len(n)]
+    }
+  }
+}
+
+# Continuous palette (NOW uses the 'c' palette)
+ruhi_pal_continuous <- function(reverse = FALSE, n = 256) {
+  cols <- unname(ruhi_colors_c)
+  if (reverse) cols <- rev(cols)
+  grDevices::colorRampPalette(cols, space = "Lab")(n)
+}
+
+scale_color_ruhi <- function(..., reverse = FALSE, recycle = TRUE) {
+  ggplot2::discrete_scale(
+    aesthetics = "colour",
+    scale_name = "ruhi",
+    palette = ruhi_pal_discrete(reverse = reverse, recycle = recycle),
+    ...
+  )
+}
+
+# Alias for UK spelling
+scale_colour_ruhi <- scale_color_ruhi # Alias for UK spelling
+
+scale_fill_ruhi <- function(..., reverse = FALSE, recycle = TRUE) {
+  ggplot2::discrete_scale(
+    aesthetics = "fill",
+    scale_name = "ruhi",
+    palette = ruhi_pal_discrete(reverse = reverse, recycle = recycle),
+    ...
+  )
+}
+
+# Continuous scales (multi-stop gradient)
+scale_color_ruhi_c <- function(..., reverse = FALSE) {
+  ggplot2::scale_color_gradientn(
+    colours = ruhi_pal_continuous(reverse = reverse),
+    ...
+  )
+}
+scale_fill_ruhi_c <- function(..., reverse = FALSE) {
+  ggplot2::scale_fill_gradientn(
+    colours = ruhi_pal_continuous(reverse = reverse),
+    ...
+  )
+}
+
+# Binned (steps) scales using same gradient
+scale_color_ruhi_b <- function(..., reverse = FALSE) {
+  ggplot2::scale_color_stepsn(
+    colours = ruhi_pal_continuous(reverse = reverse),
+    ...
+  )
+}
+scale_fill_ruhi_b <- function(..., reverse = FALSE) {
+  ggplot2::scale_fill_stepsn(
+    colours = ruhi_pal_continuous(reverse = reverse),
+    ...
+  )
+}
+#+end_src
+
+#+RESULTS:
+
+** Fonts
+We'd like to use more of the hyperlegible fonts.
+#+begin_src R :results discard
+library('showtext')
+font_add_google("Atkinson Hyperlegible", "Atkinson")
+showtext_auto()
+#+end_src
+
+#+RESULTS:
+
+** Theme
+#+begin_src R :results discard
+theme_Publication <- function(base_size = 36, base_family = "Atkinson") {
+  (theme_foundation(base_size = base_size, base_family = base_family)
+   + theme(
+     plot.title = element_text(
+       face = "bold",
+       size = rel(2.2), hjust = 0.5
+     ),
+     text = element_text(),
+     panel.background = element_rect(colour = NA, fill = "#FFFFFF"),
+     plot.background = element_rect(colour = NA, fill = "#FFFFFF"),
+     plot.tag = element_text(face = "bold"),
+     panel.border = element_rect(colour = "black", fill = NA, linewidth = 1),
+     axis.title = element_text(face = "bold", size = rel(1.8)),
+     axis.title.y = element_text(angle = 90, vjust = 2),
+     axis.title.x = element_text(vjust = -0.2),
+     axis.text = element_text(size = rel(1.8)),
+     axis.line = element_line(colour = "black"),
+     axis.ticks = element_line(),
+     panel.grid.major = element_line(colour = "#e6e3dd"),
+     panel.grid.minor = element_blank(),
+     legend.background = element_rect(fill = "#FFFFFF", colour = NA),
+     legend.key = element_rect(colour = NA, fill = "#FFFFFF"),
+     legend.position = "right",
+     legend.direction = "vertical",
+     legend.key.size = unit(0.8, "cm"),
+     legend.margin = margin(unit(0, "cm")),
+     legend.title = element_text(face = "italic", size = rel(1.6)),
+     legend.text = element_text(size = rel(1.8)),
+     plot.margin = unit(c(10, 5, 5, 5), "mm"),
+     strip.background = element_rect(colour = "#FFFFFF", fill = "#FFFFFF"),
+     strip.text = element_text(face = "bold", size = rel(1.5))
+   ))
+}
+#+end_src
+#+RESULTS:
+
+*** ~brms~ helpers
+
+Also to conditionally load or compute.
+
+#+begin_src R :results none
+get_or_compute_epreds <- function(model, newdata, filename, ...) {
+
+  # --- Input Validation (Basic) ---
+  if (!inherits(model, "brmsfit")) {
+    stop("'model' must be a brmsfit object.")
+  }
+  if (!is.data.frame(newdata)) {
+    stop("'newdata' must be a data frame.")
+  }
+  if (!is.character(filename) || length(filename) != 1 || nchar(filename) == 0) {
+    stop("'filename' must be a non-empty character string path.")
+  }
+  if (!grepl("\\.rds$", filename, ignore.case = TRUE)) {
+    warning("Filename '", filename, "' does not end with .rds. Using the .rds extension is recommended for clarity.")
+  }
+  # Ensure brms namespace is available
+  if (!requireNamespace("brms", quietly = TRUE)) {
+    stop("Package 'brms' is required but not installed/loaded.")
+  }
+
+  # --- Check for Cached File ---
+  if (file.exists(filename)) {
+    # Load from file
+    message("Cache file found. Loading pre-computed epreds from: '", filename, "'")
+    results <- tryCatch({
+        ## Kanged from https://coolbutuseless.github.io/2018/10/02/using-lz4-and-zstandard-to-compress-files-with-saverds/
+        con <- archive::file_read(file = filename)
+        res<-readRDS(con)
+        close(con)
+        res
+      }, error = function(e) {
+        # Handle potential errors during loading (e.g., corrupted file)
+        stop("Error loading file '", filename, "': ", e$message)
+    })
+    message("Loading complete.")
+
+  } else {
+    # Compute and Save
+    message("Cache file not found: '", filename, "'")
+    message("Computing epreds using brms::add_epred_draws (this might take a while)...")
+
+    # Create directory if it doesn't exist, before trying to save
+    output_dir <- dirname(filename)
+    if (!dir.exists(output_dir)) {
+        message("Creating output directory: '", output_dir, "'")
+        dir.create(output_dir, recursive = TRUE, showWarnings = FALSE) # Suppress warning if dir already exists due to race condition
+        if (!dir.exists(output_dir)) { # Check again if creation failed
+             stop("Failed to create output directory: '", output_dir, "'. Check permissions.")
+        }
+    }
+
+
+    # Compute using add_epred_draws, passing extra arguments via ...
+    results <- tryCatch({
+      tidybayes::add_epred_draws(
+        object = model,
+        newdata = newdata,
+        ... # Pass arguments like ndraws, allow_new_levels, re_formula, seed etc.
+      )
+    }, error = function(e) {
+      # Handle potential errors during computation
+      stop("Error during brms::add_epred_draws computation: ", e$message)
+    })
+
+    message("Computation complete.")
+    message("Saving results to: '", filename, "'")
+
+    # Save the computed results
+    tryCatch({
+      ## Kanged from https://coolbutuseless.github.io/2018/10/02/using-lz4-and-zstandard-to-compress-files-with-saverds/
+      con = archive::file_write(file = filename, filter="zstd", options = "compression-level=22")
+      open(con)
+      saveRDS(results, con)
+      message("Save complete.")
+    }, error = function(e) {
+      # Warn if saving fails, but still return results if computation succeeded
+      warning("Error saving results to '", filename, "': ", e$message)
+      warning("Computation succeeded, but results could not be cached to disk.")
+    })
+  }
+
+  return(results)
+}
+#+end_src
+** Data
+
+#+begin_src R :results none
+process_transition_state_data <- function(file_path) {
+  # Load the raw CSV data
+  raw_data <- read_csv(file_path, show_col_types = FALSE)
+  
+  # Transform and clean the data
+  processed_data <- raw_data %>%
+    mutate(
+      # Convert System to a factor for categorical analysis
+      System = as.factor(System),
+      
+      # Retain termination status as factors
+      Term_CINEB = as.factor(Term_CINEB),
+      Term_MMF = as.factor(Term_MMF)
+    ) %>%
+    # Organize columns to prioritize physical chemistry metrics and performance
+    dplyr::relocate(
+      System, 
+      Formula, 
+      N_Atoms, 
+      E_Diff, 
+      RMSD_Saddle,
+      starts_with("Time_"),
+      starts_with("Calls_"),
+      everything()
+    )
+  
+  return(processed_data)
+}
+#+end_src
+
+#+begin_src R :results discard
+data_raw <- process_transition_state_data("../benchmark_results.csv")
+##  Need a long version too
+dff <- data_raw %>%
+  pivot_longer(
+    cols = matches("_(CINEB|MMF)$"),
+    names_to = c(".value", "Method"),
+    names_pattern = "(.*)_(CINEB|MMF)"
+  ) %>%
+  mutate(
+    # Create a plotting cost that caps failures at 8000 for visibility
+    Cost_Plot = ifelse(Term == "BAD_MAX_ITERATIONS", 8000, Calls),
+    # Make Method a factor for consistent coloring
+    Method = factor(Method, levels = c("CINEB", "MMF"))
+  )
+#+end_src
+
+#+RESULTS:
+
+We need a long set.
+
+#+begin_src R :results discard
+# Process raw data to long format in ONE step
+df_long <- data_raw %>%
+  # Pivot all method-specific columns at once
+  pivot_longer(
+    cols = matches("_(CINEB|MMF)$"),
+    names_to = c(".value", "Method"),
+    names_pattern = "(.*)_(CINEB|MMF)"
+  ) %>%
+  # Rename for clarity (optional, but matches your brms code)
+  rename(
+    tot_time = Time,
+    pes_calls = Calls,
+    term_reason = Term
+  ) %>%
+  # Add logical flags and factors
+  mutate(
+    # Create distinct Success flag (TRUE only if strictly "GOOD")
+    success = term_reason == "GOOD",
+    Method = ifelse(Method == "MMF", "RONEB", Method),    
+    # Ensure Method is a factor with CINEB as the baseline (first level)
+    Method = factor(Method, levels = c("CINEB", "RONEB")),
+    
+    # Log-transform calls for the spline model (avoid log(0) if any)
+    log_pes_calls = log(ifelse(pes_calls == 0, 1, pes_calls)),
+    
+    # Factorize System for random effects
+    System = as.factor(System)
+  )
+
+# Verify the structure
+glimpse(df_long)
+#+end_src
+
+#+RESULTS:
+
+** Bayesian models
+No point trying to do success analysis, we succeed everywhere. For now we cover only PES counts.
+
+#+begin_src R :results value :colnames yes :post round-tbl[:colnames yes](*this*)
+df_long %>%
+  group_by(Method) %>%
+  summarize(n=n(), mean=mean(pes_calls), median=median(pes_calls))
+#+end_src
+
+#+RESULTS[eee09c218f0effc884f99947f341b2bdf30f87a6]:
+| Method |  n |  mean | median |
+|--------+----+-------+--------|
+| CINEB  | 24 | 790.7 |    482 |
+| RONEB  | 24 | 445.9 |  230.5 |
+
+** PES Call Models
+#+begin_src R :results none
+## cmdstanr::set_cmdstan_path('/home/rgoswami/Git/Github/TheochemUI/nebmmf/.pixi/envs/brms/bin/cmdstan')
+## cmdstanr::cmdstan_make_local(cpp_options = list(CXX17FLAGS = "-O3 -std=c++17"))
+#+end_src
+
+#+begin_src R :results discard
+prior_list <- c(
+    prior(normal(0, 1), class = "b"),
+    prior(exponential(2), class = "sds"),
+    prior(exponential(1), class = "sd"),
+    prior(student_t(3, 0, 2.5), class = "Intercept"),
+    ## Dispersion difference
+    prior(normal(0, 0.5), class = "b", dpar = "shape")
+  )
+# Formula: Cost depends on Method, and the scaling with Distance varies by Method
+# Family: Negative Binomial (handles overdispersed count data better than Poisson)
+brms_roneb <- brm(
+  formula = bf(
+    pes_calls ~ Method + s(RMSD_Init_Final, by = Method, k = 3) + (1 | System),
+    shape ~ Method
+  ),
+  data = df_long,
+  family = negbinomial(link = "log"),
+  prior = prior_list,
+  chains = 8, iter = 5000, warmup = 2000,
+  cores = 8, seed = 1995,
+  backend = "cmdstanr",
+  control = list(adapt_delta = 0.999, max_treedepth = 15),
+  file = "../data/models/brms_efficiency_scaling_v5"
+)
+#+end_src
+
+#+RESULTS:
+
+*** Summaries
+
+#+begin_src R :results output
+summary(brms_roneb)
+#+end_src
+
+#+RESULTS[a29dfdb8d056ad13d53f309e749db7eaf1c16802]:
+#+begin_example
+ Family: negbinomial 
+  Links: mu = log; shape = log 
+Formula: pes_calls ~ Method + s(RMSD_Init_Final, by = Method, k = 3) + (1 | System) 
+         shape ~ Method
+   Data: df_long (Number of observations: 48) 
+  Draws: 8 chains, each with iter = 5000; warmup = 2000; thin = 1;
+         total post-warmup draws = 24000
+
+Smoothing Spline Hyperparameters:
+                                   Estimate Est.Error l-95% CI u-95% CI Rhat
+sds(sRMSD_Init_FinalMethodCINEB_1)     0.67      0.61     0.02     2.22 1.00
+sds(sRMSD_Init_FinalMethodRONEB_1)     0.63      0.58     0.02     2.13 1.00
+                                   Bulk_ESS Tail_ESS
+sds(sRMSD_Init_FinalMethodCINEB_1)    10827    11028
+sds(sRMSD_Init_FinalMethodRONEB_1)    12279    11499
+
+Multilevel Hyperparameters:
+~System (Number of levels: 24) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     0.43      0.09     0.28     0.62 1.00     4800     8431
+
+Regression Coefficients:
+                               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+Intercept                          6.38      0.11     6.16     6.59 1.00     6754
+shape_Intercept                    2.60      0.41     1.80     3.42 1.00     6989
+MethodRONEB                       -0.62      0.08    -0.79    -0.46 1.00    23393
+shape_MethodRONEB                  0.12      0.46    -0.81     1.03 1.00    13564
+sRMSD_Init_Final:MethodCINEB_1     0.54      0.11     0.32     0.76 1.00     6188
+sRMSD_Init_Final:MethodRONEB_1     0.55      0.10     0.34     0.76 1.00     6241
+                               Tail_ESS
+Intercept                         10286
+shape_Intercept                   12216
+MethodRONEB                       16755
+shape_MethodRONEB                 15483
+sRMSD_Init_Final:MethodCINEB_1     8380
+sRMSD_Init_Final:MethodRONEB_1     7688
+
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
+#+end_example
+
+#+begin_src R :results value :colnames yes :post round-tbl[:colnames yes](*this*)
+param_draws_eff <- brms_roneb %>%
+  tidy_draws() %>%
+  select(b_Intercept, b_MethodRONEB, `sd_System__Intercept`)
+
+# 1. Baseline Intercept
+summary_int_eff <- param_draws_eff %>%
+  mutate(val = exp(b_Intercept)) %>%
+  summarize(med = median(val), lo = quantile(val, 0.025), hi = quantile(val, 0.975)) %>%
+  mutate(Effect_Type = "Expected PES Calls (Baseline: CINEB)",
+         `Median Effect` = sprintf("%.1f", med),
+         `95% CrI` = paste0("[", sprintf("%.1f", lo), ", ", sprintf("%.1f", hi), "]"))
+
+# 2. RONEB Comparison
+summary_mmf_eff <- param_draws_eff %>%
+  mutate(mult = exp(b_MethodRONEB), perc = (mult - 1) * 100) %>%
+  summarize(med_m = median(mult), lo_m = quantile(mult, 0.025), hi_m = quantile(mult, 0.975),
+            med_p = median(perc), lo_p = quantile(perc, 0.025), hi_p = quantile(perc, 0.975))
+
+formatted_mmf <- bind_rows(
+  summary_mmf_eff %>% mutate(Effect_Type = "Multiplicative Factor (RONEB vs CINEB)", 
+                             `Median Effect` = sprintf("%.2f", med_m),
+                             `95% CrI` = paste0("[", sprintf("%.2f", lo_m), ", ", sprintf("%.2f", hi_m), "]")),
+  summary_mmf_eff %>% mutate(Effect_Type = "Percentage Change (RONEB vs CINEB)", 
+                             `Median Effect` = sprintf("%.1f%%", med_p),
+                             `95% CrI` = paste0("[", sprintf("%.1f%%", lo_p), ", ", sprintf("%.1f%%", hi_p), "]"))
+)
+
+# 3. Combine
+combined_eff_summary <- bind_rows(summary_int_eff, formatted_mmf) %>%
+  select(Effect_Type, `Median Effect`, `95% CrI`)
+
+combined_eff_summary
+#+end_src
+
+#+RESULTS[379772df734dfba2e93530c593c42b4706e5d729]:
+| Effect_Type                            | Median Effect | 95% CrI          |
+|----------------------------------------+---------------+------------------|
+| Expected PES Calls (Baseline: CINEB)   |         587.4 | [473.9, 725.7]   |
+| Multiplicative Factor (RONEB vs CINEB) |           0.5 | [0.45, 0.63]     |
+| Percentage Change (RONEB vs CINEB)     |        -46.3% | [-54.7%, -36.9%] |
+
+*** Checks
+**** Distance spread
+We need to check that the distances span the interval in a reasonable manner.
+#+begin_src R :results graphics file :file ../imgs/gen/R/suppl/nolog_dist.png
+ggplot(df_long, aes(x = RMSD_Init_Final)) +
+  geom_histogram(bins = 20, fill = "gray50", color = "white") +
+  labs(title = "Check Data Density: Is Linear X Safe?",
+       x = "RMSD_Init_Final (Linear Scale)") +
+  theme_Publication(base_size=32)
+ggsave("../imgs/gen/R/suppl/nolog_dist.png", width = 8, height = 6)
+#+end_src
+
+#+RESULTS[18ae98255ec8bd65435b57366e3f29f1aeb449c2]:
+[[file:../imgs/gen/R/suppl/nolog_dist.png]]
+
+**** Posterior predictive density
+#+begin_src R :results graphics file :file ../imgs/gen/R/suppl/pp_density.png
+# 1. Density Overlay
+# Dark line = Your real data. Light blue lines = 50 simulations from the model.
+# If the dark line sticks out, your model is missing something.
+pp_check(brms_roneb, ndraws = 50) +
+  labs(title = "Posterior Predictive Check: Density",
+       subtitle = "Does the model reproduce the distribution of gradient calls?") +
+  theme_Publication(base_size=32)
+ggsave("../imgs/gen/R/suppl/pp_density.png", width = 8, height = 6)
+#+end_src
+
+#+RESULTS[bc786aa8d7db4a558bdecd91d04e40c66650843b]:
+[[file:../imgs/gen/R/suppl/pp_density.png]]
+
+**** Posterior predictive group intervals
+
+#+begin_src R :results graphics file :file ../imgs/gen/R/suppl/pp_group.png
+# 2. Intervals by Method (Grouped Check)
+# This checks if the model fits CINEB and MMF equally well, or if it fits one but fails the other.
+pp_check(brms_roneb, type = "intervals_grouped", group = "Method") +
+  labs(title = "Posterior Predictive Check: Intervals by Method",
+       subtitle = "Do the observed data points (dots) fall within the predicted ranges (bars)?") +
+  theme_Publication(base_size=32)
+ggsave("../imgs/gen/R/suppl/pp_group.png", width = 8, height = 6)
+#+end_src
+
+#+RESULTS[9de2b02aebc279bbc1766c58f91ca840dde42043]:
+[[file:../imgs/gen/R/suppl/pp_group.png]]
+
+**** Consistency check
+#+begin_src R :results graphics file :file ../imgs/gen/R/suppl/brms_shape_posterior.png
+# Extract draws specifically for the shape parameters
+shape_draws <- brms_roneb %>%
+  as_draws_df() %>%
+  mutate(
+    `Shape (CINEB)` = b_shape_Intercept,
+    `Shape (RONEB)` = b_shape_Intercept + b_shape_MethodRONEB
+  ) %>%
+  pivot_longer(cols = c(`Shape (CINEB)`, `Shape (RONEB)`), 
+               names_to = "Algorithm", 
+               values_to = "Shape_Value")
+
+# Plot the Density
+p_consistency <- ggplot(shape_draws, aes(x = Shape_Value, fill = Algorithm, color = Algorithm)) +
+  geom_density(alpha = 0.5, linewidth = 1.2) +
+  
+  scale_fill_manual(values = c("Shape (CINEB)" = ruhi_colors[["coral"]], 
+                               "Shape (RONEB)" = ruhi_colors[["teal"]])) +
+  scale_color_manual(values = c("Shape (CINEB)" = ruhi_colors[["coral"]], 
+                                "Shape (RONEB)" = ruhi_colors[["teal"]])) +
+  
+  labs(
+    title = "Algorithmic Consistency Analysis",
+    subtitle = "Posterior distribution of the Negative Binomial 'Shape' parameter",
+    x = "Shape Parameter (Higher = More Consistent)",
+    y = "Posterior Density"
+  ) +
+  theme_Publication(base_size = 32) +
+  theme(legend.position = "top")
+
+ggsave("../imgs/gen/R/suppl/brms_shape_posterior.png", p_consistency, width = 8, height = 6)
+#+end_src
+
+#+RESULTS[4b3ef2c155e62a81cd89e3d84b11a8e4bad58941]:
+[[file:../imgs/gen/R/suppl/brms_shape_posterior.png]]
+
+**** LOO analysis
+Now the outlier check with LOO and Pareto k, keeping in mind that below 0.5 works fine, and greater than 0.7 indicates a difficult point.
+
+The ~reloo~ procedure takes a while, re-fits for each bad point.
+#+begin_src R :results value :colnames yes :rownames yes :post round-tbl[:colnames yes](*this*)
+# Compute LOO
+loo_result <- loo(brms_roneb, save_psis=TRUE, reloo = TRUE)
+loo_result$estimates
+#+end_src
+
+#+RESULTS[e93157bc4cdd77db771eb2025ec32f5a0b7cf329]:
+|          | Estimate |   SE |
+|----------+----------+------|
+| elpd_loo |   -312.8 |  9.3 |
+| p_loo    |     24.6 |  4.0 |
+| looic    |    625.6 | 18.6 |
+
+#+begin_src R :results output
+loo_result
+#+end_src
+
+#+RESULTS[3205d61cf86c69a7dea694b3c307d729a62785a3]:
+#+begin_example
+
+Computed from 24000 by 48 log-likelihood matrix.
+
+         Estimate   SE
+elpd_loo   -314.6 10.1
+p_loo        26.4  4.9
+looic       629.2 20.2
+------
+MCSE of elpd_loo is 0.4.
+MCSE and ESS estimates assume MCMC draws (r_eff in [0.4, 1.0]).
+
+All Pareto k estimates are good (k < 0.7).
+See help('pareto-k-diagnostic') for details.
+#+end_example
+
+We need to check the PIT value information [[cite:&gabryVisualizationBayesianWorkflow2018]].
+
+#+begin_src R :results graphics file :file ../imgs/gen/R/suppl/ppc_loo.png
+## Visualize the Pareto k values
+## plot(loo_result, label_points = TRUE)
+## Also the marginals
+yrep <- posterior_predict(brms_roneb)
+ppc_loo_pit_qq(y=df_brms$pes_calls,
+               yrep=yrep,
+               lw=weights(loo_result$psis_object)) +
+  theme_Publication(base_size=32)
+ggsave("../imgs/gen/R/suppl/ppc_loo.png", width = 8, height = 6)
+#+end_src
+
+#+RESULTS[228b667f17aa388a7b511856f6d6e93966d57785]:
+[[file:../imgs/gen/R/suppl/ppc_loo.png]]
+
+Worth checking the values which have higher k diagnostic values.
+#+begin_src R :results value :colnames yes :post round-tbl[:colnames yes](*this*)
+## No longer valid since after re-fitting data
+## # Extract the Pareto k values directly from the loo object
+## pk <- loo_result$diagnostics$pareto_k
+## # Identify the row indices where k > 0.7
+## influential_indices <- which(pk > 0.7)
+## difficult_systems <- df_long[influential_indices, ]
+## # Display the results to see which geometries are 'outliers'
+## difficult_systems %>%
+##   select(System, Method, RMSD_Init_Final, pes_calls)
+#+end_src
+
+*** Plots
+
+#+begin_src R :results graphics file :file ../imgs/gen/R/brms_pes.png
+# Generate Marginal Effects for Model v5
+cond_effects <- conditional_effects(brms_roneb, effects = "RMSD_Init_Final:Method", points = TRUE)
+plot_data <- cond_effects$`RMSD_Init_Final:Method`
+
+p_linear_robustness <- ggplot(plot_data, aes(x = RMSD_Init_Final, y = estimate__, color = Method, fill = Method)) +
+  # 1. Credible Intervals
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+
+  # 2. Median Lines
+  geom_line(linewidth = 1.5) +
+
+  # 3. Raw Data (Crucial for validation)
+  geom_jitter(data = df_long, aes(y = pes_calls),
+              width = 0.05, height = 0, size = 2, alpha = 0.4, shape = 16) +
+
+  # 4. Scales
+  scale_y_log10() + # Keep Y log! Cost is multiplicative.
+  scale_color_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+    
+  # 5. Annotation
+  labs(
+    ## title = "Efficiency to RMSD_Init_Final",
+    ## subtitle = "Computational cost vs. structural distance of initial guess",
+    x = expression("Distance (" * RMSD[Init - TS] * " in Å)"),
+    y = "Gradient Calls (Log Scale)"
+  ) +
+  theme_Publication(base_size=32)+
+  theme(legend.position = "inside", legend.position.inside = c(0.1, 0.9))
+
+ggsave("../imgs/gen/R/brms_pes.png", p_linear_robustness, width = 8, height = 6)
+#+end_src
+
+#+RESULTS[8359ca64b387c9018ca32d6b093250da2713d78a]:
+[[file:../imgs/gen/R/brms_pes.png]]
+
+
