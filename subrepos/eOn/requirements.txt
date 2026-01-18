@@ -1,0 +1,7 @@
+numpy
+ase
+PyYAML
+pytest
+pytest-datadir
+sh
+sphinx

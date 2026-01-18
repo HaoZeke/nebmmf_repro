@@ -1,0 +1,446 @@
+#+TITLE: EON GPR Test Systems
+#+SUBTITLE: Under the Auspices of REAXPRO
+#+AUTHOR: Alejandro, Hannes, Rohit, Satish, Maxim
+#+OPTIONS: toc:nil tasks:nill
+# I need the footnotes to be inlined
+#+STARTUP: fninline
+#+EXCLUDE_TAGS: noexport
+
+#+BEGIN_SRC emacs-lisp :exports none :eval always
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
+#+END_SRC
+
+#+RESULTS:
+
+* Configuration :ignoreheading:ignore:
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+** LaTeX :ignoreheading:ignore:
+#+LATEX_COMPILER: xelatex
+#+LATEX_CLASS: koma-article
+#+LATEX_CLASS_OPTIONS: [12pt,a4paper]
+# Suppress section numbers
+#+OPTIONS: num:nil
+*** Preamble :ignoreheading:ignore:
+# Load first
+#+LATEX_HEADER: \usepackage{amssymb,amsmath,amsthm,mathdots}
+#+LATEX_HEADER: \usepackage{unicode-math}
+#+LATEX_HEADER: \usepackage{mathtools}
+#+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \usepackage{float,subcaption}
+#+LATEX_HEADER: % \usepackage{mathspec} Either this or mathtools
+#+LATEX_HEADER: \defaultfontfeatures{Mapping=tex-text}
+#+LATEX_HEADER: \setromanfont[Ligatures={Common}, Numbers={OldStyle}, ItalicFont={Crimson-Italic}, BoldFont={Crimson-Bold}]{Crimson} % If Hoefler is missing replace with Crimson
+#+LATEX_HEADER: \setsansfont[Scale=0.8]{Roboto} % Used to be Helvetica Neue LT Com -> Nimbus Sans
+#+LATEX_HEADER: \setmonofont[Scale=0.8]{Fira Mono} % Used to be MesloLGSDZ Nerd Font
+#+LATEX_HEADER: \newfontfamily\scfont[Scale=1.2]{Crimson} % Used to be Minion Pro
+# References
+#+LATEX_HEADER: \usepackage[natbib]{biblatex}
+#+LATEX_HEADER: \bibliography{/home/haozeke/GDrive/zotLib.bib}
+# Check-boxes
+#+LATEX_HEADER: \setbox0=\hbox{\large$\square$}
+#+BIND: org-export-latex-list-parameters (:cbon "[{\parbox[][][c]{\wd0}{\large$\boxtimes$}}]" :cboff "[{\parbox[][][c]{\wd0}{\large$\square$}}]")
+# Nicer Fonts
+#+LATEX_HEADER: \usepackage{xunicode}
+#+LATEX_HEADER: \usepackage{xltxtra}
+#+LATEX_HEADER: \usepackage[protrusion=true,final]{microtype}
+# Wider Text
+# #+LATEX_HEADER: \usepackage[textwidth=7in,textheight=9in]{geometry}
+# Better Heading (from this [[https://github.com/tatlicioglu/SoP/blob/master/SoP.tex][minimal template]])
+#+LATEX_HEADER: \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+#+LATEX_HEADER: \newcommand{\Hrule}{\rule{\linewidth}{0.3mm}}
+#+LATEX_HEADER: \makeatletter% since there's an at-sign (@) in the command name
+#+LATEX_HEADER: \renewcommand{\@maketitle}{%
+#+LATEX_HEADER:   \parindent=0pt% don't indent paragraphs in the title block
+#+LATEX_HEADER:   \centering
+#+LATEX_HEADER:   {\Large \bfseries\scfont\textsc{\@title}}
+#+LATEX_HEADER:   \HRule\par%
+#+LATEX_HEADER:   \textit{\@author \hfill \@date}
+#+LATEX_HEADER:   \par
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \makeatother% resets the meaning of the at-sign (@)
+# Suppress the abstract heading
+#+LATEX_HEADER: \renewcommand{\abstractname}{\vspace{-\baselineskip}}
+# Colors
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \definecolor{darkgreen}{rgb}{0,0.3922,0}
+* Abstract :ignoreheading:ignore:
+#+begin_abstract
+\noindent Brief system descriptions of test cases considered. Also includes developer ~TODO~ items.
+#+end_abstract
+* Begin :ignoreheading:ignore:
+\vspace{0.7em}
+\noindent Many of the systems studied here are taken from textcite:koistinenMinimumModeSaddle2020 and the data has been kindly provided by Villi. Before describing the data-sets used, as well as the results; we will give a brief overview of the coupling of ~eon~ to the ~GPR Dimer~ library. The results of textcite:koistinenAlgorithmsFindingSaddle2019 established a baseline for studying the effects of accelerating saddle search methods namely:
+- Nudged elastic band calculation cite:koistinenNudgedElasticBand2017,koistinenNudgedElasticBand2019
+- Tailored bespoke covariance functions for atomic data cite:koistinenNudgedElasticBand2019,koistinenMinimumModeSaddle2020
+- Proof of concept studies of accelerating surface walking methods like the dimer cite:asgeirssonExploringPotentialEnergy2018 using Gaussian Process Regression cite:koistinenMinimumModeSaddle2020
+However, these proof of concept studies were implemented in MATLAB and were not amenable to large systems due to both theoretical restrictions and computational inefficiency.
+* Architecture
+The structure of the interface is given below:
+
+#+DOWNLOADED: screenshot @ 2021-02-26 16:18:25
+#+caption: EON to GPR Dimer interface
+[[file:images/Architecture/2021-02-26_16-18-25_screenshot.png]]
+
+** Programming Methodology
+The GPR dimer is implemented as a stand-alone library (Apache2 licensed) with minimally invasive
+changes to the EON code. This allowed for the use of modern and performance
+oriented programming practices like:
+- Modern build system
+  - Allows for cross-platform optimizations
+  - Integrates with MKL for improved HPC performance
+- Extensive Testing with the ~googletest~ framework
+  - Both unit tests and integration tests are provided
+  - ~eon~ does not include a unit testing framework
+    - An extensive set of manual test cases are provided to replicate all existing literature results
+- Modular design following OOP practices
+  - Separation of GPR hyperparameter optimizations
+    - Allows for updating both the minimizer, and the possibility of implementing monte-carlo methods for hyperparameter optimization
+  - Separation of GPR surface and the LBFGS call
+    - This allows for the usage of other minimizers like the Lanczos
+  - Separation of covariance functions
+    - A standard interface for the implementation of future covariance functions has been provided
+- Only user determined parameters are used internally
+We use the numerical linear algebra library, Eigen; which supports Intel MKL
+optimizations. Eigen is also used by EON.
+
+The library itself has a self contained executable for testing which consumes the same input data as the MATLB code. The interface is seamless, with the addition of input parameters done through the standard ~eon~ configuration file.
+
+The structure of the library is such that it accepts a general potential function from EON and then uses it to calculate the GPR approximation to the potential energy surface. For the relaxation phase, the trained GPR potential in EON is called.
+
+A user defined set of pruning parameters have been implemented which ensure optimal and bound scaling of the GPR.
+*** EON Changes
+A Cmake build system was implemented for efficient cross-platform builds. We augment the potentials with an interface to AMS. A GPR potential was also written, which is called by the library for the relaxation phase. Additionally, the build system allows for HPC speed-ups which are determined automatically and uses the MKL.
+*** User Inputs
+All the configurations follow the standard ~ini~ file specification of EON. As the ~gprdimer~ is implemented as a Minimum Mode Search method; as a replacement for the existing ~lanczos~ or ~dimer~ methods. Consider the standard configuration for a saddle search run:
+#+begin_src ini
+[Main]
+job = saddle_search
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+converged_force = 0.001
+max_iterations = 1000
+
+[Saddle Search]
+displace_least_coordinated_weight = 1.0
+displace_radius = 3.3
+displace_magnitude = 0.01
+min_mode_method = dimer
+max_energy = 10.0
+#+end_src
+**** AMS Interface
+#+begin_src ini
+[AMS]
+engine = ADF
+xc = B3LYP
+#+end_src
+The current implementation uses an I/O pipe and supports any of the engines exposed by AMS; however efforts to use the standard [[https://www.scm.com/doc/AMS/Pipe_protocol.html][AMSpipe protocol]] for AMS are ongoing.
+**** GPR Dimer
+The interface through EON augments the existing ~conf.ini~ file with the following GPR specific parameters.
+#+begin_src ini
+[GPR Dimer]
+finite_angle = 0.05
+converged_angle = 0.0873
+relaxation_converged_angle = 0.01
+max_initial_rotation_iterations = 6
+max_relaxation_rotation_iterations = 10
+divisor_t_dimer = 10
+max_outer_iterations =  300
+max_inner_iterations = 1000
+max_midpoint_displacement = 0.5
+rotation_opt_method = "lbfgs"
+translation_opt_method = "lbfgs"
+inner_opt = "dimer"
+active_radius = 10.0
+dimer_separation = 0.01
+convex_region_step_size = 0.1
+max_step_size = 0.1
+force_threshold = 0.001
+ratio_at_limit = 0.666666666667
+nogp_initial_rotations = true
+has_many_iterations = true
+hyperparameter_opt_method = "scg"
+gpr_variance = 1e-7
+gpr_noise_variance = 1e-5
+prior_mean = 0.0
+prior_variance = 1.0
+prior_degrees_of_freedom = 20
+# OPT parameters
+opt_max_iterations = 400
+opt_tol_sol = 0.001
+opt_lambda_limit = 1e16
+opt_lambda_init = 100
+gpr_jitter_variance = 0
+# OPT parameters
+opt_max_iterations = 400
+opt_tol_sol = 0.001
+opt_lambda_limit = 1e16
+opt_lambda_init = 100
+gpr_jitter_variance = 0
+#+end_src
+Additionally, we have implemented debugging levels in the code for ease of visualization; which are able to generate snapshots of the GPR surface after each call to the true energy and forces (by exhaustively calculating energies over a user defined grid of points around moving atoms) for one dimensional systems.
+* GPR Model
+The basis.
+* TODO Toy Systems
+These include standard benchmarks for the minimum mode saddle search problems in general.
+** DONE Hydrogen Adatom on Copper
+CLOSED: [2021-02-28 Sun 07:32]
+This system was used for porting the code from MATLAB. The C++ code runs ~10x~ faster than the MATLAB code as can be seen in Table [[tbl:cuh]]
+
+#+DOWNLOADED: screenshot @ 2021-03-01 13:05:45
+#+caption: Hydrogen atoms on a Copper surface
+[[file:images/Hydrogen_Adatom_on_Copper/2021-03-01_13-05-45_screenshot.png]]
+
+#+name: tbl:cuh
+#+caption: Hydrogen on Copper. EAM based potential. HyT is the time taken for hyperparameter optimizations. T indicates time.
+| Algorithm     | Overhead |    HyT | Total T |   Cost |
+| MATLAB GPRD   |  230.646 | 81.176 |  230.66 |  32.95 |
+| CPP GPRD (O3) |  21.4993 |  20.99 | 21.5133 | 3.0713 |
+| CPP GPRD (O0) |   52.165 |  50.74 | 52.1797 |  7.452 |
+
+For both systems, the results are the same, 5 hyperparameter optimizations, and the number of calls to the true energy and forces (7) is also the same. Each EAM call takes $0.002$ seconds so the total PES time is $0.014$. (-O3) refers to the compiler optimization level.
+
+** DONE Platinum Adatom on Platinum
+CLOSED: [2021-02-28 Sun 04:30]
+Chronologically the first system tested with EON. The system has some pleasant qualities which make it easy to work and test:
+- Easy control of the degrees of freedom
+  - Achieved by varying the number of moving atoms and the fixed atoms
+- Homogeneity meant neither atomic numbers nor atomic masses were required
+- Cheap throwaway potential (Morse)
+
+#+DOWNLOADED: screenshot @ 2021-02-28 00:56:03
+#+caption: Platinum adatom on a platinum island
+[[file:images/Platinum_Adatom_on_Platinum/2021-03-01_13-06-24_screenshot.png]]
+
+This system takes *0.069s* with the dimer, and *0.109s* with the GPRD in 5 cycles.
+
+| Degrees of Freedom | System Size | Active Radius | GPR Time | Dimer Time |
+|                 48 |        1008 |             5 |    0.109 |      0.069 |
+|                 12 |        1008 |           3.3 |    0.063 |      0.069 |
+
+45 degrees of freedom arise from having a cut off radius of 5, which means the surface atoms enter the covariance matrix, and 3 degrees of freedom are from the movement of the adatom itself. For this system the GPR PES has been mapped out as a function of the planar coordinates in Fig. \ref{fig:optgpr}.
+
+#+begin_export latex
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f4.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f5.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f6.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f7.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f8.png}
+\end{subfigure}
+\caption{Contour plots representing the GPR PES surfaces predicted for a single Pt adatom on a Pt island with an active radius of 5}
+\label{fig:poorsurf}
+\end{figure}
+#+end_export
+
+In this instance, the GPRD can converge to the saddle point with a lower active radius of 3.3, however, this takes 9 image evaluations; and the potential energy surface suffers, as can be seen in \ref{fig:poorsurf}.
+
+#+begin_export latex
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f9.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f10.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f11.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f12.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f13.png}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f14.png}
+\end{subfigure}
+\caption{Contour plots representing the GPR PES surfaces predicted for a single Pt adatom on a Pt island with 9 atoms used by the GPR}
+\label{fig:optgpr}
+\end{figure}
+#+end_export
+* DONE Literature Extensions
+CLOSED: [2021-02-28 Sun 07:32]
+** DONE Pruning Rationale
+CLOSED: [2021-02-28 Sun 05:06]
+*** Hyperparameters and Expectations
+For inference, even in higher dimensions; it is not the distribution itself which is important, but the *expectation* value of the the distribution:
+
+#+BEGIN_EXPORT latex
+\begin{align*}
+  E_{\color{blue} p(\theta|y)}[f(\theta)] & = \int f(\theta) {\color{blue} p(\theta|y)} d\theta,\\
+  \text{where} \quad
+  {\color{blue} p(\theta|y)} & = \frac{\color{darkgreen}p(y|\theta)p(\theta)}{\color{red} \int p(y|\theta)p(\theta) d\theta}
+\end{align*}
+#+END_EXPORT
+
+Where we note that $p(𝜃|y)$ is the posterior probability $(\mathbb{P}(𝜃))$; $p(y|𝜃)$ is the likelihood $(\mathbb{L}(𝜃))$; $p(𝜃)$ is the prior $(𝜋(𝜃)$ and the normalizing constant $∫p(𝜃|y)p(𝜃)d𝜃$ is known as the evidence ($\mathbb{Z}$). The notation of textcite:speagleConceptualIntroductionMarkov2020 is indicated.
+
+Visually, this master equation (Bayes theorem) can also be visually represented by Fig. [[fig:speagleFig]].
+#+DOWNLOADED: screenshot @ 2021-02-28 01:03:17
+#+name: fig:speagleFig
+#+caption: Illustration of Bayes theorem cite:speagleConceptualIntroductionMarkov2020
+[[file:images/Pruning/2021-02-28_01-03-17_screenshot.png]]
+
+Where we recognize that the marginal probability, or the evidence is the integral over the parameter space; and describes the independent probability of a single event regardless of the others.
+
+None of the preceding discussion implied any limits on the output range of these expectation values, and in a space of functions cite:rasmussenGaussianProcessesMachine2006,stuartPosteriorConsistencyGaussian2017; if we consider a regression problem modeled by a Gaussian process we obtain pleasantly simple posterior distribution (a Gaussian) cite:koistinenNudgedElasticBand2019,koistinenNudgedElasticBand2017,koistinenMinimumModeSaddle2020,koistinenAlgorithmsFindingSaddle2019.
+
+Having obtained a GPR model from the observations (which are high dimensional points each consisting of the positions of all points considered, $R$ which is of size $N×3$, $E$ which is the potential energy of size $N×1$ and $F$ which is of size $N×9$), we predict additional points on the GPR surface at a fraction of the cost of calculating the energy and forces from our potential.
+*** Adaptive Prior Improvements with Pruning
+Due to the high dimensional nature of the relevant space of observations; textcite:koistinenAlgorithmsFindingSaddle2019 have used a weakly informative (broad) Gaussian prior over the hyperparameters. Empirical studies cite:chenHowPriorsInitial2018 suggest that the hyperprior distribution; does not have a strong influence on the final predictions; however their studies were in the large data limit and thus are not surprising cite:mcelreathStatisticalRethinkingBayesian2020. Unlike in simulated train-test data sets, as per the algorithm outlined cite:koistinenMinimumModeSaddle2020, each call for the true energy and surfaces triggers the formation of new GPR surface (see Fig. \ref{fig:optgpr}). Indeed, given the high cost and low scalability; it is not feasible to reach the high data limit when the effect of the prior is overcome by the likelihood. Most of the models then, are formed in the low data limit, when the priors are of importance. From a frequentist or machine-learning perspective, the prior naturally gives rise to the "regularization" effect cite:mcelreathStatisticalRethinkingBayesian2020, reducing overfitting which is normally explicitly written into models cite:jamesIntroductionStatisticalLearning2013,bishopPatternRecognitionMachine2006.
+
+
+#+DOWNLOADED: screenshot @ 2021-02-28 02:15:59
+#+name: fig:borrowmce
+#+caption: Illustrative effect of iterative modeling from cite:mcelreathStatisticalRethinkingBayesian2020. The lighter dashed line shows the previous model (starting from the uniform prior). Note that importantly, as more data is drawn, the prior becomes less important.
+[[file:images/Pruning_Rationale/2021-02-28_02-15-59_screenshot.png]]
+
+Since we calculate the fitness of each final point on the GPR surface, which is the maximum force in any direction; we can remove poor points from the data. Note that the effect of this in terms of the posterior can be written out for clarity as:
+
+#+begin_export latex
+\begin{align}
+p(𝜃|y₁)=p(y₁|𝜃)p(𝜃) / \mathbb{Z₁} & \text{Likelihood from one data point} \\
+p(𝜃|y₁,y₂)=p(y₁,y₂|𝜃)p(𝜃) / \mathbb{Z_{12}} & \text{Likelihood from two data points} \\
+p(𝜃|y₁,y₂,y₃)=p(y₁,y₂,y₃|𝜃)p(𝜃) / \mathbb{Z_{123}} & \text{Likelihood from two data points} \\
+p(𝜃|y₁,y₃)=p(y₁,y₃|𝜃)p'(𝜃) / \mathbb{Z₁₂₃} & \text{All probabilities considered are Gaussian} \\
+p(𝜃|y₁…yₙ)=p(y₁…yₙ|𝜃)p(𝜃) / \mathbb{Z_{1…n}} & \text{Likelihood from n data points} \\
+\end{align}
+#+end_export
+
+As the product of two Gaussian distributions are also a Gaussian, since we have a Gaussian prior, we can absorb the effect of the second data point into the prior. This means that this iterative modeling could be seen as a case of using a new prior (namely, the posterior of the previous step) with a new data point; which is shown also in Fig. [[fig:borrowmce]].
+
+Normally, there is no need to compute the model posteriors in this manner, since the model is equivalent, irrespective of being trained one point at a time; or on a set of inputs cite:mcelreathStatisticalRethinkingBayesian2020. However, the effect of poor data is more explicit above; if the likelihood is written out as above. More generally, active data set restrictions have been reported to improve efficiency cite:seoGaussianProcessRegression2000.
+
+Perhaps more importantly, the local optimization of the hyperparameters scales poorly; $O(N³)$ with respect to the number of entries in the covariance matrix cite:rasmussenGaussianProcessesMachine2006; practically, this means that large systems and long timescales are inaccessible in theory as the number of observations increases with each step until convergence. With pruning, we are able to put a bound on the $O(N³)$ term. Note that overly zealous pruning will lead to too little information being present for the GPR. Adaptive pruning might also help steer the system to saddle points where convergence is difficult. It should be kept in mind that the generation of PES samples (DFT forces and energies) scales worse than $O(N³)$ cite:kohnNobelLectureElectronic1999 typically; and makes the dimer method unfeasible.
+
+By implementing the pruning logic as shown in Fig. [[fig:pruneme]] using user parameters, we are able to achieve better convergence and in some cases, improved performance as well. Note that since we test for convergence using the maximum forces at the end of each LBFGS translation, we have the results of the fitness function for pruning at a later stage.
+
+#+name: fig:pruneme
+#+caption: Pruning logic embedded in the GPRD to form GPRD-P; N_PRUNE is the (max) number of elements to remove, PRUNE_FORCE is the force threshold, and PRUNE_START is the starting number of points;
+[[file:images/pruneLogic.jpg]]
+
+*** Quantifying Overheads
+We define the GPR overhead to be the difference between the total time elapsed and the number of samples taken from the true PES times the average time $(\overbar{t_{DFT}})$ for calculating the true forces and energies.
+#+begin_export latex
+$$
+O_{\mathrm{method}}=T_{elapsed}-(\overbar{t_{DFT}}×N_{\mathrm{samples}})
+$$
+#+end_export
+Note that this measure includes the time taken by the LBFGS on the GPR surface. We can apply the same formula to the dimer method as well; in order to get an estimate of the normal EON dimer overhead. This means that we can also define a cost function (lower is better) as:
+#+begin_export latex
+$$
+C_{\mathrm{method}}=\frac{O_{\mathrm{method}}}{N_{\mathrm{samples}}}
+$$
+#+end_export
+The cost function is per unit time taken for evaluating a single sample of the true potential energy, which means lower is better.
+** DONE Compute Configuration
+CLOSED: [2021-02-28 Sun 05:06]
+The toy systems above were studied with resources provided by the Icelandic High Performance Computing Centre at the University of Iceland.
+
+All the systems described below were run on individual thin nodes of the Cartesius supercomputing cluster with resources provided by SURFsara. Each node for a run consists of 2 × 16-core 2.6 GHz Intel Xeon E5-2697A v4 (Broadwell) CPUs with 64 GB. All calculations were accelerated with the Intel Math Kernel Library (2020) which provides architecture optimized multi-threaded math functions. The GPR dimer algorithm consists of dense matrix inversions and so distributed memory (MPI) parallelism has not yet been considered for it; however the Amsterdam Modeling Suite was used for the potential energy calculations; which does utilize both the MKL and MPI.
+
+The B3LYP cite:beckeNewMixingHartree1993 hybrid functional was used which involves a DFT correlation with a combined DFT and Hartree-Fock exchange and is known to reproduce geometries and binding energies of molecular systems with accuracy comparable to Moller-Plesset calculations at lower costs cite:kohanoffElectronicStructureCalculations2006.
+
+For the tables, HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+** DONE Oxadiazole from N2O and Ethylene
+CLOSED: [2021-02-28 Sun 05:06]
+Described in textcite:koistinenMinimumModeSaddle2020.
+
+#+DOWNLOADED: screenshot @ 2021-02-26 21:57:49
+[[file:images/Oxadiazole_from_N2O_and_Ethylene/2021-02-26_21-57-49_screenshot.png]]
+
+#+caption: B3LYP-DZ for the Oxadiazole from N2O and Ethylene. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+| Algorithm | Overhead | HyOpt (HyT) |  Total T | PES avgT | PES TotT | PES Calls |    Cost |
+| Dimer     |  6512.39 | N/A         | 16449.93 |   44.966 |  9937.54 |       221 | 144.554 |
+| GPR-Dimer |  242.266 | 15 (53.867) | 1055.516 |   45.181 |   813.25 |        18 |   5.456 |
+| GPRD-P    |  209.041 | 16 (44.875) | 1065.221 |   45.062 |   856.18 |    19 (8) |   4.672 |
+
+Clearly, the dimer algorithm is sub-optimal for larger systems, while both the GPRD and the GPRD-P perform well. The GPR-P parameters can be tweaked from the defaults to give better performance. The difference in the GPRD and GPRD-P reflects the relative number of LBFGS rotations taken. Note that the $O(N³)$ scaling term (HyT) is effectively bound by the GPRD-P algorithm, implying that for larger systems the GPRD-P will outperform the GPRD.
+The pruning was set to remove a maximum of 4 elements larger than 0.5 every 10 steps.
+
+*** PM3
+To check against the reported values, we also calculated the systems with PM3 cite:leachMolecularModellingPrinciples2001.
+
+#+caption: PM3 for the Oxadiazole from N2O and Ethylene. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+| Algorithm | Overhead | HyOpt (HyT) | Total T | PES avgT | PES TotT | PES Calls |    Cost |
+| Dimer     |   52.414 | N/A         |  62.394 |    0.067 |     9.98 |       150 | 787.786 |
+| GPR-Dimer |   64.379 | 14 (48.71)  |  65.599 |    0.068 |     1.22 |        18 | 949.854 |
+| GPRD-P    |    65.84 | 15 (48.037) |  67.132 |    0.068 |    1.292 |    19 (6) | 968.235 |
+
+Note that now the pruning was set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
+** Allyl Vinly Ether Rearrangement
+Also in textcite:koistinenMinimumModeSaddle2020.
+#+DOWNLOADED: screenshot @ 2021-02-26 04:07:40
+[[file:images/Allyl_Vinly_Ether_Rearrangement/2021-02-26_04-07-40_screenshot.png]]
+
+The dimer calculation failed to converge after 10 hours and 30 minutes on the cluster; only finding a maximum force of $0.05$.
+
+#+caption: B3LYP-DZ for the Allyl Vinly Ether Rearrangement.
+| Algorithm  |  Overhead | HyOpt (HyT)    |   Total T | PES avgT | PES TotT | PES Calls |    Cost |
+| GPRD-Dimer |    2324.9 | 29 (642.244)   |    5050.9 |       94 |   2726.0 | 29        |  24.733 |
+| GPR-P      | 10484.867 | 132 (2604.188) | 23268.867 |       94 |  12784.0 | 136 (117) | 111.541 |
+| GPR-P_opt  |   895.722 | 37 (390.772)   |  4749.772 |       94 |   3854.0 | 41 (24)   |   9.529 |
+
+In this case, clearly, the pruning caused instabilities; given the complexity of the system; clearly too many values were dropped. The number of samples and the resolution on the GPR surface are important. The pruning was set to remove a maximum of 4 elements larger than 0.5 every 10 steps.
+
+This was re-run with the pruning set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
+
+*** PM3
+To check against the reported values, we also calculated the systems with PM3 cite:leachMolecularModellingPrinciples2001.
+
+#+caption: PM3 for the Allyl Vinly Ether Rearrangement. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+| Algorithm  | Overhead | HyOpt (HyT)  | Total T | PES avgT | PES TotT | PES Calls |     Cost |
+| Dimer      |  159.713 | N/A          | 174.993 |    0.065 |    15.28 |       234 | 2445.867 |
+| GPRD-Dimer |  348.472 | 19 (251.507) | 349.947 |    0.065 |    1.495 |        23 | 5361.108 |
+| GPR-P      |  319.302 | 22 (238.327) | 320.992 |    0.065 |     1.69 |   26 (14) | 4912.338 |
+
+Note that now the pruning was set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
+** Sulfolene from Butadiene and sulfur dioxide
+Also in textcite:koistinenMinimumModeSaddle2020.
+
+#+DOWNLOADED: screenshot @ 2021-02-26 21:56:36
+[[file:images/Allyl_Vinly_Ether_Rearrangement/2021-02-26_21-56-36_screenshot.png]]
+
+All calculations fail to converge at the B3LYP level in 10 hours and thirty minutes, but the GPR models reach around $0.02$ while the dimer reaches around $0.5$.
+
+*** PM3
+To check against the reported values, we also calculated the systems with PM3 cite:leachMolecularModellingPrinciples2001.
+
+#+caption: PM3 for the Sulfolene from Butadiene and sulfur dioxide. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+| Algorithm  | Overhead | HyOpt (HyT)  | Total T | PES avgT | PES TotT | PES Calls |     Cost |
+| Dimer      |   47.619 | N/A          |  59.419 |    0.068 |     11.8 |       174 |  702.178 |
+| GPRD-Dimer |  189.046 | 14 (152.753) | 190.316 |    0.071 |     1.27 |        18 | 2679.392 |
+| GPR-P      |  198.702 | 16 (153.707) | 200.082 |    0.069 |     1.38 |    20 (8) | 2879.739 |
+
+Note that now the pruning was set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
+* Analysis
+** Scaling
+The training of the hyperparameters using the methods of textcite:rasmussenGaussianProcessesMachine2006 involves the Cholesky decomposition for the calculation of the inverse of a dense covariance matrix. This operation scales as $O(N^{3})$. However, we show that there are more considerations, including the time taken by the LBFGS on the GPR dimer; which has a fixed scaling in cost per step (like the EON dimer) for a given system, but is unbound in that the time taken to convergence cannot be estimated.
+** Pruning
+With pruning the covariance matrix size is not allowed to exceed a user-defined size; unless the samples are of a particularly high quality. Pruning is of importance to systems which are larger than those considered here; or for systems which require more iterations.
+* References
+
+\printbibliography[heading=none]
+
+# Local Variables:
+# before-save-hook: org-babel-execute-buffer
+# after-save-hook: haozeke/org-save-and-export-latex
+# End:

@@ -1,0 +1,36 @@
+# To use:
+#
+#   $ micromamba create -n eongit -f conda-lock.yml # conda works for this as well
+#   $ micromamba activate eongit
+#
+name: eongit
+channels:
+  - conda-forge
+dependencies:
+  - compilers
+  - meson
+  - cmake
+  - cython # For qsc
+  - ninja
+  - gfortran
+  - pkg-config
+  - openblas
+  - pybind11
+  # Pinned
+  - "python<3.13" # For the docs
+  - "eigen==3.4.0"
+  - "fmt<=10"
+  - "spdlog<=1.14"
+  # AMS
+  - boost-cpp
+  - abseil-cpp
+  # Python helpers
+  - pip
+  - pipx # conda-lock pdm towncrier
+  - pre-commit
+  - numpy
+  # Lint, handled by pre-commit
+  - cppcheck
+  - cpplint
+  - clang-format
+  - ruff

@@ -1,0 +1,1764 @@
+
+################################################################################
+
+Main:
+
+    options:
+
+        job:
+            kind: string
+            default: akmc
+            values:
+                - akmc
+                - basin_hopping
+                - displacement_sampling
+                - dynamics
+                - escape_rate
+                - finite_difference
+                - global_optimization
+                - gp_surrogate
+                - hessian
+                - minimization
+                - molecular_dynamics
+                - monte_carlo
+                - nudged_elastic_band
+                - parallel_replica
+                - point
+                - prefactor
+                - process_search
+                - replica_exchange
+                - saddle_search
+                - safe_hyperdynamics
+                - structure_comparison
+                - tad
+                - unbiased_parallel_replica
+
+        random_seed:
+            kind: int
+            default: -1
+
+        temperature:
+            kind: float
+            default: 300.0
+
+        finite_difference:
+            kind: float
+            default: 0.01
+
+        checkpoint:
+            kind: boolean
+            default: false
+
+        quiet:
+            kind: boolean
+            default: False
+
+        write_log:
+            kind: boolean
+            default: True
+
+        max_force_calls:
+            kind: int
+            default: 0
+
+        remove_net_force:
+            kind: boolean
+            default: True
+
+################################################################################
+
+Potential:
+
+    options:
+
+        potential:
+            kind: string
+            default: lj
+            values:
+                - ase
+                - ams_io
+                - ase_nwchem
+                - ase_orca
+                - bop
+                - bopfox
+                - cuh2
+                - eam_al
+                - edip
+                - emt
+                - ext_pot
+                - fehe
+                - gpr
+                - imd
+                - lammps
+                - lenosky_Si
+                - lj
+                - ljcluster
+                - metatomic
+                - morse_pt
+                - mpi
+                - new_pot
+                - pyamff
+                - python
+                - qsc
+                - socket_nwchem
+                - spce
+                - sw_si
+                - tersoff_si
+                - tip4p
+                - tip4p_h
+                - tip4p_pt
+                - unknown
+                - vasp
+                - xtb
+                - zbl
+                - zpice
+
+        mpi_poll_period:
+            kind: float
+            default: 0.25
+
+        lammps_logging:
+            kind: boolean
+            default: true
+
+        lammps_threads:
+            kind: int
+            default: 0
+
+        emt_rasmussen:
+            kind: boolean
+            default: false
+
+        log_potential:
+            kind: boolean
+            default: false
+
+        ext_pot_path:
+            kind: string
+            default: ext_pot
+
+
+################################################################################
+
+Paths:
+
+    options:
+
+        superbasin_recycling:
+            kind: string
+            default: "%(main_directory)s/SB_recycling"
+
+        superbasins:
+            kind: string
+            default: "%(main_directory)s/superbasins/"
+
+        main_directory:
+            kind: string
+            default: ./
+
+        scratch:
+            kind: string
+            default: "%(main_directory)s/jobs/scratch/"
+
+        results:
+            kind: string
+            default: "%(main_directory)s"
+
+        kdb:
+            kind: string
+            default: "%(main_directory)s/kdb/"
+
+        kdb_scratch:
+            kind: string
+            default: "%(main_directory)s/kdbscratch/"
+
+        states:
+            kind: string
+            default: "%(main_directory)s/states/"
+
+        potential_files:
+            kind: string
+            default: "%(main_directory)s/potfiles"
+
+        jobs_in:
+            kind: string
+            default: "%(main_directory)s/jobs/in/"
+
+        jobs_out:
+            kind: string
+            default: "%(main_directory)s/jobs/out/"
+
+        incomplete:
+            kind: string
+            default: "%(main_directory)s/jobs/incomplete/"
+
+        bh_minima:
+            kind: string
+            default: "%(main_directory)s/minima"
+
+################################################################################
+
+Nudged Elastic Band:
+
+    options:
+
+        images:
+            kind: int
+            default: 5
+
+        spring:
+            kind: float
+            default: 5.0
+
+        climbing_image_method:
+            kind: boolean
+            default: true
+
+        climbing_image_converged_only:
+            kind: boolean
+            default: true
+
+        old_tangent:
+            kind: boolean
+            default: false
+
+        max_iterations:
+            kind: int
+            default: 1000
+
+        doubly_nudged:
+            kind: boolean
+            default: false
+
+        doubly_nudged_switching:
+            kind: boolean
+            default: false
+
+        elastic_band:
+            kind: boolean
+            default: false
+
+        setup_mmf_peaks:
+            kind: boolean
+            default: true
+
+        mmf_peak_tolerance:
+            kind: float
+            default: 0.05
+
+        converged_force:
+            kind: float
+            default: 0.01
+
+        onsager_machlup:
+            kind: boolean
+            default: false
+
+        om_optimize_k:
+            kind: boolean
+            default: true
+
+        om_k_scale:
+            kind: float
+            default: 1.0
+
+        om_k_min:
+            kind: float
+            default: 0.1
+
+        om_k_max:
+            kind: float
+            default: 100.0
+
+        energy_weighted:
+            kind: boolean
+            default: false
+
+        ew_trigger:
+            kind: float
+            default: 10.0
+
+        ew_ksp_min:
+            kind: float
+            default: 0.972
+
+        ew_ksp_max:
+            kind: float
+            default: 9.72
+
+        initial_path_in:
+            kind: string
+            default: ""
+
+        initializer:
+            kind: string
+            default: linear
+            values:
+                - linear
+                - idpp
+                - idpp_collective
+                - sidpp
+                - file
+
+        init_max_iterations:
+            kind: float
+            default: 5000
+
+        init_max_move:
+            kind: float
+            default: 0.1
+
+        init_force_threshold:
+            kind: float
+            default: 0.001
+
+        sidpp_growth_alpha:
+            kind: float
+            default: 0.33
+
+        minimize_endpoints:
+            kind: boolean
+            default: true
+
+        minimize_endpoints_for_ipath:
+            kind: boolean
+            default: false
+
+        ci_after:
+            kind: float
+            default: 100000000 # infinity actually
+
+        ci_mmf:
+            kind: boolean
+            default: false
+
+        ci_mmf_after:
+            kind: float
+            default: 0.5
+
+        ci_mmf_nsteps:
+            kind: int
+            default: 10
+
+        ci_mmf_ci_stability_count:
+            kind: int
+            default: 5
+
+        ci_mmf_angle:
+            kind: float
+            default: 0.8
+
+        ci_mmf_penalty_strength:
+            kind: float
+            default: 0.5
+
+        ci_mmf_penalty_base:
+            kind: float
+            default: 0.1
+
+################################################################################
+
+Distributed Replica:
+
+    options:
+
+        sampling steps:
+            kind: int
+            default: 500
+
+        target_temperature:
+            kind: float
+            default: 300.0
+
+        balance_steps:
+            kind: int
+            default: 500
+
+################################################################################
+
+Debug:
+
+    options:
+
+        save_stdout:
+            kind: boolean
+            default: False
+
+        result_files_path:
+            kind: string
+            default: ./debug_results/
+
+        interactive_shell:
+            kind: boolean
+            default: True
+
+        use_mean_time:
+            kind: boolean
+            default: False
+
+        register_extra_results:
+            kind: boolean
+            default: False
+
+        target_trajectory:
+            kind: boolean
+            default: False
+
+        keep_bad_saddles:
+            kind: boolean
+            default: False
+
+        keep_all_result_files:
+            kind: boolean
+            default: False
+
+        estimate_neb_eigenvalues:
+            kind: boolean
+            default: False
+
+        neb_mmf_estimator:
+            kind: string
+            default: "dimer"
+
+        write_movies:
+            kind: boolean
+            default: False
+
+        write_movies_interval:
+            kind: int
+            default: 1
+
+        stop_criterion:
+            kind: float
+            default: 1e8
+
+################################################################################
+
+Structure Comparison:
+
+    options:
+
+        use_covalent:
+            kind: boolean
+            default: False
+
+        energy_difference:
+            kind: float
+            default: 0.01
+
+        brute_neighbors:
+            kind: boolean
+            default: False
+
+        check_rotation:
+            kind: boolean
+            default: False
+
+        neighbor_cutoff:
+            kind: float
+            default: 3.3
+
+        indistinguishable_atoms:
+            kind: boolean
+            default: True
+
+        distance_difference:
+            kind: float
+            default: 0.1
+
+        covalent_scale:
+            kind: float
+            default: 1.3
+
+        remove_translation:
+            kind: boolean
+            default: True
+
+################################################################################
+
+Dynamics:
+
+    options:
+
+        time_step:
+            kind: float
+            default: 1.0
+
+        time:
+            kind: float
+            default: 1000.0
+
+        thermostat:
+            kind: string
+            default: none
+
+        andersen_alpha:
+            kind: float
+            default: 1.0
+
+        andersen_collision_period:
+            kind: float
+            default: 100.0
+
+        langevin_friction:
+            kind: float
+            default: 0.01
+
+        nose_mass:
+            kind: float
+            default: 1.0
+
+################################################################################
+
+Parallel Replica:
+
+    options:
+
+        dephase_time:
+            kind: float
+            default: 1000.0
+
+        refine_transition:
+            kind: boolean
+            default: True
+
+        post_transition_time:
+            kind: float
+            default: 1000.0
+
+        state_check_interval:
+            kind: float
+            default: 1000.0
+
+        dephase_loop_max:
+            kind: int
+            default: 5
+
+        dephase_loop_stop:
+            kind: boolean
+            default: False
+
+        state_save_interval:
+            kind: float
+            default: 100.0
+
+        stop_after_transition:
+            kind: boolean
+            default: False
+
+################################################################################
+
+Dimer:
+
+    options:
+
+        improved:
+            kind: boolean
+            default: True
+
+        remove_rotation:
+            kind: boolean
+            default: False
+
+        torque_min:
+            kind: float
+            default: 0.1
+
+        opt_method:
+            kind: string
+            default: sd
+            values:
+                - sd
+                - cg
+                - lbfgs
+
+        torque_max:
+            kind: float
+            default: 1.0
+
+        finite_angle:
+            kind: float
+            default: 0.005
+
+        rotations_max:
+            kind: int
+            default: 10
+
+        rotations_min:
+            kind: int
+            default: 1
+
+        converged_angle:
+            kind: float
+            default: 5.0
+
+################################################################################
+
+GPR Dimer:
+
+    options:
+
+        finite_angle:
+            kind: float
+            default: 0.005
+
+        converged_angle:
+            kind: float
+            default: 5.0
+
+        relaxation_converged_angle:
+            kind: float
+            default: 0.005
+
+        max_initial_rotation_iterations:
+          kind: int
+          default: 6
+
+        max_relaxation_rotation_iterations:
+          kind: int
+          default: 10
+
+        divisor_t_dimer:
+          kind: int
+          default: 10
+
+        max_outer_iterations:
+          kind: int
+          default: 300
+
+        max_inner_iterations:
+          kind: int
+          default: 1000
+
+        max_midpoint_displacement:
+          kind: float
+          default: 0.5
+
+        rotation_opt_method:
+          kind: string
+          default: lbfgs
+          values:
+            - lbfgs
+
+        translation_opt_method:
+          kind: string
+          default: lbfgs
+          values:
+            - lbfgs
+
+        active_radius:
+          kind: float
+          default: 5.0
+
+        dimer_separation:
+          kind: float
+          default: 0.01
+
+        convex_region_step_size:
+          kind: float
+          default: 0.1
+
+        max_step_size:
+          kind: float
+          default: 0.1
+
+        force_threshold:
+          kind: float
+          default: 0.01
+
+        ratio_at_limit:
+          kind: float
+          default: 0.6666666666667
+
+        nogp_initial_rotations:
+          kind: boolean
+          default: True
+
+        nogp_initial_translations:
+          kind: boolean
+          default: True
+
+        has_many_iterations:
+          kind: boolean
+          default: True
+
+        hyperparameter_opt_method:
+          kind: string
+          default: scg
+          values:
+              - scg
+
+        gpr_variance:
+          kind: float
+          default: 1e-8
+
+        gpr_jitter_variance:
+          kind: float
+          default: 1e-8
+
+        gpr_noise_variance:
+          kind: float
+          default: 1e-8
+
+        prior_mean:
+          kind: float
+          default: 0.0
+
+        prior_variance:
+          kind: float
+          default: 1.0
+
+        prior_degrees_of_freedom:
+          kind: int
+          default: 20
+
+        check_derivatives:
+          kind: boolean
+          default: False
+
+        opt_max_iterations:
+          kind: float
+          default: 400
+
+        opt_tol_func:
+          kind: float
+          default: 1e-4
+
+        opt_tol_sol:
+          kind: float
+          default: 1e-4
+
+        opt_lambda_limit:
+          kind: float
+          default: 1e20
+
+        opt_lambda_init:
+          kind: float
+          default: 10.0
+
+        rotations_min:
+            kind: int
+            default: 1
+
+        report_level:
+            kind: int
+            default: 1
+
+        debug_level:
+            kind: int
+            default: 2
+
+        use_prune:
+            kind: boolean
+            default: False
+
+        start_prune_at:
+            kind: int
+            default: 8
+
+        nprune_vals:
+            kind: int
+            default: 3
+
+        prune_threshold:
+            kind: float
+            default: 0.5
+
+################################################################################
+
+Basin Hopping:
+
+    options:
+
+        displacement:
+            kind: float
+            default: 0.5
+
+        initial_random_structure_probability:
+            kind: float
+            default: 0.0
+
+        push_apart_distance:
+            kind: float
+            default: 0.4
+
+        initial_state_pool_size:
+            kind: int
+            default: 1
+
+        adjust_fraction:
+            kind: float
+            default: 0.05
+
+        adjust_displacement:
+            kind: boolean
+            default: true
+
+        adjust_period:
+            kind: int
+            default: 10
+
+        target_ratio:
+            kind: float
+            default: 0.5
+
+        quenching_steps:
+            kind: int
+            default: 0
+
+        swap_probability:
+            kind: float
+            default: 0.0
+
+        single_atom_displace:
+            kind: boolean
+            default: False
+
+        steps:
+            kind: int
+            default: 10000
+
+        jump_max:
+            kind: int
+            default: 0
+
+        significant_structure:
+            kind: boolean
+            default: True
+
+        displacement_distribution:
+            kind: string
+            default: uniform
+            values:
+                - gaussian
+                - uniform
+
+        max_displacement_algorithm:
+            kind: string
+            default: standard
+            values:
+                - quadratic
+                - linear
+                - standard
+
+        jump_steps:
+            kind: int
+            default: 0
+
+        write_unique:
+            kind: boolean
+            default: false
+
+
+
+################################################################################
+
+Recycling:
+
+    options:
+
+        save_suggestions:
+            kind: boolean
+            default: False
+
+        move_distance:
+            kind: float
+            default: 0.2
+
+        use_recycling:
+            kind: boolean
+            default: True
+
+        use_sb_recycling:
+            kind: boolean
+            default: False
+
+        displace_moved_only:
+            kind: boolean
+            default: False
+
+        active_region:
+            kind: float
+            default: 1
+
+        mass_weight_factor:
+            kind: float
+            default: 1000.0
+
+################################################################################
+
+KDB:
+
+    options:
+
+        use_kdb:
+            kind: boolean
+            default: False
+
+        remove_duplicates:
+            kind: boolean
+            default: False
+
+        kdb_only:
+            kind: boolean
+            default: False
+
+        kdb_name:
+            kind: string
+            default: kdb.db
+
+        kdb_nf:
+            kind: float
+            default: 0.2
+        kdb_dc:
+            kind: float
+            default: 0.3
+        kdb_mac:
+            kind: float
+            default: 0.7
+
+
+################################################################################
+
+Hyperdynamics:
+
+    options:
+
+        bb_dvmax:
+            kind: float
+            default: 0.0
+
+        bias_potential:
+            kind: string
+            default: none
+            values:
+                - bond_boost
+                - none
+
+        bb_rmd_time:
+            kind: float
+            default: 100.0
+
+        bb_rcut:
+            kind: float
+            default: 3.0
+
+        bb_stretch_threshold:
+            kind: float
+            default: 0.2
+
+        bb_ds_curvature:
+            kind: float
+            default: 0.95
+
+        bb_boost_atomlist:
+            kind: string
+            default:
+
+################################################################################
+
+Process Search:
+
+    options:
+
+        minimization_offset:
+            kind: float
+            default: 0.2
+
+        minimize_first:
+            kind: boolean
+            default: True
+
+################################################################################
+
+Prefactor:
+
+    options:
+        rate_estimation:
+            kind: string
+            default: htst
+            values:
+                - htst
+                - qqhtst
+
+        all_free_atoms:
+            kind: boolean
+            default: False
+
+        min_displacement:
+            kind: float
+            default: 0.25
+
+        within_radius:
+            kind: float
+            default: 3.3
+
+        min_value:
+            kind: float
+            default: 1e+9
+
+        max_value:
+            kind: float
+            default: 1e+21
+
+        default_value:
+            kind: float
+            default: 0
+
+        configuration:
+            kind: string
+            default: reactant
+            values:
+                - reactant
+                - saddle
+                - product
+
+        filter_scheme:
+            kind: string
+            default: fraction
+            values:
+                - fraction
+                - cutoff
+
+        filter_fraction:
+            kind: float
+            default: 0.90
+
+
+
+
+################################################################################
+
+Hessian:
+
+    options:
+
+        atom_list:
+            kind: string
+            default: All
+
+        zero_freq_value:
+            kind: float
+            default: 1e-6
+
+################################################################################
+
+Lanczos:
+
+    options:
+
+        tolerance:
+            kind: float
+            default: 0.001
+
+        max_iterations:
+            kind: int
+            default: 20
+
+        quit_early:
+            kind: boolean
+            default: true
+
+################################################################################
+
+AKMC:
+
+    options:
+
+        confidence:
+            kind: float
+            default: 0.99
+
+        server_side_process_search:
+            kind: boolean
+            default: false
+
+        max_kmc_steps:
+            kind: int
+            default: 0
+
+        confidence_scheme:
+            kind: string
+            default: old
+            values:
+                - new
+                - old
+                - sampling
+                - dynamics
+
+        thermally_accessible_window:
+            kind: float
+            default: 20
+
+        thermally_accessible_buffer:
+            kind: float
+            default: 0
+
+        confidence_correction:
+            kind: boolean
+            default: False
+
+        max_rate:
+            kind: float
+            default: 0
+
+        eq_rate:
+            kind: float
+            default: 0
+
+################################################################################
+
+Communicator:
+
+    options:
+
+        type:
+            kind: string
+            default: local
+            values:
+                - cluster
+                - local
+                - mpi
+
+        client_path:
+            kind: string
+            default: eonclient
+
+        jobs_per_bundle:
+            kind: int
+            default: 1
+
+        num_jobs:
+            kind: int
+            default: 1
+
+        max_jobs:
+            kind: int
+            default: 0
+
+        number_of_CPUs:
+            kind: int
+            default: 1
+
+        cancel_job:
+            kind: string
+            default: cancel_job.sh
+
+        queued_jobs:
+            kind: string
+            default: queued_jobs.sh
+
+        script_path:
+            kind: string
+            default: ./
+
+        name_prefix:
+            kind: string
+            default: eon
+
+        submit_job:
+            kind: string
+            default: submit_job.sh
+
+################################################################################
+
+Saddle Search:
+
+    options:
+
+        nonnegative_displacement_abort:
+            kind: boolean
+            default: false
+
+        disp_at_random:
+            kind: int
+            default: 1
+
+        displace_atom_list:
+            kind: string
+            default: 0
+
+        displace_type_list:
+            kind: string
+            default: 0
+
+        displace_all_listed:
+            kind: boolean
+            default: false
+
+        max_step_size:
+            kind: float
+            default: 0.2
+
+        displace_radius:
+            kind: float
+            default: 5.0
+
+        max_single_displace:
+            kind: float
+            default: 10.0
+
+        stdev_rotation:
+            kind: float
+            default: 1.0
+
+        displace_max_coordination:
+            kind: int
+            default: 11
+
+        max_iterations:
+            kind: int
+            default: 1000
+
+        method:
+            kind: string
+            default: min_mode
+            values:
+                - min_mode
+                - dynamics
+                - basin_hopping
+
+        min_mode_method:
+            kind: string
+            default: dimer
+            values:
+                - dimer
+                - lanczos
+                - gprdimer
+
+        displace_random_weight:
+            kind: float
+            default: 0.0
+
+        displace_listed_atom_weight:
+            kind: float
+            default: 0.0
+
+        displace_listed_type_weight:
+            kind: float
+            default: 0.0
+
+        displace_under_coordinated_weight:
+            kind: float
+            default: 0.0
+
+        displace_least_coordinated_weight:
+            kind: float
+            default: 0.0
+
+        displace_not_FCC_HCP_weight:
+            kind: float
+            default: 0.0
+
+        displace_not_TCP_BCC_weight:
+            kind: float
+            default: 0.0
+
+        displace_not_TCP_weight:
+            kind: float
+            default: 0.0
+
+        displace_water_weight:
+            kind: float
+            default: 0.0
+
+        client_displace_type:
+            kind: string
+            default: random
+            values:
+                - random
+                - listed_atoms
+                - listed_types
+                - under
+                - least
+                - not_FCC_HCP
+                - not_TCP_BCC
+                - not_TCP
+                - water
+
+        displace_1d:
+            kind: boolean
+            default: false
+
+        nonlocal_count_abort:
+            kind: int
+            default: 0
+
+        nonlocal_distance_abort:
+            kind: float
+            default: 0.0
+
+        perp_force_ratio:
+            kind: float
+            default: 0.0
+
+        molecule_list:
+            kind: string
+            default: []
+
+        displace_magnitude:
+            kind: float
+            default: 0.1
+
+        stdev_translation:
+            kind: float
+            default: 0.2
+
+        max_energy:
+            kind: float
+            default: 20.0
+
+        converged_force:
+            kind: float
+            default: 0.01
+
+        displace_min_norm:
+            kind: float
+            default: 0.0
+
+        void_bias_fraction:
+            kind: float
+            default: 0.0
+
+        random_mode:
+            kind: boolean
+            default: True
+
+        confine_positive:
+            kind: boolean
+            default: False
+
+        bowl_breakout:
+            kind: boolean
+            default: False
+
+        bowl_active_atoms:
+            kind: int
+            default: 20
+
+        confine_positive_min_force:
+            kind: float
+            default: 0.5
+
+        confine_positive_scale_ratio:
+            kind: float
+            default: 0.9
+
+        confine_positive_boost:
+            kind: float
+            default: 10.
+
+        confine_positive_min_active:
+            kind: int
+            default: 30
+
+        dynamics_temperature:
+            kind: float
+            default: 300
+
+        dynamics_state_check_interval:
+            kind: float
+            default: 100
+
+        dynamics_record_interval:
+            kind: float
+            default: 10
+
+        dynamics_linear_interpolation:
+            kind: boolean
+            default: false
+
+        remove_rotation:
+            kind: boolean
+            default: False
+
+        dynamics_max_init_curvature:
+            kind: float
+            default: 0.
+
+        zero_mode_abort_curvature:
+            kind: float
+            default: 0.
+
+################################################################################
+
+Coarse Graining:
+
+    options:
+
+        number_of_transitions:
+            kind: int
+            default: 5
+
+        askmc_high_barrier_def:
+            kind: float
+            default: 2
+
+        use_askmc:
+            kind: boolean
+            default: False
+
+        superbasin_scheme:
+            kind: string
+            default: transition_counting
+
+        max_size:
+            kind: int
+            default: 0
+
+        use_mcamc:
+            kind: boolean
+            default: False
+
+        state_file:
+            kind: string
+            default: superbasin
+
+        askmc_barrier_raise_param:
+            kind: float
+            default: 1.5
+
+        rate_threshold:
+            kind: float
+            default: 1.0e9
+
+        energy_increment:
+            kind: float
+            default: 0.01
+
+        askmc_barrier_test_on:
+            kind: boolean
+            default: True
+
+        askmc_connections_test_on:
+            kind: boolean
+            default: False
+
+        askmc_confidence:
+            kind: float
+            default: 0.9
+
+        superbasin_confidence:
+            kind: boolean
+            default: True
+
+################################################################################
+
+Optimizer:
+
+    options:
+
+        convergence_metric:
+            kind: string
+            default: norm
+            values:
+                - norm
+                - max_atom
+                - max_component
+
+        converged_force:
+            kind: float
+            default: 0.01
+
+        max_move:
+            kind: float
+            default: 0.2
+
+        time_step:
+            kind: float
+            default: 0.25
+
+        max_time_step:
+            kind: float
+            default: 1.0
+
+        variable_time_step:
+            kind: boolean
+            default: False
+
+        max_iterations:
+            kind: int
+            default: 1000
+
+        opt_method:
+            kind: string
+            default: cg
+            values:
+                - box
+                - cg
+                - qm
+                - lbfgs
+                - fire
+
+        lbfgs_memory:
+            kind: int
+            default: 20
+
+        lbfgs_inverse_curvature:
+            kind: float
+            default: 0.01
+
+        lbfgs_max_inverse_curvature:
+            kind: float
+            default: 0.1
+
+        lbfgs_auto_scale:
+            kind: bool
+            default: false
+
+        lbfgs_angle_reset:
+            kind: bool
+            default: true
+
+        lbfgs_distance_reset:
+            kind: bool
+            default: true
+
+        qm_steepest_descent:
+            kind: bool
+            default: False
+
+        cg_no_overshooting:
+            kind: bool
+            default: False
+
+        cg_knock_out_max_move:
+            kind: bool
+            default: False
+
+        cg_line_search:
+            kind: bool
+            default: False
+
+        cg_max_iter_line_search:
+            kind: int
+            default: 5
+
+        cg_max_iter_before_reset:
+            kind: int
+            default: 10
+
+        cg_line_converged:
+            kind: float
+            default: 0.1
+
+################################################################################
+
+AMS_ENV:
+    options:
+        amshome:
+            kind: string
+            default: ""
+
+        scm_tmpdir:
+            kind: string
+            default: ""
+
+        scm_pythondir:
+            kind: string
+            default: ""
+
+        amsbin:
+            kind: string
+            default: ""
+
+        scmlicense:
+            kind: string
+            default: ""
+
+        amsresources:
+            kind: string
+            default: ""
+
+################################################################################
+AMS:
+    options:
+        engine:
+            kind: string
+            default: ""
+
+        forcefield:
+            kind: string
+            default: ""
+
+        model:
+            kind: string
+            default: ""
+
+        xc:
+            kind: string
+            default: ""
+
+        basis:
+            kind: string
+            default: ""
+
+        resources:
+            kind: string
+            default: ""
+
+################################################################################
+
+AMS_IO:
+    options:
+        engine:
+            kind: string
+            default: ""
+
+        forcefield:
+            kind: string
+            default: ""
+
+        model:
+            kind: string
+            default: ""
+
+        xc:
+            kind: string
+            default: ""
+
+################################################################################
+
+XTBPot:
+    options:
+        paramset:
+            kind: string
+            default: "GFNFF"
+
+        accuracy:
+            kind: float
+            default: 1.0
+
+        electronic_temperature:
+            kind: float
+            default: 0.0
+
+        max_iterations:
+            kind: int
+            default: 250
+
+################################################################################
+
+ZBLPot:
+    options:
+        cut_inner:
+            kind: float
+            default: 2.0
+
+        cut_global:
+            kind: float
+            default: 2.5
+
+################################################################################
+
+SocketNWChemPot:
+    options:
+        host:
+            kind: string
+            default: "127.0.0.1"
+
+        port:
+            kind: int
+            default: 9999
+
+        mem_in_gb:
+            kind: int
+            default: 2
+
+        nwchem_settings:
+            kind: string
+            default: "nwchem_settings.nwi"
+
+        unix_socket_mode:
+            kind: bool
+            default: False
+
+        unix_socket_path:
+            kind: string
+            default: "eon_nwchem"
+
+        make_template_input:
+            kind: bool
+            default: True
+
+################################################################################
+
+Metatomic:
+    options:
+        model_path:
+            kind: string
+            default: ""
+
+        device:
+            kind: string
+            default: "auto"
+
+        length_unit:
+            kind: string
+            default: "Angstrom"
+
+        extensions_directory:
+            kind: string
+            default: ""
+
+        check_consistency:
+            kind: boolean
+            default: false
+
+        uncertainty_threshold:
+          kind: float
+          default: 0.1
+
+################################################################################
+
+ASE_NWCHEM:
+    options:
+        nwchem_path:
+            kind: string
+            default: "NONE"
+
+        nproc:
+            kind: string
+            default: "auto"
+
+        multiplicity:
+            kind: string
+            default: "1"
+
+        scf_thresh:
+            kind: float
+            default: 1e-5
+
+        scf_maxiter:
+            kind: int
+            default: 200
+
+################################################################################
+
+ASE_ORCA:
+    options:
+        orca_path:
+            kind: string
+            default: "NONE"
+
+        nproc:
+            kind: string
+            default: "auto"
+
+        simpleinput:
+            kind: string
+            default: "ENGRAD HF-3c"
+
+################################################################################
+
+LBFGS:
+    options:
+        lbfgs_memory:
+            kind: int
+            default: 25
+        lbfgs_inverse_curvature:
+            kind: float
+            default: 0.01
+        lbfgs_auto_scale:
+            kind: boolean
+            default: True

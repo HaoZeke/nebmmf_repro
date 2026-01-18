@@ -1,0 +1,139 @@
+[workspace]
+authors = ["Rohit Goswami <rog32@hi.is>"]
+channels = ["conda-forge"]
+name = "eOn"
+platforms = ["linux-64", "osx-64"] # , "osx-arm64" needs to be built for EON release
+version = "2.8.2"
+
+[tasks]
+
+[dependencies]
+eigen = ">=3.4,<3.5"
+# Pin python for torch
+python = ">=3.11.5,<3.13"
+# End manual pins
+cmake = ">=4.0.3,<5"
+highfive = ">=2.10.1,<3"
+meson = ">=1.8.2,<2"
+ninja = ">=1.12.1,<2"
+pkgconf = ">=2.4.3,<3"
+openblas = ">=0.3.29,<0.4"
+pip = ">=25.1.1,<26"
+pipx = ">=1.7.1,<2"
+numpy = ">=2.3.0,<3"
+compilers = ">=1.9.0,<2"
+gfortran = ">=13.3.0,<13.4"
+fmt = ">=12,<13"
+spdlog = ">=1.16,<2"
+
+[pypi-dependencies]
+towncrier = ">=25.8.0, <26"
+
+[pypi-options]
+# TODO(rg): only if the CPU version is needed
+# set these on the command line instead
+# export UV_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
+# export PIP_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
+extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
+
+[environments]
+# TODO(rg): Flesh out the rest of these
+metatomic = {features = ["metatomic"]}
+dev-lite = {features = ["lint", "develop"]}
+dev = {features = ["lint", "develop", "nwchem", "metatomic"]}
+# ams is incompatible with metatomic
+dev-mta = {features = ["lint", "develop", "metatomic"]}
+lammps = {features = ["lammps"]}
+ams = {features = ["ams"]}
+nwchem = {features = ["nwchem"]}
+docs = {features = ["docs"]}
+rel = {features = ["metatomic", "release"]}
+
+[feature.metatomic]
+# vesin torch has a wheel issue with macos x86_64
+platforms = ["linux-64", "osx-arm64"]
+
+[feature.metatomic.pypi-dependencies]
+torch = ">=2.9, <2.10"
+metatomic-torch = ">=0.1.7, <0.2"
+metatensor-torch = ">=0.8.2, <0.9"
+vesin-torch = ">=0.4, <0.5"
+vesin = ">=0.4, <0.5"
+metatrain = ">=2025.8.1, <2026"
+
+[feature.ams.dependencies]
+boost-cpp = "*"
+abseil-cpp = "*"
+
+[feature.lint.dependencies]
+cppcheck = "*"
+cpplint = "*"
+clang-format = "*"
+ruff = "*"
+pre-commit = "*"
+
+[feature.develop.pypi-dependencies]
+ase = "*"
+
+[feature.develop.dependencies]
+ipython = ">=9.3.0,<10"
+
+[feature.lammps.dependencies]
+lammps = ">=2024.8.29,<2025"
+
+[feature.nwchem.dependencies]
+nwchem = ">=7.2.3,<8"
+i-pi = ">=3.1.5.1,<4"
+pybind11 = ">=3.0.0,<4"
+
+[feature.nwchem.pypi-dependencies]
+psutil = ">=7.0.0, <8"
+
+[feature.docs.tasks.srvdocs]
+depends-on = [
+  { task = "makedocs", environment = "docs" },
+]
+cmd = """
+python -m http.server -d html
+"""
+
+[feature.release.dependencies]
+# eon = "*"
+
+[feature.metatomic.tasks.mkeon]
+args = ["buildtype"]
+depends-on = [
+  { task = "setupeon", environment = "eon", "args" = ["{{buildtype}}"] },
+]
+cmd = """
+meson compile -C bbdir && \
+meson install -C bbdir
+"""
+
+[feature.metatomic.tasks.setupeon]
+# Remember that the mold stuff assumes that the user has a UNIX machine However
+# dropping mold does nothing but leads to slightly longer build times so it
+# isn't an issue
+# For exact reproducibility -Dwith_ase_nwchem should be used but it shouldn't matter
+# For debugging set
+# --buildtype debug -Db_sanitize=address
+# To prevent the subproject from leaking into the EON history, it is easier to
+# simply rsync in since it is ignored at that path anyway
+#
+# -Dwith_metatomic=True -Dpip_metatomic=True \
+# -Dtorch_version=2.7 \
+cmd = """
+rsync -vaz ../gpr_optim subprojects && \
+meson setup bbdir --reconfigure \
+      --prefix=$CONDA_PREFIX \
+      --libdir=lib --buildtype {{ buildtype }} \
+      --native-file nativeFiles/mold.ini \
+      --native-file nativeFiles/ccache_gnu.ini \
+      -Dwith_xtb=False \
+      -Dwith_metatomic=True \
+      -Dpip_metatomic=True \
+      -Dtorch_version=2.9 \
+      -Dwith_tests=True \
+      -Dwith_gprd=True
+"""
+args = ["buildtype"]

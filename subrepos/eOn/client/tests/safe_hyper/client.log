@@ -1,0 +1,27 @@
+
+Minimizing initial reactant
+iter    step size    max force         energy
+   0      0.00000      0.00422     -472.90978
+
+Parallel Replica Dynamics, running
+
+Dephasing for 0.00 fs
+
+Starting MD run
+Temperature: 300.00 Kelvin
+Total Simulation Time: 300000.00 fs
+Time Step: 2.00 fs
+Total Steps: 150000
+
+MD buffer length: 100
+New State 1: tranisitonTime= 6.804e-08 s, biasPot= 0.000 s, correctedTime= 7.627e-11 s, sumCorrectedTime= 7.627e-11 s, minCorTime= 7.627e-11 s
+progress:  10%, max displacement:  0.471, step   15000/150000
+New State 2: tranisitonTime= 1.534e-06 s, biasPot= 0.000 s, correctedTime= 1.693e-08 s, sumCorrectedTime= 1.701e-08 s, minCorTime= 7.627e-11 s
+New State 3: tranisitonTime= 1.534e-06 s, biasPot= 0.000 s, correctedTime= 1.938e-08 s, sumCorrectedTime= 3.639e-08 s, minCorTime= 7.627e-11 s
+New State 4: tranisitonTime= 1.534e-06 s, biasPot= 0.000 s, correctedTime= 1.252e-08 s, sumCorrectedTime= 4.892e-08 s, minCorTime= 7.627e-11 s
+New State 5: tranisitonTime= 1.534e-06 s, biasPot= 0.000 s, correctedTime= 1.126e-08 s, sumCorrectedTime= 6.017e-08 s, minCorTime= 7.627e-11 s
+New State 6: tranisitonTime= 1.534e-06 s, biasPot= 0.000 s, correctedTime= 3.437e-08 s, sumCorrectedTime= 9.455e-08 s, minCorTime= 7.627e-11 s
+
+Temperature : Average = 300.404643 ; Stddev = 26.658771 ; Factor = 1.193108; Boost = 39069.417302
+
+Transition time: 7.63e-11 s
