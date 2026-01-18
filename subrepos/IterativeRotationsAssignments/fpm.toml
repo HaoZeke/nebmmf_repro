@@ -1,0 +1,22 @@
+name = "ira"
+version = "2.2.0"
+
+[build]
+link = "lapack"
+
+[library]
+type = "shared"
+source-dir = "src"
+
+[fortran]
+implicit-external = true
+source-form="default"
+
+[dependencies]
+
+[preprocess]
+[preprocess.cpp]
+
+[install]
+library=true
+

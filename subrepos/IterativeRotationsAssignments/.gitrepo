@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:mammasmias/IterativeRotationsAssignments.git
+	branch = dev_ierr
+	commit = 03aa972d46c277bead4daeb5b2a0942ba91d2ee0
+	parent = 89a3856b5445b3d3f8291fb2bdb3ca9633c755cd
+	method = merge
+	cmdver = 0.4.9
