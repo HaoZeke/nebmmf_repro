@@ -189,6 +189,17 @@ find . -name "initial.xyz" -execdir python -m rgpycrumbs.cli eon con-splitter \
     # --use-ira \
     # --ira-kmax 1.8 \;
 #+end_src
+** Regenerating plots
+A ~nu~ based parallel helper regenerates 2D plots much faster than going through
+Snakemake repeatedly.
+#+begin_src bash
+export GITROOT=$(git rev-parse --show-toplevel)
+cd "${GITROOT}/eonRuns"
+nu "${GITROOT}/scripts/regen_plots.nu"
+# Optional: wipe older 2D plots
+cd "${GITROOT}/eonRuns/results/04_plots"
+find . -type f -name "2D_rmsd.png" -delete
+#+end_src
 ** References
 #+begin_quote
 [1] R. Goswami, M. Masterov, S. Kamath, A. Pena-Torres, and H. Jónsson, “Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions,” J. Chem. Theory Comput., Jul. 2025, doi: 10.1021/acs.jctc.5c00866.
