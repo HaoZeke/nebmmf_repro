@@ -1,0 +1,46 @@
+common:
+  number_of_intermediate_imgs: 8
+systems:
+  20_hconh3_cation:
+    reactant: resources/icFSM/baker/20_hconh3_cation/initial/ipath_000.con
+    product: resources/icFSM/baker/20_hconh3_cation/initial/ipath_001.con
+    saddle: resources/icFSM/baker/20_hconh3_cation/ts.xyz
+    use_ira: False
+methods:
+  cineb: "resources/config_nebci.ini"
+  mmf: "resources/config_roneb.ini"
+  strict: "resources/config_roneb_strict.ini"
+paths:
+  models: "results/00_models"
+  endpoints: "results/01_endpoints"
+  idpp: "results/02_idpp"
+  neb: "results/03_neb"
+  plots: "results/04_plots"
+  cache: "results/_cache"
+eon:
+  config: "resources/config.ini"
+pet_mad:
+  version: "v1.1.0"
+plotting:
+  plot_structures: "crit_points"
+  facecolor: "white"
+  title: ""
+  aserot: "0x,90y,0z"
+  draw_reactant:
+    x: 30.0
+    y: 60.0
+    rad: 0.1
+  draw_product:
+    x: -1.0
+    y: 40.0
+    rad: 0.1
+  draw_saddle:
+    x: 25.0
+    y: 40.0
+    rad: 0.1
+  figure:
+    figsize: [5.37, 3.37]
+    dpi: 300
+    zoom_ratio: 0.25
+  fonts:
+    base: 12
