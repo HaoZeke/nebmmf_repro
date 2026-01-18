@@ -1,8 +1,8 @@
 * About
-Validation data and runs for the Hybrid NEB-MMF method.
+Validation data and runs for the RONEB method.
 ** Reference
 If you use this repository or its parts please cite the corresponding publication or data source.
-*** Primary Publication
+*** TODO Primary Publication
 Submitted.
 *** TODO Preprint
 A more accessible form of the same publication:
@@ -12,7 +12,7 @@ A more accessible form of the same publication:
 :END:
 Submitted to the Materials Cloud Archive.
 ** Replication data
-Remember to inflate the data using the ~materialscloud~ source (section ref:mca) before using the scripts in the repository. Assuming that the ~.xz~ files have been downloaded to ~data~ relative to the repository root:
+Remember to inflate the data using the ~materialscloud~ (section ref:mca) before using the output parsing scripts in the repository. Assuming that the ~.xz~ files have been downloaded to ~data~ relative to the repository root:
 #+begin_src bash
 export GITROOT=$(git rev-parse --show-toplevel)
 cd $GITROOT
@@ -29,3 +29,5 @@ See ~readme.org~ in ~eonRuns~.
 ** References
 1. R. Goswami, M. Masterov, S. Kamath, A. Pena-Torres, and H. Jónsson, “Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions,” J. Chem. Theory Comput., July 2025, doi: 10.1021/acs.jctc.5c00866.
 2. R. Goswami, “Bayesian hierarchical models for quantitative estimates for performance metrics applied to saddle search algorithms,” AIP Adv., vol. 15, no. 8, p. 85210, Aug. 2025, doi: 10.1063/5.0283639.
+3. R. Goswami and H. Jónsson, “Adaptive Pruning for Increased Robustness and Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point Searches,” ChemPhysChem, Nov. 2025, doi: 10.1002/cphc.202500730.
+

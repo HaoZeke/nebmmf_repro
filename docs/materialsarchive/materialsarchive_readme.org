@@ -1,0 +1,53 @@
+* Preliminary
+
+Clone the GitHub repository:
+#+begin_src bash
+git clone git@github.com:HaoZeke/nebmmf_repro.git
+#+end_src
+
+* About
+Contains the reproduction details for the publication on the performance and logs for the RONEB algorithm for seeking accelerated transition state.
+
+** Reference
+If you use this repository or its parts please cite the corresponding publication or data source.
+
+*** TODO Preprint
+#+begin_quote
+#+end_quote
+
+** TODO Replication data
+Remember to inflate the data using the materialscloud source before using the scripts in the repository. This can be done by running the following--assuming that the ~.xz~ files are in ~data~ relative to the repository root:
+#+begin_src bash
+#+end_src
+
+*** Reusing models
+To reuse the models and predictions, both F.A.I.R. formatted results and easier to work with ~R~ formats are provided.
+**** TODO From R
+The record contains ~R~ objects for the ~brms~ models and their predictions. The model dependencies need to be loaded. After this, the base ~R~ function, ~readRDS~ will suffice:
+#+begin_src R
+library('brms')
+model <- readRDS("data/models/brms_pes_cglbfgs_norot.rds")
+#+end_src
+More helper functions for generating and using these models and predictions are in the Github repository.
++The repository employs ~pixi~ for dependency management and organizes content by function:
+
+| Directory       | Description                                                                    |
+|-----------------+--------------------------------------------------------------------------------|
+| ~case_studies/~ | Specific molecular systems and ~optbench~ configurations.                      |
+| ~data/~         | Raw benchmarks (~.csv~), Stan models, and Parquet data.                        |
+| ~docs/~         | Documentation, including ~.org~ files for visualization and model definitions. |
+| ~eonRuns/~      | Workflow configurations and results for the eOn runs.                          |
+| ~scripts/~      | Python utilities for generating YAML configs and parsing simulation outputs.   |
+
+The results directory (~eonRuns/results~) implements the following hierarchy:
+- **00_models**: Contains the PyTorch (~.pt~) Machine Learning Potentials used for the PES evaluations.
+- **01_endpoints**: Atomic coordinates for the reactant and product states for each system (e.g., ~01_hcn~, ~09_parentdielsalder~).
+- **02_idpp**: Initial guesses for the reaction paths.
+- **03_neb**: Optimized transition state paths using the RONEB and standard NEB algorithms.
+- **04_plots**: Resultant visualizations and energy profiles for each chemical system.
+
+*** Configuration and Environment
+This project uses ~pixi~ for reproducible environment management.
+- ~pixi.toml~ / ~pixi.lock~: Define the environment.
+- ~baker_systems.yml~ / ~birkholz_systems.yaml~: Define the chemical systems for the benchmarks.
+- ~mutagen.yml~: Synchronization configuration for remote HPC execution.
