@@ -30,7 +30,7 @@ tar -xf nebviz_results.tar.xz && rm -rf nebviz_results.tar.xz
 #+end_src
 * DONE Usage
 CLOSED: [2025-12-08 Mon 03:39]
-A reproducible setup for generating benchmarks discussed elsewhere [1 ([[https://github.com/TheochemUI/gpr_sella_repro][Github]]), 2 ([[https://github.com/HaoZeke/brms_idrot_repro/blob/main/readme.org][Github]]), 3 (Github)].
+A reproducible setup for generating benchmarks discussed elsewhere [1 ([[https://github.com/TheochemUI/gpr_sella_repro][Github]]), 2 ([[https://github.com/HaoZeke/brms_idrot_repro/blob/main/readme.org][Github]]), 3 ([[https://github.com/theochemUI/otgpd_repro][Github]])].
 ** Setup and reproduction
 See ~readme.org~ in ~eonRuns~.
 ** References
