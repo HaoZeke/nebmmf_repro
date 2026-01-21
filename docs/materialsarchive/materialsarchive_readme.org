@@ -16,20 +16,34 @@ If you use this repository or its parts please cite the corresponding publicatio
 #+end_quote
 
 ** TODO Replication data
-Remember to inflate the data using the materialscloud source before using the scripts in the repository. This can be done by running the following--assuming that the ~.xz~ files are in ~data~ relative to the repository root:
+Users must inflate the archives from the MaterialsCloud record into the
+repository structure. Place the following archives into the root or the
+designated subdirectories before execution:
+
+| Archive                        | Destination                      | Description                                                    |
+|--------------------------------+----------------------------------+----------------------------------------------------------------|
+| ~data.tar.xz~                  | ~data/~                          | Stan models, Parquet data, and CSV benchmarks.                 |
+| ~case_baker_results.tar.xz~    | ~case_studies/molecular_systems~ | Parameter ablation results for the Baker benchmark set.        |
+| ~case_optbench_results.tar.xz~ | ~case_studies/optbench~          | Platinum heptamer benchmark for surface systems from OptBench. |
+| ~eonRuns_results.tar.xz~       | ~eonRuns/~                       | Full NEB/RONEB trajectory logs and plots for the Baker.        |
+
+Inflate the results archive using ~tar~, e.g.
 #+begin_src bash
+tar -xvf eonRuns_results.tar.xz -C eonRuns/
 #+end_src
 
 *** Reusing models
-To reuse the models and predictions, both F.A.I.R. formatted results and easier to work with ~R~ formats are provided.
+The repository offers both F.A.I.R.-compliant artifacts and native ~R~ objects for Bayesian analysis via ~brms~.
 **** TODO From R
-The record contains ~R~ objects for the ~brms~ models and their predictions. The model dependencies need to be loaded. After this, the base ~R~ function, ~readRDS~ will suffice:
-#+begin_src R
+The ~data/models/~ directory stores serialized ~.rds~ objects, readable with
+~readRDS~. These require the ~brms~ library for further analysis:
+#+begin_src R :eval never
 library('brms')
 model <- readRDS("data/models/brms_pes_cglbfgs_norot.rds")
 #+end_src
 More helper functions for generating and using these models and predictions are in the Github repository.
-+The repository employs ~pixi~ for dependency management and organizes content by function:
+
+The repository employs ~pixi~ for dependency management and organizes content by function:
 
 | Directory       | Description                                                                    |
 |-----------------+--------------------------------------------------------------------------------|
@@ -45,9 +59,3 @@ The results directory (~eonRuns/results~) implements the following hierarchy:
 - **02_idpp**: Initial guesses for the reaction paths.
 - **03_neb**: Optimized transition state paths using the RONEB and standard NEB algorithms.
 - **04_plots**: Resultant visualizations and energy profiles for each chemical system.
-
-*** Configuration and Environment
-This project uses ~pixi~ for reproducible environment management.
-- ~pixi.toml~ / ~pixi.lock~: Define the environment.
-- ~baker_systems.yml~ / ~birkholz_systems.yaml~: Define the chemical systems for the benchmarks.
-- ~mutagen.yml~: Synchronization configuration for remote HPC execution.

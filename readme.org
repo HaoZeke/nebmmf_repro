@@ -4,13 +4,20 @@ Validation data and runs for the RONEB method.
 If you use this repository or its parts please cite the corresponding publication or data source.
 *** TODO Primary Publication
 Submitted.
-*** TODO Preprint
+*** DONE Preprint
+CLOSED: [2026-01-21 Wed 09:18]
 A more accessible form of the same publication:
-*** TODO Data source
+#+begin_quote
+R. Goswami, M. Gunde, and H. Jónsson, “Reorienting off-path nudged elastic bands (RONEB) via minimum mode following,” Jan. 19, 2026, arXiv: arXiv:2601.12630. doi:10.48550/arXiv.2601.12630.
+#+end_quote
+*** HOLD Data source
 :PROPERTIES:
 :CUSTOM_ID: mca
 :END:
-Submitted to the Materials Cloud Archive.
+At the Materials Cloud Archive.
+#+begin_quote
+Rohit Goswami, Miha Gunde, and Hannes Jónsson,   Reorienting off-path nudged elastic bands (RONEB) via minimum mode following, Materials Cloud Archive 2026.X (2026). doi:10.24435/materialscloud:fw-wq
+#+end_quote
 ** Replication data
 Remember to inflate the data using the ~materialscloud~ (section ref:mca) before using the output parsing scripts in the repository. Assuming that the ~.xz~ files have been downloaded to ~data~ relative to the repository root:
 #+begin_src bash
