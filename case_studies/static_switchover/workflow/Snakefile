@@ -1,0 +1,73 @@
+# -*- mode:snakemake; -*-
+from snakemake.utils import min_version
+
+min_version("6.0")
+
+
+configfile: "config/general_config.yml"
+
+
+def get_all_targets(wildcards):
+    targets = []
+    # Safely access the keys, assuming config is loaded
+    if "systems" in config and "methods" in config:
+        for sys in config["systems"]:
+            for method in config["methods"]:
+                targets.append(f"{config['paths']['mmf']}/{sys}/{method}/saddle.con")
+    return targets
+
+
+rule all:
+    input:
+        get_all_targets,
+
+
+# -----------------------------------------------------------------------------
+
+
+module ira_align:
+    snakefile:
+        "rules/ira_align.smk"
+    config:
+        config
+
+
+module ase_idpp:
+    snakefile:
+        "rules/ase_idpp.smk"
+    config:
+        config
+
+
+module get_petmad:
+    snakefile:
+        "rules/get_petmad.smk"
+    config:
+        config
+
+
+module run_eon:
+    snakefile:
+        "rules/run_eon.smk"
+    config:
+        config
+
+
+use rule * from ira_align as __ira_align_*
+
+
+use rule * from ase_idpp as __ase_idpp_*
+
+
+use rule * from get_petmad
+
+
+use rule * from run_eon
+
+
+rule minimize_endpoints:
+    input:
+        expand(
+            f"{config['paths']['endpoints']}/{{endpoint}}_minimized.con",
+            endpoint=["reactant", "product"],
+        ),

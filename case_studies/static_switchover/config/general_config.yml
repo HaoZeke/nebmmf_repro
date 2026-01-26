@@ -1,0 +1,141 @@
+common:
+  number_of_intermediate_imgs: 8
+systems:
+
+  ###############
+  # icFSM Baker #
+  ###############
+
+  01_hcn:
+    reactant: ../../eonRuns/resources/icFSM/baker/01_hcn/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/01_hcn/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/01_hcn/ts.xyz
+    use_ira: False
+  02_hcch:
+    reactant: ../../eonRuns/resources/icFSM/baker/02_hcch/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/02_hcch/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/02_hcch/ts.xyz
+    use_ira: False
+  03_h2co:
+    reactant: ../../eonRuns/resources/icFSM/baker/03_h2co/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/03_h2co/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/03_h2co/ts.xyz
+    use_ira: False
+  04_ch3o:
+    reactant: ../../eonRuns/resources/icFSM/baker/04_ch3o/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/04_ch3o/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/04_ch3o/ts.xyz
+    use_ira: False
+  05_cyclopropyl:
+    reactant: ../../eonRuns/resources/icFSM/baker/05_cyclopropyl/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/05_cyclopropyl/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/05_cyclopropyl/ts.xyz
+    use_ira: False
+  06_bicyclobutane:
+    reactant: ../../eonRuns/resources/icFSM/baker/06_bicyclobutane/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/06_bicyclobutane/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/06_bicyclobutane/ts.xyz
+    use_ira: False
+  08_formyloxyethyl:
+    reactant: ../../eonRuns/resources/icFSM/baker/08_formyloxyethyl/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/08_formyloxyethyl/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/08_formyloxyethyl/ts.xyz
+    use_ira: False
+  09_parentdielsalder:
+    reactant: ../../eonRuns/resources/icFSM/baker/09_parentdielsalder/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/09_parentdielsalder/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/09_parentdielsalder/ts.xyz
+    use_ira: False
+  10_tetrazine:
+    reactant: ../../eonRuns/resources/icFSM/baker/10_tetrazine/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/10_tetrazine/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/10_tetrazine/ts.xyz
+    use_ira: False
+  11_trans_butadiene:
+    reactant: ../../eonRuns/resources/icFSM/baker/11_trans_butadiene/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/11_trans_butadiene/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/11_trans_butadiene/ts.xyz
+    use_ira: False
+  12_ethane_h2_abstraction:
+    reactant: ../../eonRuns/resources/icFSM/baker/12_ethane_h2_abstraction/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/12_ethane_h2_abstraction/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/12_ethane_h2_abstraction/ts.xyz
+    use_ira: False
+  13_hf_abstraction:
+    reactant: ../../eonRuns/resources/icFSM/baker/13_hf_abstraction/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/13_hf_abstraction/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/13_hf_abstraction/ts.xyz
+    use_ira: False
+  14_vinyl_alcohol:
+    reactant: ../../eonRuns/resources/icFSM/baker/14_vinyl_alcohol/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/14_vinyl_alcohol/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/14_vinyl_alcohol/ts.xyz
+    use_ira: False
+  15_hocl:
+    reactant: ../../eonRuns/resources/icFSM/baker/15_hocl/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/15_hocl/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/15_hocl/ts.xyz
+    use_ira: False
+  16_h2po4_anion:
+    reactant: ../../eonRuns/resources/icFSM/baker/16_h2po4_anion/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/16_h2po4_anion/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/16_h2po4_anion/ts.xyz
+    use_ira: False
+  17_claisen:
+    reactant: ../../eonRuns/resources/icFSM/baker/17_claisen/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/17_claisen/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/17_claisen/ts.xyz
+    use_ira: False
+  18_silylene_insertion:
+    reactant: ../../eonRuns/resources/icFSM/baker/18_silylene_insertion/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/18_silylene_insertion/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/18_silylene_insertion/ts.xyz
+    use_ira: False
+  19_hnccs:
+    reactant: ../../eonRuns/resources/icFSM/baker/19_hnccs/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/19_hnccs/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/19_hnccs/ts.xyz
+    use_ira: False
+  20_hconh3_cation:
+    reactant: ../../eonRuns/resources/icFSM/baker/20_hconh3_cation/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/20_hconh3_cation/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/20_hconh3_cation/ts.xyz
+    use_ira: False
+  21_acrolein_rot:
+    reactant: ../../eonRuns/resources/icFSM/baker/21_acrolein_rot/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/21_acrolein_rot/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/21_acrolein_rot/ts.xyz
+    use_ira: False
+  22_hconhoh:
+    reactant: ../../eonRuns/resources/icFSM/baker/22_hconhoh/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/22_hconhoh/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/22_hconhoh/ts.xyz
+    use_ira: False
+  23_hcn_h2:
+    reactant: ../../eonRuns/resources/icFSM/baker/23_hcn_h2/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/23_hcn_h2/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/23_hcn_h2/ts.xyz
+    use_ira: False
+  24_h2cnh:
+    reactant: ../../eonRuns/resources/icFSM/baker/24_h2cnh/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/24_h2cnh/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/24_h2cnh/ts.xyz
+    use_ira: False
+  25_hcnh2:
+    reactant: ../../eonRuns/resources/icFSM/baker/25_hcnh2/initial/ipath_000.con
+    product: ../../eonRuns/resources/icFSM/baker/25_hcnh2/initial/ipath_001.con
+    saddle: ../../eonRuns/resources/icFSM/baker/25_hcnh2/ts.xyz
+    use_ira: False
+methods:
+  static: 
+    neb:  "resources/config_static_nebci.ini" 
+    mmf:  "resources/config_static_dimer.ini" 
+paths:
+  models: "results/00_models"
+  endpoints: "results/01_endpoints"
+  idpp: "results/02_idpp"
+  neb: "results/03_neb"
+  mmf: "results/04_mmf"
+  cache: "results/_cache"
+pet_mad:
+  version: "v1.1.0"
