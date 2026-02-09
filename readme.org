@@ -1,5 +1,5 @@
 * About
-Validation data and runs for the RONEB method.
+Validation data and runs for the OCI-NEB method (ex RONEB).
 ** Reference
 If you use this repository or its parts please cite the corresponding publication or data source.
 *** TODO Primary Publication
@@ -16,7 +16,7 @@ R. Goswami, M. Gunde, and H. Jónsson, “Reorienting off-path nudged elastic ba
 :END:
 At the Materials Cloud Archive.
 #+begin_quote
-Rohit Goswami, Miha Gunde, and Hannes Jónsson,   Reorienting off-path nudged elastic bands (RONEB) via minimum mode following, Materials Cloud Archive 2026.X (2026). doi:10.24435/materialscloud:fw-wq
+Rohit Goswami, Miha Gunde, and Hannes Jónsson, Enhanced Climbing Image Nudged Elastic Band method with Hessian Eigenmode Alignment, Materials Cloud Archive 2026.X (2026). doi:10.24435/materialscloud:ym-my
 #+end_quote
 ** Replication data
 Remember to inflate the data using the ~materialscloud~ (section ref:mca) before using the output parsing scripts in the repository. Assuming that the ~.xz~ files have been downloaded to ~data~ relative to the repository root:
