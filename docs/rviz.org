@@ -58,10 +58,14 @@ Always start the interpreters from the same directory as the file.
 We set the results to ~value~ so as to get the ~print()~ output instead of the mangled output.
 
 #+begin_src emacs-lisp :results none
-(let ((git-root-path (replace-regexp-in-string "\n" "" (shell-command-to-string "git rev-parse --show-toplevel"))))
-  ;; make-local-variable ensures the change stays within this buffer
-  (setq-local inferior-R-program
-              (concat git-root-path "/.pixi/envs/rviz/bin/R")))
+(let* ((root (vc-root-dir))
+       (bin-dir (expand-file-name ".pixi/envs/rviz/bin" root))
+       (r-path (expand-file-name "R" bin-dir)))
+  (setq-local inferior-ess-r-program r-path)
+  (setq-local org-babel-R-command (concat r-path " --slave --no-save"))
+  (setq-local exec-path (cons bin-dir exec-path))
+  (setenv "PATH" (concat bin-dir ":" (getenv "PATH")))
+  (setq-local ess-r-executable-list (list r-path)))
 #+end_src
 
 #+begin_src R :results none
@@ -429,7 +433,7 @@ The results of the RONEB are too good for the CINEB on a plot like this.
 process_transition_state_data <- function(file_path) {
   # Load the raw CSV data
   raw_data <- read_csv(file_path, show_col_types = FALSE)
-  colnames(raw_data) <- gsub("_MMF$", "_RONEB", colnames(raw_data))
+  colnames(raw_data) <- gsub("_MMF$", "_OCINEB", colnames(raw_data))
   
   # Transform and clean the data
   processed_data <- raw_data %>%
@@ -439,7 +443,7 @@ process_transition_state_data <- function(file_path) {
       
       # Retain termination status as factors
       Term_CINEB = as.factor(Term_CINEB),
-      Term_RONEB = as.factor(Term_RONEB)
+      Term_OCINEB = as.factor(Term_OCINEB)
     ) %>%
     # Organize columns to prioritize physical chemistry metrics and performance
     dplyr::relocate(
@@ -470,9 +474,9 @@ We need a long set.
 df_long <- data_raw %>%
   # Pivot all method-specific columns at once
   pivot_longer(
-    cols = matches("_(CINEB|RONEB)$"),
+    cols = matches("_(CINEB|OCINEB)$"),
     names_to = c(".value", "Method"),
-    names_pattern = "(.*)_(CINEB|RONEB)"
+    names_pattern = "(.*)_(CINEB|OCINEB)"
   ) %>%
   # Rename for clarity (optional, but matches your brms code)
   rename(
@@ -485,7 +489,7 @@ df_long <- data_raw %>%
     # Create distinct Success flag (TRUE only if strictly "GOOD")
     success = term_reason == "GOOD",
     # Ensure Method is a factor with CINEB as the baseline (first level)
-    Method = factor(Method, levels = c("CINEB", "RONEB")),
+    Method = factor(Method, levels = c("CINEB", "OCINEB")),
     
     # Log-transform calls for the spline model (avoid log(0) if any)
     log_pes_calls = log(ifelse(pes_calls == 0, 1, pes_calls)),
@@ -516,8 +520,7 @@ df_long %>%
 | Method | mean_rmsd | median_rmsd | max_rmsd | n_systems |
 |--------+-----------+-------------+----------+-----------|
 | CINEB  |       0.0 |         0.0 |      0.3 |        24 |
-| RONEB  |       0.0 |         0.0 |      0.3 |        24 |
-
+| OCINEB |       0.0 |         0.0 |      0.3 |        24 |
 
 #+begin_src R :results value :colnames yes :post round-tbl[:colnames yes](*this*)
 df_long %>%
@@ -529,7 +532,7 @@ df_long %>%
 | Method |  n |  mean | median |
 |--------+----+-------+--------|
 | CINEB  | 24 | 790.7 |    482 |
-| RONEB  | 24 | 445.9 |  230.5 |
+| OCINEB  | 24 | 445.9 |  230.5 |
 
 ** Performance Plots
 *** Dumbbell
@@ -539,18 +542,18 @@ df_dumbbell <- data_raw %>%
   # Cap values for failures to keep plot readable
   mutate(
     Calls_CINEB_Plot = ifelse(Term_CINEB == "BAD_MAX_ITERATIONS", 8000, Calls_CINEB),
-    Calls_RONEB_Plot = Calls_RONEB,
+    Calls_OCINEB_Plot = Calls_OCINEB,
     Time_CINEB_Plot = Time_CINEB,
-    Time_RONEB_Plot = Time_RONEB
+    Time_OCINEB_Plot = Time_OCINEB
   ) %>%
   pivot_longer(
-    cols = c(Calls_CINEB_Plot, Calls_RONEB_Plot, Time_CINEB_Plot, Time_RONEB_Plot),
+    cols = c(Calls_CINEB_Plot, Calls_OCINEB_Plot, Time_CINEB_Plot, Time_OCINEB_Plot),
     names_to = c("Metric", "Method"),
     names_pattern = "(.*)_(.*)_Plot", 
     values_to = "Value"
   ) %>%
   mutate(
-    Method = factor(Method, levels = c("CINEB", "RONEB")),
+    Method = factor(Method, levels = c("CINEB", "OCINEB")),
     Metric_Label = case_when(
       Metric == "Calls" ~ "Gradient Evaluations",
       Metric == "Time" ~ "Wall Time (s)"
@@ -583,18 +586,18 @@ df_combined <- bind_rows(df_dumbbell, df_avg, df_median)
 # --- 2. Calculate Segments and Differences ---
 df_segments <- df_combined %>%
   pivot_wider(names_from = Method, values_from = c(Value, Status_Point)) %>%
-  filter(!is.na(Value_CINEB) & !is.na(Value_RONEB)) %>%
+  filter(!is.na(Value_CINEB) & !is.na(Value_OCINEB)) %>%
   # Group by Metric to find the local maximum for each facet
   group_by(Metric_Label) %>%
   mutate(
-    Improvement = Value_CINEB - Value_RONEB,
-    Diff_Value = Value_RONEB - Value_CINEB,
+    Improvement = Value_CINEB - Value_OCINEB,
+    Diff_Value = Value_OCINEB - Value_CINEB,
     Diff_Label = case_when(
       Metric_Label == "Gradient Evaluations" ~ sprintf("%+d", as.integer(Diff_Value)),
       Metric_Label == "Wall Time (s)" ~ sprintf("%+.1fs", Diff_Value)
     ),
     # Use a localized maximum for each facet to keep labels near the data
-    Right_Pos = max(c(Value_CINEB, Value_RONEB), na.rm = TRUE) * 1.8
+    Right_Pos = max(c(Value_CINEB, Value_OCINEB), na.rm = TRUE) * 1.8
   ) %>%
   ungroup()
 
@@ -611,7 +614,7 @@ p_dumbbell <- ggplot() +
   # A. The Connector Line
   geom_segment(
     data = df_segments,
-    aes(y = Reaction, yend = Reaction, x = Value_RONEB, xend = Value_CINEB),
+    aes(y = Reaction, yend = Reaction, x = Value_OCINEB, xend = Value_CINEB),
     color = "grey70", linewidth = 0.8
   ) +
   
@@ -632,7 +635,7 @@ p_dumbbell <- ggplot() +
   facet_wrap(~Metric_Label, scales = "free_x", ncol = 2) +
  scale_y_discrete(labels = scales::label_parse(), expand = expansion(mult = c(0.05, 0.05))) + 
   scale_color_manual(
-    values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])
+    values = c("CINEB" = ruhi_colors[["coral"]], "OCINEB" = ruhi_colors[["teal"]])
   ) +
   scale_shape_manual(
     values = c("Converged" = 19, "Failed" = 4)
@@ -644,8 +647,8 @@ scale_x_log10(
   ) +
   
   labs(
-    ## title = "Performance Gap: RONEB vs. CINEB",
-    ## subtitle = "Labels indicate savings (negative values = RONEB faster).",
+    ## title = "Performance Gap: OCINEB vs. CINEB",
+    ## subtitle = "Labels indicate savings (negative values = OCINEB faster).",
     x = "Log Scale Value",
     y = NULL,
     color = "Method",
@@ -660,7 +663,7 @@ scale_x_log10(
   )
 
 ggsave(
-  "../imgs/gen/R/dumbbell_plot.png", 
+  "imgs/gen/R/dumbbell_plot.png", 
   p_dumbbell, 
   width = 12, 
   height = 8,
@@ -668,14 +671,14 @@ ggsave(
 )
 #+end_src
 
-#+RESULTS[5d2d6c69231b609d5d79b368797eaefbb9119a85]:
+#+RESULTS[f604b3f525745cdf9f6eefcb355f442eb622f8dc]:
 [[file:../imgs/gen/R/dumbbell_plot.png]]
 
 
 *** Cactus
 #+begin_src R :results graphics file :file ../imgs/gen/R/suppl/cactus_violin.png
 df_plot_ready <- df_long %>%
-  filter(Method %in% c("CINEB", "RONEB"), success == TRUE)
+  filter(Method %in% c("CINEB", "OCINEB"), success == TRUE)
 
 # Panel A: Cactus Plot
 cactus_data <- df_plot_ready %>%
@@ -724,7 +727,7 @@ combined <- panel_a + panel_b +
   plot_layout(ncol = 2, widths = c(1.2, 0.8))
 
 ggsave(
-  "../imgs/gen/R/suppl/cactus_violin.png", 
+  "imgs/gen/R/suppl/cactus_violin.png", 
   combined, 
   width = 12, 
   height = 8,
@@ -732,7 +735,7 @@ ggsave(
 )
 #+end_src
 
-#+RESULTS[b3a70475ff8813bb29ea92c322b59c5ef1bb1616]:
+#+RESULTS[d4f28369d4e4a6e458fb1ed2b963ea399947301a]:
 [[file:../imgs/gen/R/suppl/cactus_violin.png]]
 
 ** Distributional visualization
@@ -743,7 +746,7 @@ df_phys <- df_long %>% filter(success == TRUE)
 # Panel A: Barrier Height Distribution (How hard is the test set?)
 p_barrier <- ggplot(df_phys, aes(x = Barrier, fill = Method)) +
   geom_histogram(alpha = 0.6, position = "identity", bins = 15, color = "white") +
-  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "OCINEB" = ruhi_colors[["teal"]])) +
   labs(
     title = "A. Reaction Barrier Distribution",
     subtitle = "Range of activation energies in the Baker set",
@@ -754,11 +757,11 @@ p_barrier <- ggplot(df_phys, aes(x = Barrier, fill = Method)) +
   theme(legend.position = "none")
 
 # Panel B: Accuracy Check (RMSD to Reference Saddle)
-# This validates that RONEB isn't just 'fast' because it's finding wrong/lazy saddles.
+# This validates that OCINEB isn't just 'fast' because it's finding wrong/lazy saddles.
 p_accuracy <- ggplot(df_phys, aes(x = RMSD_Saddle, fill = Method)) +
   geom_density(alpha = 0.5, color = NA) +
   geom_vline(xintercept = 0.1, linetype = "dashed", color = "grey50") +
-  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "OCINEB" = ruhi_colors[["teal"]])) +
   labs(
     title = "B. Saddle Point Similarity",
     subtitle = "Structural deviation from CINEB transition states",
@@ -773,7 +776,7 @@ p_correlation <- ggplot(df_phys, aes(x = Barrier, y = pes_calls, color = Method)
   geom_point(size = 3, alpha = 0.8) +
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed", alpha = 0.5) +
   scale_y_log10() +
-  scale_color_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+  scale_color_manual(values = c("CINEB" = ruhi_colors[["coral"]], "OCINEB" = ruhi_colors[["teal"]])) +
   labs(
     title = "C. Scaling with Barrier Height",
     subtitle = "Computational cost vs. Activation Energy",
@@ -787,13 +790,14 @@ p_correlation <- ggplot(df_phys, aes(x = Barrier, y = pes_calls, color = Method)
 library(patchwork)
 p_combined <- (p_barrier | p_accuracy) / p_correlation ## +
   ## plot_annotation(tag_levels = 'A')
+## ggsave("replot.png", p_combined, width=14, height=12,dpi=300)
 
-ggsave("../imgs/gen/R/suppl/dataset_characterization.png",
+ggsave("imgs/gen/R/suppl/dataset_characterization.png",
        p_combined,
        width = 14,
        height = 12,
        dpi=300)
 #+end_src
 
-#+RESULTS[5a986014d0fac5ed9a440b1398dace18b4917596]:
+#+RESULTS[90c37126aab2726ecfd069981d9d2d4e42aaf715]:
 [[file:../imgs/gen/R/suppl/dataset_characterization.png]]

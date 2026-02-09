@@ -58,10 +58,14 @@ export PIXI_NO_PROGRESS=true
 :END:
 
 #+begin_src emacs-lisp :results none
-(let ((git-root-path (replace-regexp-in-string "\n" "" (shell-command-to-string "git rev-parse --show-toplevel"))))
-  ;; make-local-variable ensures the change stays within this buffer
-  (setq-local inferior-R-program
-              (concat git-root-path "/.pixi/envs/brms/bin/R")))
+(let* ((root (vc-root-dir))
+       (bin-dir (expand-file-name ".pixi/envs/brms/bin" root))
+       (r-path (expand-file-name "R" bin-dir)))
+  (setq-local inferior-ess-r-program r-path)
+  (setq-local org-babel-R-command (concat r-path " --slave --no-save"))
+  (setq-local exec-path (cons bin-dir exec-path))
+  (setenv "PATH" (concat bin-dir ":" (getenv "PATH")))
+  (setq-local ess-r-executable-list (list r-path)))
 #+end_src
 
 #+begin_src R :results none
@@ -351,6 +355,7 @@ get_or_compute_epreds <- function(model, newdata, filename, ...) {
 process_transition_state_data <- function(file_path) {
   # Load the raw CSV data
   raw_data <- read_csv(file_path, show_col_types = FALSE)
+  colnames(raw_data) <- gsub("_MMF$", "_OCINEB", colnames(raw_data))
   
   # Transform and clean the data
   processed_data <- raw_data %>%
@@ -360,7 +365,7 @@ process_transition_state_data <- function(file_path) {
       
       # Retain termination status as factors
       Term_CINEB = as.factor(Term_CINEB),
-      Term_MMF = as.factor(Term_MMF)
+      Term_OCINEB = as.factor(Term_OCINEB)
     ) %>%
     # Organize columns to prioritize physical chemistry metrics and performance
     dplyr::relocate(
@@ -379,19 +384,19 @@ process_transition_state_data <- function(file_path) {
 #+end_src
 
 #+begin_src R :results discard
-data_raw <- process_transition_state_data("../benchmark_results.csv")
+data_raw <- process_transition_state_data("data/baker_bench.csv")
 ##  Need a long version too
 dff <- data_raw %>%
   pivot_longer(
-    cols = matches("_(CINEB|MMF)$"),
+    cols = matches("_(CINEB|OCINEB)$"),
     names_to = c(".value", "Method"),
-    names_pattern = "(.*)_(CINEB|MMF)"
+    names_pattern = "(.*)_(CINEB|OCINEB)"
   ) %>%
   mutate(
     # Create a plotting cost that caps failures at 8000 for visibility
     Cost_Plot = ifelse(Term == "BAD_MAX_ITERATIONS", 8000, Calls),
     # Make Method a factor for consistent coloring
-    Method = factor(Method, levels = c("CINEB", "MMF"))
+    Method = factor(Method, levels = c("CINEB", "OCINEB")),
   )
 #+end_src
 
@@ -404,9 +409,9 @@ We need a long set.
 df_long <- data_raw %>%
   # Pivot all method-specific columns at once
   pivot_longer(
-    cols = matches("_(CINEB|MMF)$"),
+    cols = matches("_(CINEB|OCINEB)$"),
     names_to = c(".value", "Method"),
-    names_pattern = "(.*)_(CINEB|MMF)"
+    names_pattern = "(.*)_(CINEB|OCINEB)"
   ) %>%
   # Rename for clarity (optional, but matches your brms code)
   rename(
@@ -418,9 +423,7 @@ df_long <- data_raw %>%
   mutate(
     # Create distinct Success flag (TRUE only if strictly "GOOD")
     success = term_reason == "GOOD",
-    Method = ifelse(Method == "MMF", "RONEB", Method),    
-    # Ensure Method is a factor with CINEB as the baseline (first level)
-    Method = factor(Method, levels = c("CINEB", "RONEB")),
+    Method = factor(Method, levels = c("CINEB", "OCINEB")),
     
     # Log-transform calls for the spline model (avoid log(0) if any)
     log_pes_calls = log(ifelse(pes_calls == 0, 1, pes_calls)),
@@ -444,11 +447,11 @@ df_long %>%
   summarize(n=n(), mean=mean(pes_calls), median=median(pes_calls))
 #+end_src
 
-#+RESULTS[eee09c218f0effc884f99947f341b2bdf30f87a6]:
+#+RESULTS[bce413b33a6d06228295df08b3c37fca2c199809]:
 | Method |  n |  mean | median |
 |--------+----+-------+--------|
 | CINEB  | 24 | 790.7 |    482 |
-| RONEB  | 24 | 445.9 |  230.5 |
+| OCINEB | 24 | 445.9 |  230.5 |
 
 ** PES Call Models
 #+begin_src R :results none
@@ -467,7 +470,7 @@ prior_list <- c(
   )
 # Formula: Cost depends on Method, and the scaling with Distance varies by Method
 # Family: Negative Binomial (handles overdispersed count data better than Poisson)
-brms_roneb <- brm(
+brms_ocineb <- brm(
   formula = bf(
     pes_calls ~ Method + s(RMSD_Init_Final, by = Method, k = 3) + (1 | System),
     shape ~ Method
@@ -479,7 +482,7 @@ brms_roneb <- brm(
   cores = 8, seed = 1995,
   backend = "cmdstanr",
   control = list(adapt_delta = 0.999, max_treedepth = 15),
-  file = "../data/models/brms_efficiency_scaling_v5"
+  file = "data/models/brms_efficiency_scaling_v5"
 )
 #+end_src
 
@@ -488,10 +491,10 @@ brms_roneb <- brm(
 *** Summaries
 
 #+begin_src R :results output
-summary(brms_roneb)
+summary(brms_ocineb)
 #+end_src
 
-#+RESULTS[a29dfdb8d056ad13d53f309e749db7eaf1c16802]:
+#+RESULTS[5808be8e4bb510765bba77ebe6106980996c17b1]:
 #+begin_example
  Family: negbinomial 
   Links: mu = log; shape = log 
@@ -502,33 +505,61 @@ Formula: pes_calls ~ Method + s(RMSD_Init_Final, by = Method, k = 3) + (1 | Syst
          total post-warmup draws = 24000
 
 Smoothing Spline Hyperparameters:
-                                   Estimate Est.Error l-95% CI u-95% CI Rhat
-sds(sRMSD_Init_FinalMethodCINEB_1)     0.67      0.61     0.02     2.22 1.00
-sds(sRMSD_Init_FinalMethodRONEB_1)     0.63      0.58     0.02     2.13 1.00
-                                   Bulk_ESS Tail_ESS
-sds(sRMSD_Init_FinalMethodCINEB_1)    10827    11028
-sds(sRMSD_Init_FinalMethodRONEB_1)    12279    11499
+                                    Estimate
+sds(sRMSD_Init_FinalMethodCINEB_1)      0.67
+sds(sRMSD_Init_FinalMethodOCINEB_1)     0.63
+                                    Est.Error
+sds(sRMSD_Init_FinalMethodCINEB_1)       0.61
+sds(sRMSD_Init_FinalMethodOCINEB_1)      0.58
+                                    l-95% CI
+sds(sRMSD_Init_FinalMethodCINEB_1)      0.02
+sds(sRMSD_Init_FinalMethodOCINEB_1)     0.02
+                                    u-95% CI Rhat
+sds(sRMSD_Init_FinalMethodCINEB_1)      2.22 1.00
+sds(sRMSD_Init_FinalMethodOCINEB_1)     2.13 1.00
+                                    Bulk_ESS
+sds(sRMSD_Init_FinalMethodCINEB_1)     10827
+sds(sRMSD_Init_FinalMethodOCINEB_1)    12279
+                                    Tail_ESS
+sds(sRMSD_Init_FinalMethodCINEB_1)     11028
+sds(sRMSD_Init_FinalMethodOCINEB_1)    11499
 
 Multilevel Hyperparameters:
 ~System (Number of levels: 24) 
-              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(Intercept)     0.43      0.09     0.28     0.62 1.00     4800     8431
+              Estimate Est.Error l-95% CI u-95% CI
+sd(Intercept)     0.43      0.09     0.28     0.62
+              Rhat Bulk_ESS Tail_ESS
+sd(Intercept) 1.00     4800     8431
 
 Regression Coefficients:
-                               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-Intercept                          6.38      0.11     6.16     6.59 1.00     6754
-shape_Intercept                    2.60      0.41     1.80     3.42 1.00     6989
-MethodRONEB                       -0.62      0.08    -0.79    -0.46 1.00    23393
-shape_MethodRONEB                  0.12      0.46    -0.81     1.03 1.00    13564
-sRMSD_Init_Final:MethodCINEB_1     0.54      0.11     0.32     0.76 1.00     6188
-sRMSD_Init_Final:MethodRONEB_1     0.55      0.10     0.34     0.76 1.00     6241
-                               Tail_ESS
-Intercept                         10286
-shape_Intercept                   12216
-MethodRONEB                       16755
-shape_MethodRONEB                 15483
-sRMSD_Init_Final:MethodCINEB_1     8380
-sRMSD_Init_Final:MethodRONEB_1     7688
+                                Estimate Est.Error
+Intercept                           6.38      0.11
+shape_Intercept                     2.60      0.41
+MethodOCINEB                       -0.62      0.08
+shape_MethodOCINEB                  0.12      0.46
+sRMSD_Init_Final:MethodCINEB_1      0.54      0.11
+sRMSD_Init_Final:MethodOCINEB_1     0.55      0.10
+                                l-95% CI u-95% CI
+Intercept                           6.16     6.59
+shape_Intercept                     1.80     3.42
+MethodOCINEB                       -0.79    -0.46
+shape_MethodOCINEB                 -0.81     1.03
+sRMSD_Init_Final:MethodCINEB_1      0.32     0.76
+sRMSD_Init_Final:MethodOCINEB_1     0.34     0.76
+                                Rhat Bulk_ESS
+Intercept                       1.00     6754
+shape_Intercept                 1.00     6989
+MethodOCINEB                    1.00    23393
+shape_MethodOCINEB              1.00    13564
+sRMSD_Init_Final:MethodCINEB_1  1.00     6188
+sRMSD_Init_Final:MethodOCINEB_1 1.00     6241
+                                Tail_ESS
+Intercept                          10286
+shape_Intercept                    12216
+MethodOCINEB                       16755
+shape_MethodOCINEB                 15483
+sRMSD_Init_Final:MethodCINEB_1      8380
+sRMSD_Init_Final:MethodOCINEB_1     7688
 
 Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -536,9 +567,9 @@ scale reduction factor on split chains (at convergence, Rhat = 1).
 #+end_example
 
 #+begin_src R :results value :colnames yes :post round-tbl[:colnames yes](*this*)
-param_draws_eff <- brms_roneb %>%
+param_draws_eff <- brms_ocineb %>%
   tidy_draws() %>%
-  select(b_Intercept, b_MethodRONEB, `sd_System__Intercept`)
+  select(b_Intercept, b_MethodOCINEB, `sd_System__Intercept`)
 
 # 1. Baseline Intercept
 summary_int_eff <- param_draws_eff %>%
@@ -548,17 +579,17 @@ summary_int_eff <- param_draws_eff %>%
          `Median Effect` = sprintf("%.1f", med),
          `95% CrI` = paste0("[", sprintf("%.1f", lo), ", ", sprintf("%.1f", hi), "]"))
 
-# 2. RONEB Comparison
+# 2. OCINEB Comparison
 summary_mmf_eff <- param_draws_eff %>%
-  mutate(mult = exp(b_MethodRONEB), perc = (mult - 1) * 100) %>%
+  mutate(mult = exp(b_MethodOCINEB), perc = (mult - 1) * 100) %>%
   summarize(med_m = median(mult), lo_m = quantile(mult, 0.025), hi_m = quantile(mult, 0.975),
             med_p = median(perc), lo_p = quantile(perc, 0.025), hi_p = quantile(perc, 0.975))
 
 formatted_mmf <- bind_rows(
-  summary_mmf_eff %>% mutate(Effect_Type = "Multiplicative Factor (RONEB vs CINEB)", 
+  summary_mmf_eff %>% mutate(Effect_Type = "Multiplicative Factor (OCINEB vs CINEB)", 
                              `Median Effect` = sprintf("%.2f", med_m),
                              `95% CrI` = paste0("[", sprintf("%.2f", lo_m), ", ", sprintf("%.2f", hi_m), "]")),
-  summary_mmf_eff %>% mutate(Effect_Type = "Percentage Change (RONEB vs CINEB)", 
+  summary_mmf_eff %>% mutate(Effect_Type = "Percentage Change (OCINEB vs CINEB)", 
                              `Median Effect` = sprintf("%.1f%%", med_p),
                              `95% CrI` = paste0("[", sprintf("%.1f%%", lo_p), ", ", sprintf("%.1f%%", hi_p), "]"))
 )
@@ -570,12 +601,12 @@ combined_eff_summary <- bind_rows(summary_int_eff, formatted_mmf) %>%
 combined_eff_summary
 #+end_src
 
-#+RESULTS[379772df734dfba2e93530c593c42b4706e5d729]:
-| Effect_Type                            | Median Effect | 95% CrI          |
-|----------------------------------------+---------------+------------------|
-| Expected PES Calls (Baseline: CINEB)   |         587.4 | [473.9, 725.7]   |
-| Multiplicative Factor (RONEB vs CINEB) |           0.5 | [0.45, 0.63]     |
-| Percentage Change (RONEB vs CINEB)     |        -46.3% | [-54.7%, -36.9%] |
+#+RESULTS[baee7617ec6963170d75134fa18425da07ec3991]:
+| Effect_Type                             | Median Effect | 95% CrI          |
+|-----------------------------------------+---------------+------------------|
+| Expected PES Calls (Baseline: CINEB)    |         587.4 | [473.9, 725.7]   |
+| Multiplicative Factor (OCINEB vs CINEB) |           0.5 | [0.45, 0.63]     |
+| Percentage Change (OCINEB vs CINEB)     |        -46.3% | [-54.7%, -36.9%] |
 
 *** Checks
 **** Distance spread
@@ -586,10 +617,10 @@ ggplot(df_long, aes(x = RMSD_Init_Final)) +
   labs(title = "Check Data Density: Is Linear X Safe?",
        x = "RMSD_Init_Final (Linear Scale)") +
   theme_Publication(base_size=32)
-ggsave("../imgs/gen/R/suppl/nolog_dist.png", width = 8, height = 6)
+ggsave("imgs/gen/R/suppl/nolog_dist.png", width = 8, height = 6)
 #+end_src
 
-#+RESULTS[18ae98255ec8bd65435b57366e3f29f1aeb449c2]:
+#+RESULTS[a655dab098f2b5a721c66048436a22676ee63b02]:
 [[file:../imgs/gen/R/suppl/nolog_dist.png]]
 
 **** Posterior predictive density
@@ -597,14 +628,14 @@ ggsave("../imgs/gen/R/suppl/nolog_dist.png", width = 8, height = 6)
 # 1. Density Overlay
 # Dark line = Your real data. Light blue lines = 50 simulations from the model.
 # If the dark line sticks out, your model is missing something.
-pp_check(brms_roneb, ndraws = 50) +
+pp_check(brms_ocineb, ndraws = 50) +
   labs(title = "Posterior Predictive Check: Density",
        subtitle = "Does the model reproduce the distribution of gradient calls?") +
   theme_Publication(base_size=32)
-ggsave("../imgs/gen/R/suppl/pp_density.png", width = 8, height = 6)
+ggsave("imgs/gen/R/suppl/pp_density.png", width = 8, height = 6)
 #+end_src
 
-#+RESULTS[bc786aa8d7db4a558bdecd91d04e40c66650843b]:
+#+RESULTS[bb0d277fab0fb01b339ef571128519cd11ef42aa]:
 [[file:../imgs/gen/R/suppl/pp_density.png]]
 
 **** Posterior predictive group intervals
@@ -612,26 +643,26 @@ ggsave("../imgs/gen/R/suppl/pp_density.png", width = 8, height = 6)
 #+begin_src R :results graphics file :file ../imgs/gen/R/suppl/pp_group.png
 # 2. Intervals by Method (Grouped Check)
 # This checks if the model fits CINEB and MMF equally well, or if it fits one but fails the other.
-pp_check(brms_roneb, type = "intervals_grouped", group = "Method") +
+pp_check(brms_ocineb, type = "intervals_grouped", group = "Method") +
   labs(title = "Posterior Predictive Check: Intervals by Method",
        subtitle = "Do the observed data points (dots) fall within the predicted ranges (bars)?") +
   theme_Publication(base_size=32)
-ggsave("../imgs/gen/R/suppl/pp_group.png", width = 8, height = 6)
+ggsave("imgs/gen/R/suppl/pp_group.png", width = 8, height = 6)
 #+end_src
 
-#+RESULTS[9de2b02aebc279bbc1766c58f91ca840dde42043]:
+#+RESULTS[c66c56ab775ccf48eb1a4927018778fe63661c49]:
 [[file:../imgs/gen/R/suppl/pp_group.png]]
 
 **** Consistency check
 #+begin_src R :results graphics file :file ../imgs/gen/R/suppl/brms_shape_posterior.png
 # Extract draws specifically for the shape parameters
-shape_draws <- brms_roneb %>%
+shape_draws <- brms_ocineb %>%
   as_draws_df() %>%
   mutate(
     `Shape (CINEB)` = b_shape_Intercept,
-    `Shape (RONEB)` = b_shape_Intercept + b_shape_MethodRONEB
+    `Shape (OCINEB)` = b_shape_Intercept + b_shape_MethodOCINEB
   ) %>%
-  pivot_longer(cols = c(`Shape (CINEB)`, `Shape (RONEB)`), 
+  pivot_longer(cols = c(`Shape (CINEB)`, `Shape (OCINEB)`), 
                names_to = "Algorithm", 
                values_to = "Shape_Value")
 
@@ -640,9 +671,9 @@ p_consistency <- ggplot(shape_draws, aes(x = Shape_Value, fill = Algorithm, colo
   geom_density(alpha = 0.5, linewidth = 1.2) +
   
   scale_fill_manual(values = c("Shape (CINEB)" = ruhi_colors[["coral"]], 
-                               "Shape (RONEB)" = ruhi_colors[["teal"]])) +
+                               "Shape (OCINEB)" = ruhi_colors[["teal"]])) +
   scale_color_manual(values = c("Shape (CINEB)" = ruhi_colors[["coral"]], 
-                                "Shape (RONEB)" = ruhi_colors[["teal"]])) +
+                                "Shape (OCINEB)" = ruhi_colors[["teal"]])) +
   
   labs(
     title = "Algorithmic Consistency Analysis",
@@ -653,10 +684,10 @@ p_consistency <- ggplot(shape_draws, aes(x = Shape_Value, fill = Algorithm, colo
   theme_Publication(base_size = 32) +
   theme(legend.position = "top")
 
-ggsave("../imgs/gen/R/suppl/brms_shape_posterior.png", p_consistency, width = 8, height = 6)
+ggsave("imgs/gen/R/suppl/brms_shape_posterior.png", p_consistency, width = 8, height = 6)
 #+end_src
 
-#+RESULTS[4b3ef2c155e62a81cd89e3d84b11a8e4bad58941]:
+#+RESULTS[10e29ea2831ccfc3bf01da98ab26ac7d8305da45]:
 [[file:../imgs/gen/R/suppl/brms_shape_posterior.png]]
 
 **** LOO analysis
@@ -665,30 +696,30 @@ Now the outlier check with LOO and Pareto k, keeping in mind that below 0.5 work
 The ~reloo~ procedure takes a while, re-fits for each bad point.
 #+begin_src R :results value :colnames yes :rownames yes :post round-tbl[:colnames yes](*this*)
 # Compute LOO
-loo_result <- loo(brms_roneb, save_psis=TRUE, reloo = TRUE)
+loo_result <- loo(brms_ocineb, save_psis=TRUE, reloo = TRUE)
 loo_result$estimates
 #+end_src
 
-#+RESULTS[e93157bc4cdd77db771eb2025ec32f5a0b7cf329]:
+#+RESULTS[9201d24eed4185df7df52731980ddab2ff2b54f5]:
 |          | Estimate |   SE |
 |----------+----------+------|
-| elpd_loo |   -312.8 |  9.3 |
-| p_loo    |     24.6 |  4.0 |
-| looic    |    625.6 | 18.6 |
+| elpd_loo |   -314.6 | 10.2 |
+| p_loo    |     26.4 |  4.9 |
+| looic    |    629.2 | 20.4 |
 
 #+begin_src R :results output
 loo_result
 #+end_src
 
-#+RESULTS[3205d61cf86c69a7dea694b3c307d729a62785a3]:
+#+RESULTS[9475b45680c7ce9a7a27486b6d01f95cbf8d5e1b]:
 #+begin_example
 
 Computed from 24000 by 48 log-likelihood matrix.
 
          Estimate   SE
-elpd_loo   -314.6 10.1
+elpd_loo   -314.6 10.2
 p_loo        26.4  4.9
-looic       629.2 20.2
+looic       629.2 20.4
 ------
 MCSE of elpd_loo is 0.4.
 MCSE and ESS estimates assume MCMC draws (r_eff in [0.4, 1.0]).
@@ -708,10 +739,10 @@ ppc_loo_pit_qq(y=df_brms$pes_calls,
                yrep=yrep,
                lw=weights(loo_result$psis_object)) +
   theme_Publication(base_size=32)
-ggsave("../imgs/gen/R/suppl/ppc_loo.png", width = 8, height = 6)
+ggsave("imgs/gen/R/suppl/ppc_loo.png", width = 8, height = 6)
 #+end_src
 
-#+RESULTS[228b667f17aa388a7b511856f6d6e93966d57785]:
+#+RESULTS[a2c87b3cab8ba1e648a889e72fe3efef5c43da23]:
 [[file:../imgs/gen/R/suppl/ppc_loo.png]]
 
 Worth checking the values which have higher k diagnostic values.
@@ -731,7 +762,7 @@ Worth checking the values which have higher k diagnostic values.
 
 #+begin_src R :results graphics file :file ../imgs/gen/R/brms_pes.png
 # Generate Marginal Effects for Model v5
-cond_effects <- conditional_effects(brms_roneb, effects = "RMSD_Init_Final:Method", points = TRUE)
+cond_effects <- conditional_effects(brms_ocineb, effects = "RMSD_Init_Final:Method", points = TRUE)
 plot_data <- cond_effects$`RMSD_Init_Final:Method`
 
 p_linear_robustness <- ggplot(plot_data, aes(x = RMSD_Init_Final, y = estimate__, color = Method, fill = Method)) +
@@ -747,8 +778,8 @@ p_linear_robustness <- ggplot(plot_data, aes(x = RMSD_Init_Final, y = estimate__
 
   # 4. Scales
   scale_y_log10() + # Keep Y log! Cost is multiplicative.
-  scale_color_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
-  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "RONEB" = ruhi_colors[["teal"]])) +
+  scale_color_manual(values = c("CINEB" = ruhi_colors[["coral"]], "OCINEB" = ruhi_colors[["teal"]])) +
+  scale_fill_manual(values = c("CINEB" = ruhi_colors[["coral"]], "OCINEB" = ruhi_colors[["teal"]])) +
     
   # 5. Annotation
   labs(
@@ -760,10 +791,9 @@ p_linear_robustness <- ggplot(plot_data, aes(x = RMSD_Init_Final, y = estimate__
   theme_Publication(base_size=32)+
   theme(legend.position = "inside", legend.position.inside = c(0.1, 0.9))
 
-ggsave("../imgs/gen/R/brms_pes.png", p_linear_robustness, width = 8, height = 6)
+ggsave("imgs/gen/R/brms_pes.png", p_linear_robustness, width = 8, height = 6)
 #+end_src
 
-#+RESULTS[8359ca64b387c9018ca32d6b093250da2713d78a]:
+#+RESULTS[4807acb4000617c80ff13d476f4debbd6c8efb1e]:
 [[file:../imgs/gen/R/brms_pes.png]]
-
 

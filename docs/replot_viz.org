@@ -48,30 +48,30 @@ discussed in the manuscript.
 :header-args:bash: :session vizSH :results discard :exports none :cache yes :tangle 01_plotter.sh
 :END:
 ** 2D visualization
-*** CINEB
-# TODO(rg): take more data for the interpolation
-Since this has more points, we choose to plot it for the surface over the RONEB.
+*** MMF
+We use the real MMF surface result.
 #+begin_src bash :results discard :exports none
 python -m rgpycrumbs.cli eon plt_neb \
-            --con-file "${NEBRES}/19_hnccs/cineb/neb.con" \
-            --output-file "${OUTDIR}/hnccs_cineb_2D.png" \
+            --con-file "${NEBRES}/19_hnccs/mmf/neb.con" \
+            --output-file "${OUTDIR}/hnccs_mmf_2D.png" \
             --plot-type "landscape" \
             --rc-mode "rmsd" \
             --show-pts \
             --landscape-path "all" \
+            --surface-type "grad_imq" \
             --plot-structures "crit_points" \
             --facecolor "white" \
-            --input-dat-pattern "${NEBRES}/19_hnccs/cineb/neb_*.dat" \
-            --input-path-pattern "${NEBRES}/19_hnccs/cineb/neb_path*.con" \
+            --input-dat-pattern "${NEBRES}/19_hnccs/mmf/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/19_hnccs/mmf/neb_path*.con" \
             --figsize 5.37 5.37 \
             --dpi 300 \
             --zoom-ratio 0.25 \
             --fontsize-base 12 \
             --title "" \
-            --cache-file "${CACHERES}/19_hnccs/cineb/2dcache.parquet" \
+            --cache-file "${CACHERES}/19_hnccs/mmf/2dcache.parquet" \
             --ase-rotation 0x,0y,0z \
             --ira-kmax 14 \
-            --additional-con "${NEBRES}/19_hnccs/mmf/sp.con" "RONEB" \
+            --additional-con "${NEBRES}/19_hnccs/cineb/sp.con" "CINEB" \
             --show-legend
             # --additional-con "resources/icFSM/baker/19_hnccs/ts.xyz" "Baker" \
 #+end_src
@@ -79,7 +79,7 @@ python -m rgpycrumbs.cli eon plt_neb \
 #+RESULTS:
 
 
-file:../imgs/gen/scripted/hnccs_cineb_2D.png
+file:../imgs/gen/scripted/hnccs_mmf_2D.png
 ** 1D visualization
 *** CINEB
 #+begin_src bash :results discard :exports none
@@ -125,7 +125,7 @@ python -m rgpycrumbs.cli eon plt_neb \
             --dpi 300 \
             --zoom-ratio 0.25 \
             --fontsize-base 16 \
-            --title "RONEB" \
+            --title "OCI-NEB" \
             --cache-file "${CACHERES}/19_hnccs/mmf/1dcache.parquet" \
             --ase-rotation 0x,0y,0z
 #+end_src
@@ -156,6 +156,7 @@ python -m rgpycrumbs.cli eon plt_neb \
             --show-pts \
             --landscape-path "all" \
             --plot-structures "crit_points" \
+            --surface-type "grad_imq" \
             --facecolor "white" \
             --input-dat-pattern "${NEBRES}/20_hconh3_cation/cineb/neb_*.dat" \
             --input-path-pattern "${NEBRES}/20_hconh3_cation/cineb/neb_path*.con" \
@@ -167,7 +168,7 @@ python -m rgpycrumbs.cli eon plt_neb \
             --cache-file "${CACHERES}/20_hconh3_cation/cineb/2dcache.parquet" \
             --ase-rotation 0x,0y,0z \
             --ira-kmax 14 \
-            --additional-con "${NEBRES}/20_hconh3_cation/mmf/sp.con" "RONEB" \
+            --additional-con "${NEBRES}/20_hconh3_cation/mmf/sp.con" "OCINEB" \
             --show-legend
 #+end_src
 
@@ -203,7 +204,7 @@ python -m rgpycrumbs.cli eon plt_neb \
 
 file:../imgs/gen/scripted/cases/hconh3cat_cineb_1D_path.png
 
-*** RONEB -- Aggressive
+*** OCINEB -- Aggressive
 #+begin_src bash :results discard :exports none
 python -m rgpycrumbs.cli eon plt_neb \
             --con-file "${NEBRES}/20_hconh3_cation/mmf/neb.con" \
@@ -222,7 +223,7 @@ python -m rgpycrumbs.cli eon plt_neb \
             --draw-product 30.0 -30.0 0.1 \
             --draw-reactant 30.0 -30.0 0.1 \
             --draw-saddle -25.0 40.0 0.1 \
-            --title "RONEB -- Loose" \
+            --title "OCINEB -- Loose" \
             --cache-file "${CACHERES}/20_hconh3_cation/mmf/1dcache.parquet" \
             --ase-rotation 0x,0y,0z
 #+end_src
@@ -231,7 +232,7 @@ python -m rgpycrumbs.cli eon plt_neb \
 
 file:../imgs/gen/scripted/cases/hconh3cat_mmf_agg_1D_path.png
 
-*** RONEB -- Strict
+*** OCINEB -- Strict
 #+begin_src bash :results discard :exports none
 python -m rgpycrumbs.cli eon plt_neb \
             --con-file "${NEBRES}/20_hconh3_cation/strict/neb.con" \
@@ -250,7 +251,7 @@ python -m rgpycrumbs.cli eon plt_neb \
             --draw-product 30.0 -30.0 0.1 \
             --draw-reactant 30.0 -30.0 0.1 \
             --draw-saddle -25.0 40.0 0.1 \
-            --title "RONEB -- Strict" \
+            --title "OCINEB -- Strict" \
             --cache-file "${CACHERES}/20_hconh3_cation/strict/1dcache.parquet" \
             --ase-rotation 0x,0y,0z
 #+end_src
@@ -258,3 +259,46 @@ python -m rgpycrumbs.cli eon plt_neb \
 #+RESULTS:
 
 file:../imgs/gen/scripted/cases/hconh3cat_mmf_strict_1D_path.png
+
+* Claisen study
+:PROPERTIES:
+:header-args:bash: :session vizSH :results discard :exports none :cache yes :tangle 01_plotter.sh
+:END:
+** 2D visualization
+*** CINEB to 0.5
+# TODO(rg): take more data for the interpolation
+#+begin_src bash :results discard :exports none
+export RESDIR="${GITROOT}/case_studies/static_switchover/results"
+export CACHERES="${RESDIR}/_cache"
+export NEBRES="${RESDIR}/03_neb"
+export OUTDIR="${GITROOT}/imgs/gen/scripted/cases/"
+
+python -m rgpycrumbs.cli eon plt_neb \
+            --con-file "${NEBRES}/17_claisen/static/neb.con" \
+            --output-file "${OUTDIR}/17_claisen_static_neb_2D.png" \
+            --plot-type "landscape" \
+            --surface-type "grad_imq" \
+            --rc-mode "rmsd" \
+            --show-pts \
+            --landscape-path "all" \
+            --plot-structures "crit_points" \
+            --facecolor "white" \
+            --input-dat-pattern "${NEBRES}/17_claisen/static/neb_*.dat" \
+            --input-path-pattern "${NEBRES}/17_claisen/static/neb_path*.con" \
+            --figsize 5.37 5.37 \
+            --dpi 300 \
+            --zoom-ratio 0.20 \
+            --fontsize-base 12 \
+            --title "" \
+            --cache-file "${CACHERES}/17_claisen/static/2dcache.parquet" \
+            --ase-rotation 0x,0y,0z \
+            --ira-kmax 14 \
+            --additional-con "${RESDIR}/04_mmf/17_claisen/static/saddle.con" "Dimer" \
+            --additional-con "${GITROOT}/eonRuns/results/03_neb/17_claisen/mmf/sp.con" "OCINEB" \
+            --show-legend
+#+end_src
+
+#+RESULTS:
+
+
+file:../imgs/gen/scripted/cases/17_claisen_static_neb_2D.png
