@@ -1,0 +1,23 @@
+DIGEST 97779858d6df5c681f104065421cf7ee
+FOCI_NEB.ThresholdBounds
+R15:19 Coq.Reals.Reals <> <> lib
+R37:39 Coq.micromega.Lra <> <> lib
+prf 141:161 <> threshold_lower_bound
+R197:197 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 175:179 <> f_tol:1
+binder 181:193 <> raw_threshold:2
+R214:221 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R252:255 Coq.Reals.Rdefinitions <> ::R_scope:x_'>='_x not
+R222:225 Coq.Reals.Rbasic_fun <> Rmax def
+R243:245 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R246:250 OCI_NEB.ThresholdBounds <> f_tol:1 var
+R227:239 OCI_NEB.ThresholdBounds <> raw_threshold:2 var
+R257:259 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R260:264 OCI_NEB.ThresholdBounds <> f_tol:1 var
+R206:208 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R209:213 OCI_NEB.ThresholdBounds <> f_tol:1 var
+R291:294 Coq.Reals.Rbasic_fun <> Rmax def
+R307:313 Coq.Reals.RIneq <> Rle_dec thm
+R331:333 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R307:313 Coq.Reals.RIneq <> Rle_dec thm
+R331:333 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not

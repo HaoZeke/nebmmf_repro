@@ -1,0 +1,44 @@
+DIGEST 6b0728a2fb448cbdb5fc695e1599533f
+FOCI_NEB.PenaltyConsistency
+R15:19 Coq.Reals.Reals <> <> lib
+R37:39 Coq.micromega.Lra <> <> lib
+prf 111:139 <> derived_base_in_unit_interval
+R156:156 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 152:152 <> s:1
+R164:171 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R182:185 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R191:191 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R187:189 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R190:190 OCI_NEB.PenaltyConsistency <> s:1 var
+binder 176:176 <> b:2
+R205:208 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R201:203 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R204:204 OCI_NEB.PenaltyConsistency <> b:2 var
+R210:212 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R209:209 OCI_NEB.PenaltyConsistency <> b:2 var
+R160:162 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R163:163 OCI_NEB.PenaltyConsistency <> s:1 var
+R256:259 Coq.Reals.Rdefinitions <> Rdiv def
+R268:284 Coq.Reals.RIneq <> Rmult_lt_0_compat thm
+R268:284 Coq.Reals.RIneq <> Rmult_lt_0_compat thm
+R298:313 Coq.Reals.RIneq <> Rinv_0_lt_compat thm
+R298:313 Coq.Reals.RIneq <> Rinv_0_lt_compat thm
+R358:360 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R331:344 Coq.Reals.RIneq <> Rmult_lt_reg_r thm
+R358:360 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R331:344 Coq.Reals.RIneq <> Rmult_lt_reg_r thm
+R381:384 Coq.Reals.Rdefinitions <> Rdiv def
+R395:403 Coq.Reals.Raxioms <> Rmult_1_l thm
+R395:403 Coq.Reals.Raxioms <> Rmult_1_l thm
+R395:403 Coq.Reals.Raxioms <> Rmult_1_l thm
+R418:423 Coq.Reals.Raxioms <> Rinv_l thm
+R418:423 Coq.Reals.Raxioms <> Rinv_l thm
+R418:423 Coq.Reals.Raxioms <> Rinv_l thm
+R418:423 Coq.Reals.Raxioms <> Rinv_l thm
+prf 549:566 <> default_base_value
+R585:587 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R573:576 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R584:584 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R578:580 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R582:582 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R589:589 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not

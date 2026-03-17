@@ -2,6 +2,31 @@ common:
   number_of_intermediate_imgs: 8
 systems:
 
+  # ##################
+  # # mlFSM examples #
+  # ##################
+
+  # formaldehyde_01:
+  #   reactant: resources/mlFSM/01_formaldehyde/initial/ipath_000.con
+  #   product: resources/mlFSM/01_formaldehyde/initial/ipath_001.con
+  #   saddle: resources/mlFSM/01_formaldehyde/ts.xyz
+  # isocyanate_water_02:
+  #   reactant: resources/mlFSM/02_isocyanate_water/initial/ipath_000.con
+  #   product: resources/mlFSM/02_isocyanate_water/initial/ipath_001.con
+  #   saddle: resources/mlFSM/02_isocyanate_water/ts.xyz
+  # ethanal_03:
+  #   reactant: resources/mlFSM/03_ethanal/initial/ipath_000.con
+  #   product: resources/mlFSM/03_ethanal/initial/ipath_001.con
+  #   saddle: resources/mlFSM/03_ethanal/ts.xyz
+  # ethane_dehydrogenation_04:
+  #   reactant: resources/mlFSM/04_ethane_dehydrogenation/initial/ipath_000.con
+  #   product: resources/mlFSM/04_ethane_dehydrogenation/initial/ipath_001.con
+  #   saddle: resources/mlFSM/04_ethane_dehydrogenation/ts.xyz
+  # bicyclobutane_05:
+  #   reactant: resources/mlFSM/05_bicyclobutane/initial/ipath_000.con
+  #   product: resources/mlFSM/05_bicyclobutane/initial/ipath_001.con
+  #   saddle: resources/mlFSM/05_bicyclobutane/ts.xyz
+
   ###############
   # icFSM Baker #
   ###############
@@ -127,9 +152,624 @@ systems:
     saddle: resources/icFSM/baker/25_hcnh2/ts.xyz
     use_ira: False
 
+  # #################
+  # # icFSM Sharada #
+  # #################
+
+  # 01_formaldehyde:
+  #   reactant: resources/icFSM/sharada/01_formaldehyde/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/01_formaldehyde/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/01_formaldehyde/ts.xyz
+  # 02_silane:
+  #   reactant: resources/icFSM/sharada/02_silane/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/02_silane/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/02_silane/ts.xyz
+  # 03_ethanal:
+  #   reactant: resources/icFSM/sharada/03_ethanal/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/03_ethanal/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/03_ethanal/ts.xyz
+  # 04_ethane_dehydrogenation:
+  #   reactant: resources/icFSM/sharada/04_ethane_dehydrogenation/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/04_ethane_dehydrogenation/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/04_ethane_dehydrogenation/ts.xyz
+  # 05_bicyclobutane:
+  #   reactant: resources/icFSM/sharada/05_bicyclobutane/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/05_bicyclobutane/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/05_bicyclobutane/ts.xyz
+  # 06_diels_alder:
+  #   reactant: resources/icFSM/sharada/06_diels_alder/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/06_diels_alder/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/06_diels_alder/ts.xyz
+  # 07_hexadiene:
+  #   reactant: resources/icFSM/sharada/07_hexadiene/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/07_hexadiene/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/07_hexadiene/ts.xyz
+  # 08_alanine:
+  #   reactant: resources/icFSM/sharada/08_alanine/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/08_alanine/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/08_alanine/ts.xyz
+  # 09_icr:
+  #   reactant: resources/icFSM/sharada/09_icr/initial/ipath_000.con
+  #   product: resources/icFSM/sharada/09_icr/initial/ipath_001.con
+  #   saddle: resources/icFSM/sharada/09_icr/ts.xyz
+
+  # ##################
+  # # icFSM Birkholz #
+  # ##################
+
+  # 01_c2no2:
+  #   reactant: resources/icFSM/birkholz/01_c2no2/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/01_c2no2/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/01_c2no2/ts.xyz
+  # 02_c5ht:
+  #   reactant: resources/icFSM/birkholz/02_c5ht/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/02_c5ht/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/02_c5ht/ts.xyz
+  # 03_hcn:
+  #   reactant: resources/icFSM/birkholz/03_hcn/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/03_hcn/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/03_hcn/ts.xyz
+  # 04_cope:
+  #   reactant: resources/icFSM/birkholz/04_cope/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/04_cope/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/04_cope/ts.xyz
+  # 05_cpht:
+  #   reactant: resources/icFSM/birkholz/05_cpht/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/05_cpht/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/05_cpht/ts.xyz
+  # 06_cycbut:
+  #   reactant: resources/icFSM/birkholz/06_cycbut/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/06_cycbut/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/06_cycbut/ts.xyz
+  # 07_dacp2:
+  #   reactant: resources/icFSM/birkholz/07_dacp2/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/07_dacp2/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/07_dacp2/ts.xyz
+  # 08_dacp_eth:
+  #   reactant: resources/icFSM/birkholz/08_dacp_eth/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/08_dacp_eth/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/08_dacp_eth/ts.xyz
+  # 09_dfcp:
+  #   reactant: resources/icFSM/birkholz/09_dfcp/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/09_dfcp/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/09_dfcp/ts.xyz
+  # 10_ene:
+  #   reactant: resources/icFSM/birkholz/10_ene/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/10_ene/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/10_ene/ts.xyz
+  # 11_grignard:
+  #   reactant: resources/icFSM/birkholz/11_grignard/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/11_grignard/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/11_grignard/ts.xyz
+  # 12_h2co:
+  #   reactant: resources/icFSM/birkholz/12_h2co/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/12_h2co/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/12_h2co/ts.xyz
+  # 13_hf_eth:
+  #   reactant: resources/icFSM/birkholz/13_hf_eth/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/13_hf_eth/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/13_hf_eth/ts.xyz
+  # 14_hydro:
+  #   reactant: resources/icFSM/birkholz/14_hydro/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/14_hydro/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/14_hydro/ts.xyz
+  # 15_meoh:
+  #   reactant: resources/icFSM/birkholz/15_meoh/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/15_meoh/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/15_meoh/ts.xyz
+  # 16_oxirane:
+  #   reactant: resources/icFSM/birkholz/16_oxirane/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/16_oxirane/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/16_oxirane/ts.xyz
+  # 17_oxycope:
+  #   reactant: resources/icFSM/birkholz/17_oxycope/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/17_oxycope/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/17_oxycope/ts.xyz
+  # 18_silane:
+  #   reactant: resources/icFSM/birkholz/18_silane/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/18_silane/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/18_silane/ts.xyz
+  # 19_sn2:
+  #   reactant: resources/icFSM/birkholz/19_sn2/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/19_sn2/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/19_sn2/ts.xyz
+  # 20_sulfolene:
+  #   reactant: resources/icFSM/birkholz/20_sulfolene/initial/ipath_000.con
+  #   product: resources/icFSM/birkholz/20_sulfolene/initial/ipath_001.con
+  #   saddle: resources/icFSM/birkholz/20_sulfolene/ts.xyz
+
+  # #########
+  # # ewNEB #
+  # #########
+
+  # system1:
+  #   reactant: resources/ewNEB/configurations/system1-react.xyz
+  #   product: resources/ewNEB/configurations/system1-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system1-sp.xyz
+  # system2:
+  #   reactant: resources/ewNEB/configurations/system2-react.xyz
+  #   product: resources/ewNEB/configurations/system2-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system2-sp.xyz
+  # system3:
+  #   saddle: resources/ewNEB/configurations/system3-sp.xyz
+  #   product: resources/ewNEB/configurations/system3-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system3-react.xyz
+  # system4:
+  #   saddle: resources/ewNEB/configurations/system4-sp.xyz
+  #   product: resources/ewNEB/configurations/system4-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system4-react.xyz
+  # system5:
+  #   reactant: resources/ewNEB/configurations/system5-react.xyz
+  #   saddle: resources/ewNEB/configurations/system5-sp.xyz
+  #   product: resources/ewNEB/configurations/system5-prod.xyz
+  # system6:
+  #   product: resources/ewNEB/configurations/system6-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system6-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system6-react.xyz
+  # system7:
+  #   reactant: resources/ewNEB/configurations/system7-react.xyz
+  #   saddle: resources/ewNEB/configurations/system7-sp.xyz
+  #   product: resources/ewNEB/configurations/system7-prod.xyz
+  # system8:
+  #   saddle: resources/ewNEB/configurations/system8-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system8-react.xyz
+  #   product: resources/ewNEB/configurations/system8-prod.xyz
+  # system9:
+  #   product: resources/ewNEB/configurations/system9-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system9-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system9-react.xyz
+  # system10:
+  #   product: resources/ewNEB/configurations/system10-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system10-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system10-react.xyz
+  # system11:
+  #   product: resources/ewNEB/configurations/system11-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system11-react.xyz
+  #   saddle: resources/ewNEB/configurations/system11-sp.xyz
+  # system12:
+  #   saddle: resources/ewNEB/configurations/system12-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system12-react.xyz
+  #   product: resources/ewNEB/configurations/system12-prod.xyz
+  # system13:
+  #   reactant: resources/ewNEB/configurations/system13-react.xyz
+  #   product: resources/ewNEB/configurations/system13-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system13-sp.xyz
+  # system14:
+  #   saddle: resources/ewNEB/configurations/system14-sp.xyz
+  #   product: resources/ewNEB/configurations/system14-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system14-react.xyz
+  # system15:
+  #   product: resources/ewNEB/configurations/system15-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system15-react.xyz
+  #   saddle: resources/ewNEB/configurations/system15-sp.xyz
+  # system16:
+  #   reactant: resources/ewNEB/configurations/system16-react.xyz
+  #   saddle: resources/ewNEB/configurations/system16-sp.xyz
+  #   product: resources/ewNEB/configurations/system16-prod.xyz
+  # system17:
+  #   product: resources/ewNEB/configurations/system17-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system17-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system17-react.xyz
+  # system18:
+  #   reactant: resources/ewNEB/configurations/system18-react.xyz
+  #   product: resources/ewNEB/configurations/system18-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system18-sp.xyz
+  # system19:
+  #   reactant: resources/ewNEB/configurations/system19-react.xyz
+  #   product: resources/ewNEB/configurations/system19-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system19-sp.xyz
+  # system20:
+  #   reactant: resources/ewNEB/configurations/system20-react.xyz
+  #   saddle: resources/ewNEB/configurations/system20-sp.xyz
+  #   product: resources/ewNEB/configurations/system20-prod.xyz
+  # system21:
+  #   product: resources/ewNEB/configurations/system21-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system21-react.xyz
+  #   saddle: resources/ewNEB/configurations/system21-sp.xyz
+  # system22:
+  #   saddle: resources/ewNEB/configurations/system22-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system22-react.xyz
+  #   product: resources/ewNEB/configurations/system22-prod.xyz
+  # system23:
+  #   saddle: resources/ewNEB/configurations/system23-sp.xyz
+  #   product: resources/ewNEB/configurations/system23-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system23-react.xyz
+  # system24:
+  #   saddle: resources/ewNEB/configurations/system24-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system24-react.xyz
+  #   product: resources/ewNEB/configurations/system24-prod.xyz
+  # system25:
+  #   saddle: resources/ewNEB/configurations/system25-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system25-react.xyz
+  #   product: resources/ewNEB/configurations/system25-prod.xyz
+  # system26:
+  #   product: resources/ewNEB/configurations/system26-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system26-react.xyz
+  #   saddle: resources/ewNEB/configurations/system26-sp.xyz
+  # system27:
+  #   product: resources/ewNEB/configurations/system27-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system27-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system27-react.xyz
+  # system28:
+  #   reactant: resources/ewNEB/configurations/system28-react.xyz
+  #   product: resources/ewNEB/configurations/system28-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system28-sp.xyz
+  # system29:
+  #   reactant: resources/ewNEB/configurations/system29-react.xyz
+  #   product: resources/ewNEB/configurations/system29-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system29-sp.xyz
+  # system30:
+  #   product: resources/ewNEB/configurations/system30-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system30-react.xyz
+  #   saddle: resources/ewNEB/configurations/system30-sp.xyz
+  # system31:
+  #   product: resources/ewNEB/configurations/system31-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system31-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system31-react.xyz
+  # system32:
+  #   saddle: resources/ewNEB/configurations/system32-sp.xyz
+  #   product: resources/ewNEB/configurations/system32-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system32-react.xyz
+  # system33:
+  #   reactant: resources/ewNEB/configurations/system33-react.xyz
+  #   product: resources/ewNEB/configurations/system33-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system33-sp.xyz
+  # system34:
+  #   product: resources/ewNEB/configurations/system34-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system34-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system34-react.xyz
+  # system35:
+  #   reactant: resources/ewNEB/configurations/system35-react.xyz
+  #   product: resources/ewNEB/configurations/system35-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system35-sp.xyz
+  # system36:
+  #   reactant: resources/ewNEB/configurations/system36-react.xyz
+  #   product: resources/ewNEB/configurations/system36-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system36-sp.xyz
+  # system37:
+  #   product: resources/ewNEB/configurations/system37-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system37-react.xyz
+  #   saddle: resources/ewNEB/configurations/system37-sp.xyz
+  # system38:
+  #   reactant: resources/ewNEB/configurations/system38-react.xyz
+  #   product: resources/ewNEB/configurations/system38-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system38-sp.xyz
+  # system39:
+  #   reactant: resources/ewNEB/configurations/system39-react.xyz
+  #   product: resources/ewNEB/configurations/system39-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system39-sp.xyz
+  # system40:
+  #   product: resources/ewNEB/configurations/system40-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system40-react.xyz
+  #   saddle: resources/ewNEB/configurations/system40-sp.xyz
+  # system41:
+  #   reactant: resources/ewNEB/configurations/system41-react.xyz
+  #   product: resources/ewNEB/configurations/system41-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system41-sp.xyz
+  # system42:
+  #   reactant: resources/ewNEB/configurations/system42-react.xyz
+  #   product: resources/ewNEB/configurations/system42-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system42-sp.xyz
+  # system43:
+  #   product: resources/ewNEB/configurations/system43-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system43-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system43-react.xyz
+  # system44:
+  #   reactant: resources/ewNEB/configurations/system44-react.xyz
+  #   product: resources/ewNEB/configurations/system44-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system44-sp.xyz
+  # system45:
+  #   reactant: resources/ewNEB/configurations/system45-react.xyz
+  #   saddle: resources/ewNEB/configurations/system45-sp.xyz
+  #   product: resources/ewNEB/configurations/system45-prod.xyz
+  # system46:
+  #   reactant: resources/ewNEB/configurations/system46-react.xyz
+  #   saddle: resources/ewNEB/configurations/system46-sp.xyz
+  #   product: resources/ewNEB/configurations/system46-prod.xyz
+  # system47:
+  #   product: resources/ewNEB/configurations/system47-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system47-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system47-react.xyz
+  # system48:
+  #   reactant: resources/ewNEB/configurations/system48-react.xyz
+  #   product: resources/ewNEB/configurations/system48-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system48-sp.xyz
+  # system49:
+  #   reactant: resources/ewNEB/configurations/system49-react.xyz
+  #   product: resources/ewNEB/configurations/system49-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system49-sp.xyz
+  # system50:
+  #   reactant: resources/ewNEB/configurations/system50-react.xyz
+  #   saddle: resources/ewNEB/configurations/system50-sp.xyz
+  #   product: resources/ewNEB/configurations/system50-prod.xyz
+  # system51:
+  #   saddle: resources/ewNEB/configurations/system51-sp.xyz
+  #   product: resources/ewNEB/configurations/system51-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system51-react.xyz
+  # system52:
+  #   saddle: resources/ewNEB/configurations/system52-sp.xyz
+  #   product: resources/ewNEB/configurations/system52-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system52-react.xyz
+  # system53:
+  #   saddle: resources/ewNEB/configurations/system53-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system53-react.xyz
+  #   product: resources/ewNEB/configurations/system53-prod.xyz
+  # system54:
+  #   product: resources/ewNEB/configurations/system54-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system54-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system54-react.xyz
+  # system55:
+  #   reactant: resources/ewNEB/configurations/system55-react.xyz
+  #   product: resources/ewNEB/configurations/system55-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system55-sp.xyz
+  # system56:
+  #   product: resources/ewNEB/configurations/system56-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system56-react.xyz
+  #   saddle: resources/ewNEB/configurations/system56-sp.xyz
+  # system57:
+  #   reactant: resources/ewNEB/configurations/system57-react.xyz
+  #   saddle: resources/ewNEB/configurations/system57-sp.xyz
+  #   product: resources/ewNEB/configurations/system57-prod.xyz
+  # system58:
+  #   saddle: resources/ewNEB/configurations/system58-sp.xyz
+  #   product: resources/ewNEB/configurations/system58-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system58-react.xyz
+  # system59:
+  #   product: resources/ewNEB/configurations/system59-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system59-react.xyz
+  #   saddle: resources/ewNEB/configurations/system59-sp.xyz
+  # system60:
+  #   product: resources/ewNEB/configurations/system60-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system60-react.xyz
+  #   saddle: resources/ewNEB/configurations/system60-sp.xyz
+  # system61:
+  #   reactant: resources/ewNEB/configurations/system61-react.xyz
+  #   product: resources/ewNEB/configurations/system61-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system61-sp.xyz
+  # system62:
+  #   saddle: resources/ewNEB/configurations/system62-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system62-react.xyz
+  #   product: resources/ewNEB/configurations/system62-prod.xyz
+  # system63:
+  #   product: resources/ewNEB/configurations/system63-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system63-react.xyz
+  #   saddle: resources/ewNEB/configurations/system63-sp.xyz
+  # system64:
+  #   saddle: resources/ewNEB/configurations/system64-sp.xyz
+  #   product: resources/ewNEB/configurations/system64-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system64-react.xyz
+  # system65:
+  #   reactant: resources/ewNEB/configurations/system65-react.xyz
+  #   product: resources/ewNEB/configurations/system65-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system65-sp.xyz
+  # system66:
+  #   product: resources/ewNEB/configurations/system66-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system66-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system66-react.xyz
+  # system67:
+  #   product: resources/ewNEB/configurations/system67-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system67-react.xyz
+  #   saddle: resources/ewNEB/configurations/system67-sp.xyz
+  # system68:
+  #   reactant: resources/ewNEB/configurations/system68-react.xyz
+  #   saddle: resources/ewNEB/configurations/system68-sp.xyz
+  #   product: resources/ewNEB/configurations/system68-prod.xyz
+  # system69:
+  #   product: resources/ewNEB/configurations/system69-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system69-react.xyz
+  #   saddle: resources/ewNEB/configurations/system69-sp.xyz
+  # system70:
+  #   reactant: resources/ewNEB/configurations/system70-react.xyz
+  #   product: resources/ewNEB/configurations/system70-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system70-sp.xyz
+  # system71:
+  #   product: resources/ewNEB/configurations/system71-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system71-react.xyz
+  #   saddle: resources/ewNEB/configurations/system71-sp.xyz
+  # system72:
+  #   reactant: resources/ewNEB/configurations/system72-react.xyz
+  #   saddle: resources/ewNEB/configurations/system72-sp.xyz
+  #   product: resources/ewNEB/configurations/system72-prod.xyz
+  # system73:
+  #   saddle: resources/ewNEB/configurations/system73-sp.xyz
+  #   product: resources/ewNEB/configurations/system73-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system73-react.xyz
+  # system74:
+  #   saddle: resources/ewNEB/configurations/system74-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system74-react.xyz
+  #   product: resources/ewNEB/configurations/system74-prod.xyz
+  # system75:
+  #   reactant: resources/ewNEB/configurations/system75-react.xyz
+  #   product: resources/ewNEB/configurations/system75-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system75-sp.xyz
+  # system76:
+  #   product: resources/ewNEB/configurations/system76-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system76-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system76-react.xyz
+  # system77:
+  #   reactant: resources/ewNEB/configurations/system77-react.xyz
+  #   saddle: resources/ewNEB/configurations/system77-sp.xyz
+  #   product: resources/ewNEB/configurations/system77-prod.xyz
+  # system78:
+  #   saddle: resources/ewNEB/configurations/system78-sp.xyz
+  #   product: resources/ewNEB/configurations/system78-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system78-react.xyz
+  # system79:
+  #   product: resources/ewNEB/configurations/system79-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system79-react.xyz
+  #   saddle: resources/ewNEB/configurations/system79-sp.xyz
+  # system80:
+  #   reactant: resources/ewNEB/configurations/system80-react.xyz
+  #   product: resources/ewNEB/configurations/system80-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system80-sp.xyz
+  # system81:
+  #   saddle: resources/ewNEB/configurations/system81-sp.xyz
+  #   product: resources/ewNEB/configurations/system81-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system81-react.xyz
+  # system82:
+  #   reactant: resources/ewNEB/configurations/system82-react.xyz
+  #   saddle: resources/ewNEB/configurations/system82-sp.xyz
+  #   product: resources/ewNEB/configurations/system82-prod.xyz
+  # system83:
+  #   saddle: resources/ewNEB/configurations/system83-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system83-react.xyz
+  #   product: resources/ewNEB/configurations/system83-prod.xyz
+  # system84:
+  #   reactant: resources/ewNEB/configurations/system84-react.xyz
+  #   product: resources/ewNEB/configurations/system84-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system84-sp.xyz
+  # system85:
+  #   product: resources/ewNEB/configurations/system85-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system85-react.xyz
+  #   saddle: resources/ewNEB/configurations/system85-sp.xyz
+  # system86:
+  #   reactant: resources/ewNEB/configurations/system86-react.xyz
+  #   product: resources/ewNEB/configurations/system86-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system86-sp.xyz
+  # system87:
+  #   saddle: resources/ewNEB/configurations/system87-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system87-react.xyz
+  #   product: resources/ewNEB/configurations/system87-prod.xyz
+  # system88:
+  #   saddle: resources/ewNEB/configurations/system88-sp.xyz
+  #   product: resources/ewNEB/configurations/system88-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system88-react.xyz
+  # system89:
+  #   saddle: resources/ewNEB/configurations/system89-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system89-react.xyz
+  #   product: resources/ewNEB/configurations/system89-prod.xyz
+  # system90:
+  #   reactant: resources/ewNEB/configurations/system90-react.xyz
+  #   saddle: resources/ewNEB/configurations/system90-sp.xyz
+  #   product: resources/ewNEB/configurations/system90-prod.xyz
+  # system91:
+  #   saddle: resources/ewNEB/configurations/system91-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system91-react.xyz
+  #   product: resources/ewNEB/configurations/system91-prod.xyz
+  # system92:
+  #   reactant: resources/ewNEB/configurations/system92-react.xyz
+  #   saddle: resources/ewNEB/configurations/system92-sp.xyz
+  #   product: resources/ewNEB/configurations/system92-prod.xyz
+  # system93:
+  #   reactant: resources/ewNEB/configurations/system93-react.xyz
+  #   saddle: resources/ewNEB/configurations/system93-sp.xyz
+  #   product: resources/ewNEB/configurations/system93-prod.xyz
+  # system94:
+  #   saddle: resources/ewNEB/configurations/system94-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system94-react.xyz
+  #   product: resources/ewNEB/configurations/system94-prod.xyz
+  # system95:
+  #   product: resources/ewNEB/configurations/system95-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system95-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system95-react.xyz
+  # system96:
+  #   saddle: resources/ewNEB/configurations/system96-sp.xyz
+  #   product: resources/ewNEB/configurations/system96-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system96-react.xyz
+  # system97:
+  #   saddle: resources/ewNEB/configurations/system97-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system97-react.xyz
+  #   product: resources/ewNEB/configurations/system97-prod.xyz
+  # system98:
+  #   saddle: resources/ewNEB/configurations/system98-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system98-react.xyz
+  #   product: resources/ewNEB/configurations/system98-prod.xyz
+  # system99:
+  #   saddle: resources/ewNEB/configurations/system99-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system99-react.xyz
+  #   product: resources/ewNEB/configurations/system99-prod.xyz
+  # system100:
+  #   reactant: resources/ewNEB/configurations/system100-react.xyz
+  #   saddle: resources/ewNEB/configurations/system100-sp.xyz
+  #   product: resources/ewNEB/configurations/system100-prod.xyz
+  # system101:
+  #   product: resources/ewNEB/configurations/system101-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system101-react.xyz
+  #   saddle: resources/ewNEB/configurations/system101-sp.xyz
+  # system102:
+  #   saddle: resources/ewNEB/configurations/system102-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system102-react.xyz
+  #   product: resources/ewNEB/configurations/system102-prod.xyz
+  # system103:
+  #   saddle: resources/ewNEB/configurations/system103-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system103-react.xyz
+  #   product: resources/ewNEB/configurations/system103-prod.xyz
+  # system104:
+  #   saddle: resources/ewNEB/configurations/system104-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system104-react.xyz
+  #   product: resources/ewNEB/configurations/system104-prod.xyz
+  # system105:
+  #   reactant: resources/ewNEB/configurations/system105-react.xyz
+  #   saddle: resources/ewNEB/configurations/system105-sp.xyz
+  #   product: resources/ewNEB/configurations/system105-prod.xyz
+  # system106:
+  #   reactant: resources/ewNEB/configurations/system106-react.xyz
+  #   saddle: resources/ewNEB/configurations/system106-sp.xyz
+  #   product: resources/ewNEB/configurations/system106-prod.xyz
+  # system107:
+  #   saddle: resources/ewNEB/configurations/system107-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system107-react.xyz
+  #   product: resources/ewNEB/configurations/system107-prod.xyz
+  # system108:
+  #   saddle: resources/ewNEB/configurations/system108-sp.xyz
+  #   product: resources/ewNEB/configurations/system108-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system108-react.xyz
+  # system109:
+  #   reactant: resources/ewNEB/configurations/system109-react.xyz
+  #   saddle: resources/ewNEB/configurations/system109-sp.xyz
+  #   product: resources/ewNEB/configurations/system109-prod.xyz
+  # system110:
+  #   saddle: resources/ewNEB/configurations/system110-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system110-react.xyz
+  #   product: resources/ewNEB/configurations/system110-prod.xyz
+  # system111:
+  #   saddle: resources/ewNEB/configurations/system111-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system111-react.xyz
+  #   product: resources/ewNEB/configurations/system111-prod.xyz
+  # system112:
+  #   saddle: resources/ewNEB/configurations/system112-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system112-react.xyz
+  #   product: resources/ewNEB/configurations/system112-prod.xyz
+  # system113:
+  #   reactant: resources/ewNEB/configurations/system113-react.xyz
+  #   saddle: resources/ewNEB/configurations/system113-sp.xyz
+  #   product: resources/ewNEB/configurations/system113-prod.xyz
+  # system114:
+  #   product: resources/ewNEB/configurations/system114-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system114-react.xyz
+  #   saddle: resources/ewNEB/configurations/system114-sp.xyz
+  # system115:
+  #   product: resources/ewNEB/configurations/system115-prod.xyz
+  #   reactant: resources/ewNEB/configurations/system115-react.xyz
+  #   saddle: resources/ewNEB/configurations/system115-sp.xyz
+  # system116:
+  #   product: resources/ewNEB/configurations/system116-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system116-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system116-react.xyz
+  # system117:
+  #   saddle: resources/ewNEB/configurations/system117-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system117-react.xyz
+  #   product: resources/ewNEB/configurations/system117-prod.xyz
+  # system118:
+  #   reactant: resources/ewNEB/configurations/system118-react.xyz
+  #   product: resources/ewNEB/configurations/system118-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system118-sp.xyz
+  # system119:
+  #   reactant: resources/ewNEB/configurations/system119-react.xyz
+  #   product: resources/ewNEB/configurations/system119-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system119-sp.xyz
+  # system120:
+  #   product: resources/ewNEB/configurations/system120-prod.xyz
+  #   saddle: resources/ewNEB/configurations/system120-sp.xyz
+  #   reactant: resources/ewNEB/configurations/system120-react.xyz
+  # system121:
+  #   reactant: resources/ewNEB/configurations/system121-react.xyz
+  #   saddle: resources/ewNEB/configurations/system121-sp.xyz
+  #   product: resources/ewNEB/configurations/system121-prod.xyz
 methods:
-  cineb: "resources/config_nebci.ini"
-  mmf: "resources/config_roneb.ini"
+  - cineb
+  - mmf
+  # - strict
 paths:
   models: "results/00_models"
   endpoints: "results/01_endpoints"
@@ -138,9 +778,10 @@ paths:
   plots: "results/04_plots"
   cache: "results/_cache"
 eon:
-  config: "resources/config.ini"
+  device: "cuda"
 pet_mad:
-  version: "v1.1.0"
+  version: "v1.5.0"
+  type: "pet-mad-s"
 plotting:
   plot_structures: "crit_points"
   facecolor: "white"

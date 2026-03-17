@@ -1,0 +1,160 @@
+DIGEST 0cd7a173898bb89efa528baa98847b3c
+FOCI_NEB.SaddleStability
+R15:19 Coq.Reals.Reals <> <> lib
+R37:39 Coq.micromega.Lra <> <> lib
+R57:61 Coq.micromega.Psatz <> <> lib
+prf 1128:1145 <> eigenvalue_flip_1d
+R1165:1165 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 1158:1159 <> mu:1
+binder 1161:1161 <> d:2
+R1181:1311 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1343:1345 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1312:1312 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R1319:1322 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R1315:1317 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1313:1314 OCI_NEB.SaddleStability <> mu:1 var
+R1318:1318 OCI_NEB.SaddleStability <> d:2 var
+R1339:1341 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1324:1327 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1338:1338 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1334:1336 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1330:1332 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1328:1329 OCI_NEB.SaddleStability <> mu:1 var
+R1333:1333 OCI_NEB.SaddleStability <> d:2 var
+R1337:1337 OCI_NEB.SaddleStability <> d:2 var
+R1342:1342 OCI_NEB.SaddleStability <> d:2 var
+R1346:1347 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R1354:1354 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R1350:1352 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1348:1349 OCI_NEB.SaddleStability <> mu:1 var
+R1353:1353 OCI_NEB.SaddleStability <> d:2 var
+R1177:1179 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1173:1175 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1172:1172 OCI_NEB.SaddleStability <> d:2 var
+R1176:1176 OCI_NEB.SaddleStability <> d:2 var
+R1510:1512 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1506:1508 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1502:1504 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1515:1518 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1524:1524 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1520:1522 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1510:1512 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R1506:1508 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1502:1504 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1515:1518 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1524:1524 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1520:1522 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+prf 1701:1723 <> unstable_becomes_stable
+R1741:1741 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 1736:1737 <> mu:3
+R1754:1757 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1761:1763 Coq.Reals.Rdefinitions <> ::R_scope:x_'>'_x not
+R1758:1758 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R1759:1760 OCI_NEB.SaddleStability <> mu:3 var
+R1750:1752 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1748:1749 OCI_NEB.SaddleStability <> mu:3 var
+prf 2171:2204 <> all_effective_eigenvalues_positive
+R2229:2229 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 2217:2220 <> mu_1:4
+binder 2222:2225 <> mu_2:5
+R2244:2279 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2288:2321 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2331:2334 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R2323:2325 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2326:2326 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R2327:2330 OCI_NEB.SaddleStability <> mu_1:4 var
+R2336:2338 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2339:2342 OCI_NEB.SaddleStability <> mu_2:5 var
+R2281:2283 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2284:2287 OCI_NEB.SaddleStability <> mu_2:5 var
+R2240:2242 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2236:2239 OCI_NEB.SaddleStability <> mu_1:4 var
+prf 2565:2589 <> convergence_rate_positive
+R2614:2614 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 2602:2605 <> mu_1:6
+binder 2607:2610 <> mu_2:7
+R2629:2632 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2641:2648 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2667:2670 Coq.Reals.Rbasic_fun <> Rmin def
+R2680:2683 OCI_NEB.SaddleStability <> mu_2:7 var
+R2673:2673 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R2674:2677 OCI_NEB.SaddleStability <> mu_1:6 var
+binder 2653:2662 <> lambda_min:8
+R2693:2695 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2696:2705 OCI_NEB.SaddleStability <> lambda_min:8 var
+R2634:2636 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2637:2640 OCI_NEB.SaddleStability <> mu_2:7 var
+R2625:2627 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2621:2624 OCI_NEB.SaddleStability <> mu_1:6 var
+R2757:2760 Coq.Reals.Rbasic_fun <> Rmin def
+R2773:2779 Coq.Reals.RIneq <> Rle_dec thm
+R2782:2782 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R2773:2779 Coq.Reals.RIneq <> Rle_dec thm
+R2782:2782 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+prf 3507:3540 <> perpendicular_eigenvalue_unchanged
+R3562:3562 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 3553:3554 <> mu:9
+binder 3556:3556 <> v:10
+binder 3558:3558 <> d:11
+R3578:3648 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R3680:3682 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R3649:3649 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R3656:3659 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R3652:3654 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3650:3651 OCI_NEB.SaddleStability <> mu:9 var
+R3655:3655 OCI_NEB.SaddleStability <> v:10 var
+R3676:3678 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3661:3664 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3675:3675 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3671:3673 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3667:3669 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3665:3666 OCI_NEB.SaddleStability <> mu:9 var
+R3670:3670 OCI_NEB.SaddleStability <> v:10 var
+R3674:3674 OCI_NEB.SaddleStability <> d:11 var
+R3679:3679 OCI_NEB.SaddleStability <> d:11 var
+R3685:3687 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3683:3684 OCI_NEB.SaddleStability <> mu:9 var
+R3688:3688 OCI_NEB.SaddleStability <> v:10 var
+R3574:3576 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R3570:3572 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3569:3569 OCI_NEB.SaddleStability <> v:10 var
+R3573:3573 OCI_NEB.SaddleStability <> d:11 var
+R3744:3746 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R3740:3742 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3736:3738 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3749:3752 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3758:3758 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3754:3756 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3744:3746 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R3740:3742 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3736:3738 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3749:3752 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3758:3758 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3754:3756 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+prf 4263:4286 <> saddle_stability_summary
+R4311:4311 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 4299:4302 <> mu_1:12
+binder 4304:4307 <> mu_2:13
+R4326:4329 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R4338:4400 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R4410:4417 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R4402:4404 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R4405:4405 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R4406:4409 OCI_NEB.SaddleStability <> mu_1:12 var
+R4426:4467 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R4419:4421 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R4422:4425 OCI_NEB.SaddleStability <> mu_2:13 var
+R4469:4471 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R4472:4475 Coq.Reals.Rbasic_fun <> Rmin def
+R4485:4488 OCI_NEB.SaddleStability <> mu_2:13 var
+R4478:4478 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R4479:4482 OCI_NEB.SaddleStability <> mu_1:12 var
+R4331:4333 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R4334:4337 OCI_NEB.SaddleStability <> mu_2:13 var
+R4322:4324 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R4318:4321 OCI_NEB.SaddleStability <> mu_1:12 var
+R4558:4561 Coq.Reals.Rbasic_fun <> Rmin def
+R4574:4580 Coq.Reals.RIneq <> Rle_dec thm
+R4583:4583 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not
+R4574:4580 Coq.Reals.RIneq <> Rle_dec thm
+R4583:4583 Coq.Reals.Rdefinitions <> ::R_scope:'-'_x not

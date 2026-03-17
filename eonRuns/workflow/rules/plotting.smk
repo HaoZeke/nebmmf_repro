@@ -43,7 +43,7 @@ rule plot_neb_1d_path:
     shell:
         """
         mkdir -p {params._cache} &&
-        python -m rgpycrumbs.cli eon plt_neb \
+        python -m rgpycrumbs.cli eon plt-neb \
             --con-file {input.con} \
             --output-file {output.plot} \
             --plot-type "profile" \
@@ -92,7 +92,7 @@ rule plot_neb_1d_index:
     shell:
         """
         mkdir -p {params._cache} &&
-        python -m rgpycrumbs.cli eon plt_neb \
+        python -m rgpycrumbs.cli eon plt-neb \
             --con-file {input.con} \
             --output-file {output.plot} \
             --plot-type "profile" \
@@ -141,7 +141,7 @@ rule plot_neb_1d_rmsd:
     shell:
         """
         mkdir -p {params._cache} &&
-        python -m rgpycrumbs.cli eon plt_neb \
+        python -m rgpycrumbs.cli eon plt-neb \
             --con-file {input.con} \
             --output-file {output.plot} \
             --plot-type "profile" \
@@ -199,7 +199,7 @@ rule plot_neb_2d_rmsd:
     shell:
         """
         mkdir -p {params._cache} &&
-        python -m rgpycrumbs.cli eon plt_neb \
+        python -m rgpycrumbs.cli eon plt-neb \
             --con-file {input.con} \
             --output-file {output.plot} \
             --plot-type "landscape" \
@@ -220,6 +220,7 @@ rule plot_neb_2d_rmsd:
             --title "{params.title}" \
             --cache-file {params._cache}/2dcache.parquet \
             --ase-rotation {params._aserot} \
+            --surface-type grad_imq \
             --ira-kmax 14 \
             {params._additional_flags} \
             --show-legend || touch {output.plot}

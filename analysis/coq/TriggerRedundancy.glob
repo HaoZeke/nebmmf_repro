@@ -1,0 +1,43 @@
+DIGEST 1f0044a19cb9e2ce65750a9af930f8b2
+FOCI_NEB.TriggerRedundancy
+R15:19 Coq.Reals.Reals <> <> lib
+R37:39 Coq.micromega.Lra <> <> lib
+prf 168:190 <> trigger_force_redundant
+R229:229 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 203:203 <> F:1
+binder 205:214 <> T_adaptive:2
+binder 216:225 <> T_absolute:3
+R260:267 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R268:268 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R301:306 Coq.Init.Logic <> ::type_scope:x_'<->'_x not
+R283:286 Coq.Init.Logic <> ::type_scope:x_'\/'_x not
+R270:272 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R269:269 OCI_NEB.TriggerRedundancy <> F:1 var
+R273:282 OCI_NEB.TriggerRedundancy <> T_adaptive:2 var
+R288:290 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R287:287 OCI_NEB.TriggerRedundancy <> F:1 var
+R291:300 OCI_NEB.TriggerRedundancy <> T_absolute:3 var
+R308:310 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R307:307 OCI_NEB.TriggerRedundancy <> F:1 var
+R311:320 OCI_NEB.TriggerRedundancy <> T_adaptive:2 var
+R246:249 Coq.Reals.Rdefinitions <> ::R_scope:x_'>='_x not
+R236:245 OCI_NEB.TriggerRedundancy <> T_adaptive:2 var
+R250:259 OCI_NEB.TriggerRedundancy <> T_absolute:3 var
+prf 557:580 <> default_params_redundant
+R612:612 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 593:597 <> f_tol:4
+binder 599:608 <> T_adaptive:5
+R628:635 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R659:666 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R689:691 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R692:696 OCI_NEB.TriggerRedundancy <> f_tol:4 var
+binder 671:683 <> trigger_force:6
+R715:718 Coq.Reals.Rdefinitions <> ::R_scope:x_'>='_x not
+R705:714 OCI_NEB.TriggerRedundancy <> T_adaptive:5 var
+R719:731 OCI_NEB.TriggerRedundancy <> trigger_force:6 var
+R646:649 Coq.Reals.Rdefinitions <> ::R_scope:x_'>='_x not
+R636:645 OCI_NEB.TriggerRedundancy <> T_adaptive:5 var
+R651:653 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R654:658 OCI_NEB.TriggerRedundancy <> f_tol:4 var
+R620:622 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R623:627 OCI_NEB.TriggerRedundancy <> f_tol:4 var

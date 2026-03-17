@@ -1,0 +1,287 @@
+DIGEST 1d712a287f24a40501cb50206c544eae
+FOCI_NEB.AlgorithmInvariants
+R15:19 Coq.Reals.Reals <> <> lib
+R37:39 Coq.micromega.Lra <> <> lib
+R57:61 Coq.micromega.Psatz <> <> lib
+prf 360:384 <> threshold_in_band_success
+R420:420 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 397:398 <> F0:1
+binder 400:402 <> lam:2
+binder 404:408 <> f_tol:3
+binder 410:414 <> F_new:4
+binder 416:416 <> r:5
+R433:436 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R444:447 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R457:464 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R470:473 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R480:487 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R497:500 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R512:519 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R538:541 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R555:555 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R533:537 OCI_NEB.AlgorithmInvariants <> F_new:4 var
+R545:547 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R543:543 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R551:553 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R549:549 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R554:554 OCI_NEB.AlgorithmInvariants <> r:5 var
+binder 524:528 <> T_raw:6
+R580:583 Coq.Reals.Rbasic_fun <> Rmin def
+R594:596 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R592:593 OCI_NEB.AlgorithmInvariants <> F0:1 var
+R597:599 OCI_NEB.AlgorithmInvariants <> lam:2 var
+R585:589 OCI_NEB.AlgorithmInvariants <> T_raw:6 var
+binder 568:575 <> T_capped:7
+R617:620 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R609:616 OCI_NEB.AlgorithmInvariants <> T_capped:7 var
+R623:625 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R621:622 OCI_NEB.AlgorithmInvariants <> F0:1 var
+R626:628 OCI_NEB.AlgorithmInvariants <> lam:2 var
+R506:509 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R501:505 OCI_NEB.AlgorithmInvariants <> F_new:4 var
+R510:511 OCI_NEB.AlgorithmInvariants <> F0:1 var
+R489:491 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R492:496 OCI_NEB.AlgorithmInvariants <> F_new:4 var
+R475:478 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R474:474 OCI_NEB.AlgorithmInvariants <> r:5 var
+R466:468 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R469:469 OCI_NEB.AlgorithmInvariants <> r:5 var
+R449:451 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R452:456 OCI_NEB.AlgorithmInvariants <> f_tol:3 var
+R438:440 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R441:443 OCI_NEB.AlgorithmInvariants <> lam:2 var
+R428:430 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R431:432 OCI_NEB.AlgorithmInvariants <> F0:1 var
+R661:666 Coq.Reals.Rbasic_fun <> Rmin_r thm
+R661:666 Coq.Reals.Rbasic_fun <> Rmin_r thm
+prf 753:781 <> threshold_backoff_lower_bound
+R808:808 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 794:798 <> T_raw:8
+binder 800:804 <> f_tol:9
+R824:831 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R841:844 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R833:835 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R836:840 OCI_NEB.AlgorithmInvariants <> f_tol:9 var
+R845:848 Coq.Reals.Rbasic_fun <> Rmax def
+R858:860 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R861:865 OCI_NEB.AlgorithmInvariants <> f_tol:9 var
+R850:854 OCI_NEB.AlgorithmInvariants <> T_raw:8 var
+R816:818 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R819:823 OCI_NEB.AlgorithmInvariants <> f_tol:9 var
+R893:896 Coq.Reals.Rbasic_fun <> Rmax def
+R909:915 Coq.Reals.RIneq <> Rle_dec thm
+R925:927 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R909:915 Coq.Reals.RIneq <> Rle_dec thm
+R925:927 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+prf 1033:1061 <> threshold_backoff_upper_bound
+R1098:1098 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 1074:1075 <> F0:10
+binder 1077:1079 <> lam:11
+binder 1081:1094 <> penalty_factor:12
+R1111:1114 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1122:1129 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1148:1151 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1171:1178 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1204:1207 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1187:1189 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1181:1183 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1179:1180 OCI_NEB.AlgorithmInvariants <> F0:10 var
+R1184:1186 OCI_NEB.AlgorithmInvariants <> lam:11 var
+R1190:1203 OCI_NEB.AlgorithmInvariants <> penalty_factor:12 var
+R1210:1212 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1208:1209 OCI_NEB.AlgorithmInvariants <> F0:10 var
+R1213:1215 OCI_NEB.AlgorithmInvariants <> lam:11 var
+R1166:1169 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1152:1165 OCI_NEB.AlgorithmInvariants <> penalty_factor:12 var
+R1131:1133 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1134:1147 OCI_NEB.AlgorithmInvariants <> penalty_factor:12 var
+R1116:1118 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1119:1121 OCI_NEB.AlgorithmInvariants <> lam:11 var
+R1106:1108 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1109:1110 OCI_NEB.AlgorithmInvariants <> F0:10 var
+R1287:1290 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1274:1277 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1286:1286 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1280:1282 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1292:1295 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1304:1304 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1298:1300 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1287:1290 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1274:1277 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1286:1286 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1280:1282 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1292:1295 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1304:1304 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1298:1300 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1318:1334 Coq.Reals.RIneq <> Rmult_le_compat_r thm
+R1318:1334 Coq.Reals.RIneq <> Rmult_le_compat_r thm
+prf 1466:1479 <> penalty_bounds
+R1507:1507 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 1492:1495 <> base:13
+binder 1497:1503 <> alpha_s:14
+R1522:1525 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1534:1541 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1554:1557 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1570:1577 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1591:1593 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R1587:1590 OCI_NEB.AlgorithmInvariants <> base:13 var
+R1594:1594 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1603:1606 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1596:1598 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R1599:1602 OCI_NEB.AlgorithmInvariants <> base:13 var
+R1607:1613 OCI_NEB.AlgorithmInvariants <> alpha_s:14 var
+binder 1582:1582 <> P:15
+R1631:1634 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R1626:1629 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1622:1625 OCI_NEB.AlgorithmInvariants <> base:13 var
+R1630:1630 OCI_NEB.AlgorithmInvariants <> P:15 var
+R1636:1639 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1635:1635 OCI_NEB.AlgorithmInvariants <> P:15 var
+R1565:1568 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1558:1564 OCI_NEB.AlgorithmInvariants <> alpha_s:14 var
+R1543:1546 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1547:1553 OCI_NEB.AlgorithmInvariants <> alpha_s:14 var
+R1530:1532 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1526:1529 OCI_NEB.AlgorithmInvariants <> base:13 var
+R1515:1517 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1518:1521 OCI_NEB.AlgorithmInvariants <> base:13 var
+prf 1796:1820 <> backoff_reduces_threshold
+R1855:1855 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 1833:1834 <> F0:16
+binder 1836:1838 <> lam:17
+binder 1840:1843 <> base:18
+binder 1845:1851 <> alpha_s:19
+R1868:1871 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1879:1886 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1895:1898 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1907:1914 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1927:1930 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1942:1949 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1969:1971 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R1965:1968 OCI_NEB.AlgorithmInvariants <> base:18 var
+R1972:1972 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1981:1984 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R1974:1976 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R1977:1980 OCI_NEB.AlgorithmInvariants <> base:18 var
+R1985:1991 OCI_NEB.AlgorithmInvariants <> alpha_s:19 var
+binder 1954:1960 <> penalty:20
+R2021:2023 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2015:2017 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2013:2014 OCI_NEB.AlgorithmInvariants <> F0:16 var
+R2018:2020 OCI_NEB.AlgorithmInvariants <> lam:17 var
+R2024:2030 OCI_NEB.AlgorithmInvariants <> penalty:20 var
+binder 2004:2008 <> T_new:21
+R2054:2056 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2052:2053 OCI_NEB.AlgorithmInvariants <> F0:16 var
+R2057:2059 OCI_NEB.AlgorithmInvariants <> lam:17 var
+binder 2043:2047 <> T_max:22
+R2073:2075 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2068:2072 OCI_NEB.AlgorithmInvariants <> T_new:21 var
+R2076:2080 OCI_NEB.AlgorithmInvariants <> T_max:22 var
+R1938:1940 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1931:1937 OCI_NEB.AlgorithmInvariants <> alpha_s:19 var
+R1916:1919 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R1920:1926 OCI_NEB.AlgorithmInvariants <> alpha_s:19 var
+R1903:1905 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1899:1902 OCI_NEB.AlgorithmInvariants <> base:18 var
+R1888:1890 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1891:1894 OCI_NEB.AlgorithmInvariants <> base:18 var
+R1873:1875 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1876:1878 OCI_NEB.AlgorithmInvariants <> lam:17 var
+R1863:1865 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R1866:1867 OCI_NEB.AlgorithmInvariants <> F0:16 var
+R2192:2194 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2169:2171 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R2172:2172 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2181:2184 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2174:2176 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R2192:2194 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2169:2171 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R2172:2172 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2181:2184 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2174:2176 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R2222:2224 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2227:2229 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2222:2224 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2227:2229 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+prf 2348:2367 <> converged_no_trigger
+R2398:2398 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 2380:2388 <> convForce:23
+binder 2390:2394 <> f_tol:24
+R2423:2430 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2440:2447 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2457:2460 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R2448:2456 OCI_NEB.AlgorithmInvariants <> convForce:23 var
+R2461:2465 OCI_NEB.AlgorithmInvariants <> f_tol:24 var
+R2432:2434 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2435:2439 OCI_NEB.AlgorithmInvariants <> f_tol:24 var
+R2414:2417 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R2405:2413 OCI_NEB.AlgorithmInvariants <> convForce:23 var
+R2418:2422 OCI_NEB.AlgorithmInvariants <> f_tol:24 var
+prf 2571:2596 <> derived_base_penalty_floor
+R2613:2613 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 2609:2609 <> s:25
+R2621:2628 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2639:2642 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R2648:2648 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R2644:2646 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R2647:2647 OCI_NEB.AlgorithmInvariants <> s:25 var
+binder 2633:2633 <> b:26
+R2672:2674 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R2658:2660 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R2657:2657 OCI_NEB.AlgorithmInvariants <> b:26 var
+R2661:2661 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2667:2670 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2663:2665 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R2666:2666 OCI_NEB.AlgorithmInvariants <> b:26 var
+R2675:2675 OCI_NEB.AlgorithmInvariants <> b:26 var
+R2617:2619 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2620:2620 OCI_NEB.AlgorithmInvariants <> s:25 var
+prf 2714:2741 <> derived_base_penalty_ceiling
+R2758:2758 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 2754:2754 <> s:27
+R2766:2773 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R2784:2787 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R2793:2793 Coq.Reals.Rdefinitions <> ::R_scope:x_'/'_x not
+R2789:2791 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R2792:2792 OCI_NEB.AlgorithmInvariants <> s:27 var
+binder 2778:2778 <> b:28
+R2817:2819 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R2803:2805 Coq.Reals.Rdefinitions <> ::R_scope:x_'+'_x not
+R2802:2802 OCI_NEB.AlgorithmInvariants <> b:28 var
+R2806:2806 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2812:2815 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R2808:2810 Coq.Reals.Rdefinitions <> ::R_scope:x_'-'_x not
+R2811:2811 OCI_NEB.AlgorithmInvariants <> b:28 var
+R2762:2764 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R2765:2765 OCI_NEB.AlgorithmInvariants <> s:27 var
+R2852:2855 Coq.Reals.Rdefinitions <> Rdiv def
+prf 3235:3257 <> progress_or_convergence
+R3298:3298 Coq.Reals.Rdefinitions RbaseSymbolsImpl R defax
+binder 3270:3278 <> convForce:29
+binder 3280:3284 <> f_tol:30
+binder 3286:3294 <> threshold:31
+R3314:3321 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R3344:3395 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R3414:3487 Coq.Init.Logic <> ::type_scope:x_'\/'_x not
+R3405:3408 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R3396:3404 OCI_NEB.AlgorithmInvariants <> convForce:29 var
+R3409:3413 OCI_NEB.AlgorithmInvariants <> f_tol:30 var
+R3488:3488 Coq.Init.Logic <> ::type_scope:x_'\/'_x not
+R3531:3604 Coq.Init.Logic <> ::type_scope:x_'\/'_x not
+R3506:3509 Coq.Init.Logic <> ::type_scope:x_'/\'_x not
+R3494:3496 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R3489:3493 OCI_NEB.AlgorithmInvariants <> f_tol:30 var
+R3497:3505 OCI_NEB.AlgorithmInvariants <> convForce:29 var
+R3519:3521 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R3510:3518 OCI_NEB.AlgorithmInvariants <> convForce:29 var
+R3522:3530 OCI_NEB.AlgorithmInvariants <> threshold:31 var
+R3614:3617 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R3605:3613 OCI_NEB.AlgorithmInvariants <> threshold:31 var
+R3618:3626 OCI_NEB.AlgorithmInvariants <> convForce:29 var
+R3331:3334 Coq.Reals.Rdefinitions <> ::R_scope:x_'<='_x not
+R3323:3325 Coq.Reals.Rdefinitions <> ::R_scope:x_'*'_x not
+R3326:3330 OCI_NEB.AlgorithmInvariants <> f_tol:30 var
+R3335:3343 OCI_NEB.AlgorithmInvariants <> threshold:31 var
+R3306:3308 Coq.Reals.Rdefinitions <> ::R_scope:x_'<'_x not
+R3309:3313 OCI_NEB.AlgorithmInvariants <> f_tol:30 var

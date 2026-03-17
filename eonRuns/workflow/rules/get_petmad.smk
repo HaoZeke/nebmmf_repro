@@ -1,24 +1,23 @@
 # -*- mode:snakemake; -*-
+"""
+PET-MAD model retrieval and conversion.
+
+Downloads and exports model checkpoints from HuggingFace using mtt export.
+Supports pet-mad, pet-mad-xs, pet-mad-s variants via config['pet_mad']['type'].
+"""
+
+_pet_type = config.get("pet_mad", {}).get("type", "pet-mad")
+_pet_version = config["pet_mad"]["version"]
+_pet_name = f"{_pet_type}-{_pet_version}"
 
 
-rule download_ckpt:
+rule download_and_export_model:
     output:
-        # Promise to create a .ckpt file, which is what the URL provides.
-        # Mark it as temp() since it is only for the next step.
-        temp(f"{config['paths']['models']}/pet-mad-{{version}}.ckpt"),
+        protected(f"{config['paths']['models']}/{_pet_name}.pt"),
     params:
-        version="{version}",
+        repo="lab-cosmo/upet",
+        ckpt_path=f"models/{_pet_name}.ckpt",
     shell:
         """
-        curl -fL -o {output} \
-        'https://huggingface.co/lab-cosmo/pet-mad/resolve/{params.version}/models/pet-mad-{params.version}.ckpt'
+        mtt export {params.repo} {params.ckpt_path} -o {output}
         """
-
-
-rule convert_ckpt_to_pt:
-    input:
-        f"{config['paths']['models']}/pet-mad-{{version}}.ckpt",
-    output:
-        protected(f"{config['paths']['models']}/pet-mad-{{version}}.pt"),
-    shell:
-        "mtt export {input} && mv pet-mad-{wildcards.version}.pt {output}"

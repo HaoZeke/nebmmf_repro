@@ -7,9 +7,11 @@ version = "0.1.0"
 
 [environments]
 eon = {features = ["eon", "asenwchem", "metatomic", "optdev", "nwchem", "cpu"]}
+# mlfsm = {features = ["mlfsm", "metatomic", "cpu"]}
 eongpu = {features = ["eon", "asenwchem", "metatomic", "optdev", "nwchem"]}
 rviz = {features = ["rviz", "cpu"]}
 brms = {features = ["brms", "cpu"]}
+formal = {features = ["formal"], no-default-feature = true}
 
 [feature.nwchem.dependencies]
 openmpi = "*"
@@ -46,9 +48,9 @@ platforms = ["linux-64", "osx-arm64"]
 torch = ">=2.9, <2.10"
 metatomic-torch = ">=0.1.7, <0.2"
 metatensor-torch = ">=0.8.2, <0.9"
-vesin-torch = ">=0.4, <0.5"
-vesin = ">=0.4, <0.5"
-metatrain = ">=2025.8.1, <2026"
+vesin-torch = ">=0.5.2, <0.6"
+vesin = ">=0.5.2, <0.6"
+metatrain = ">=2026.2, <2027"
 
 [feature.optdev]
 platforms = ["linux-64"]
@@ -109,6 +111,8 @@ xtb-python = ">=22.1,<23"
 tblite = ">=0.4.0,<0.5"
 tblite-python = ">=0.4.0,<0.5"
 
+# [feature.mlfsm.pypi-dependencies]
+# mlfsm = { path = "./subrepos/ml-fsm", editable=true }
 
 [tasks.dag]
 args = ["_cwd"]
@@ -138,6 +142,17 @@ depends-on = [
 [feature.cpu.pypi-options]
 extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
 
+[feature.pyviz.dependencies]
+tblite-python = "*"
+
+[feature.formal.dependencies]
+coq = ">=8.12"
+python = ">=3.11"
+
+[feature.formal.pypi-dependencies]
+sympy = ">=1.13"
+matplotlib = ">=3.9"
+
 [dependencies]
 ira = ">=2.2.0,<3"
 eon = ">=2.8.2"
@@ -147,7 +162,8 @@ snakemake = ">=9.14.1,<10"
 rgpycrumbs = ">=0.1.3,<0.2"
 ase = ">=3.26.0, <4"
 requests = ">=2.28.1, <3"
-metatrain = ">=2025.12, <2026"
+metatrain = ">=2026.2, <2027"
+optuna = ">=4.0, <5"
 
 [feature.eon.tasks.setupeon]
 cwd = "subrepos/eOn"

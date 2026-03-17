@@ -1,0 +1,63 @@
+#+title: OCI-NEB Formal Analysis
+#+date: 2026-03-16
+
+* Overview
+
+Formal analysis of the OCI-NEB algorithm supporting the Frontiers in Chemistry
+paper (MS 1807063). Three complementary approaches:
+
+1. *SymPy* -- symbolic derivations with LaTeX output
+2. *Coq* -- machine-checked proofs of key properties
+3. *TikZ* -- publication-quality algorithm diagrams
+
+* SymPy analyses (=sympy/=)
+
+** Parameter reduction (7 -> 3 params)
+
+| Script | Proves |
+|--------+--------|
+| =penalty_base_derivation.py= | base = 1/(1+s) is self-consistent; reproduces default b=0.4 at s=1.5 |
+| =threshold_dynamics.py= | Adaptive threshold is bounded in [2*f_tol, baseline*lambda] |
+| =trigger_redundancy.py= | trigger_force is redundant given threshold floor |
+
+** Algorithm properties
+
+| Script | Proves |
+|--------+--------|
+| =ocineb_convergence.py= | Threshold adaptation is a contraction; algorithm makes monotonic progress |
+| =penalty_function_analysis.py= | Penalty function properties: monotonicity, bounds, integral characterization |
+| =alignment_geometry.py= | Mode-tangent alignment bounds under dimer rotation |
+
+* Coq proofs (=coq/=)
+
+| File | Theorem |
+|------+---------|
+| =ThresholdBounds.v= | T_adaptive >= 2*f_tol always holds (by construction) |
+| =PenaltyConsistency.v= | b = 1/(1+s) in (0,1) for s > 0; b(1.5) = 0.4 exactly |
+| =TriggerRedundancy.v= | (F < T_a) \/ (F < T_f) <-> (F < T_a) when T_a >= T_f |
+| =MonotonicProgress.v= | Success update implies T_new <= T_old (threshold decreases monotonically on success path) |
+
+* TikZ diagrams (=tikz/=)
+
+| File | Content |
+|------+---------|
+| =algorithm_state_machine.tex= | State machine: NEB -> Check -> Dimer -> Evaluate -> NEB |
+| =penalty_function_family.tex= | P(alpha) for s in {0.5, 1.0, 1.5, 3.0} with derived bases |
+| =threshold_timeline.tex= | Schematic: force curve + adaptive threshold + trigger events |
+
+* Running
+
+#+begin_src bash
+# SymPy (no install needed)
+uvx --with sympy,matplotlib python analysis/sympy/penalty_base_derivation.py
+
+# Coq (needs pixi formal_analysis environment)
+cd analysis/coq && make
+
+# TikZ (needs pdflatex)
+cd analysis/tikz && make
+#+end_src
+
+* Pixi environment
+
+The =formal_analysis= environment in =pixi.toml= provides coq, texlive, sympy.
