@@ -97,6 +97,9 @@ def run_plot(args):
         # Replace the surface type in the cmd
         st_idx = cmd.index("--surface-type") + 1
         cmd[st_idx] = surface_override
+        title += f" [{surface_override}]"
+        title_idx = cmd.index("--title") + 1
+        cmd[title_idx] = title
 
     # Overlay other method's saddle point
     sp_con = f"{BASE_CWD}/{NEB}/{sys_name}/{other}/sp.con"
