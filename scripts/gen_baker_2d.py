@@ -90,15 +90,13 @@ def run_plot(args):
         "--title", title,
     ]
 
-    # Per-system GP overrides (Nystrom for systems where full GP fails)
-    NYSTROM_OVERRIDES = {("06_bicyclobutane", "cineb"): 200}
-    n_ind = NYSTROM_OVERRIDES.get((sys_name, method))
-    if n_ind:
-        cmd.extend(["--n-inducing", str(n_ind)])
-        title += " [Nystrom]"
-        # Re-set the title in the cmd
-        title_idx = cmd.index("--title") + 1
-        cmd[title_idx] = title
+    # Per-system GP overrides for systems where grad_imq fails
+    SURFACE_OVERRIDES = {("06_bicyclobutane", "cineb"): "grad_matern"}
+    surface_override = SURFACE_OVERRIDES.get((sys_name, method))
+    if surface_override:
+        # Replace the surface type in the cmd
+        st_idx = cmd.index("--surface-type") + 1
+        cmd[st_idx] = surface_override
 
     # Overlay other method's saddle point
     sp_con = f"{BASE_CWD}/{NEB}/{sys_name}/{other}/sp.con"
