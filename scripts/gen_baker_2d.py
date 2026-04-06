@@ -90,6 +90,16 @@ def run_plot(args):
         "--title", title,
     ]
 
+    # Per-system GP overrides (Nystrom for systems where full GP fails)
+    NYSTROM_OVERRIDES = {("06_bicyclobutane", "cineb"): 200}
+    n_ind = NYSTROM_OVERRIDES.get((sys_name, method))
+    if n_ind:
+        cmd.extend(["--n-inducing", str(n_ind)])
+        title += " [Nystrom]"
+        # Re-set the title in the cmd
+        title_idx = cmd.index("--title") + 1
+        cmd[title_idx] = title
+
     # Overlay other method's saddle point
     sp_con = f"{BASE_CWD}/{NEB}/{sys_name}/{other}/sp.con"
     if Path(sp_con).exists():
