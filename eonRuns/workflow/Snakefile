@@ -27,16 +27,18 @@ def get_all_targets(wildcards):
 rule all:
     input:
         get_all_targets,
+        "data/baker_bench.csv",
+        "imgs/gen/R/brms_pes.png",
+        "imgs/gen/R/dumbbell_plot.png",
+        "imgs/gen/R/suppl/dataset_characterization.png",
+        "results/.baker_2d_done",
+        "results/.case_study_done",
+        "results/static_handover/.done",
+        "results/.paper_sync_done",
+        "results/nebmmf_archive.tar.xz",
 
 
 # -----------------------------------------------------------------------------
-
-
-module ira_align:
-    snakefile:
-        "rules/ira_align.smk"
-    config:
-        config
 
 
 module ase_idpp:
@@ -67,9 +69,6 @@ module plotting:
         config
 
 
-use rule * from ira_align as __ira_align_*
-
-
 use rule * from ase_idpp as __ase_idpp_*
 
 
@@ -80,6 +79,9 @@ use rule * from run_eon
 
 
 use rule * from plotting
+
+
+include: "rules/analysis.smk"
 
 
 rule minimize_endpoints:

@@ -16,33 +16,21 @@ _pet_type = config.get("pet_mad", {}).get("type", "pet-mad")
 _pet_version = config["pet_mad"]["version"]
 _pet_name = f"{_pet_type}-{_pet_version}"
 
-# NEB method settings: cineb (baseline) vs mmf (OCI-NEB)
-_METHOD_OVERRIDES = {
-    "cineb": {
-        "ci_mmf": "false",
-    },
+# NEB method settings: read from config YAML (not hardcoded)
+# Optuna-optimized params are in config["method_overrides"]["mmf"]
+_METHOD_OVERRIDES = config.get("method_overrides", {
+    "cineb": {"ci_mmf": "false"},
     "mmf": {
         "ci_mmf": "true",
         "ci_mmf_after": 0.1,
-        "ci_mmf_after_rel": 0.5,
-        "ci_mmf_penalty_strength": 1.5,
-        "ci_mmf_penalty_base": 0.4,
-        "ci_mmf_angle": 0.9,
+        "ci_mmf_after_rel": 0.53,
+        "ci_mmf_penalty_strength": 0.55,
+        "ci_mmf_penalty_base": 0.65,
+        "ci_mmf_angle": 0.65,
         "ci_mmf_nsteps": 1000,
+        "ci_mmf_ci_stability_count": 5,
     },
-    "strict": {
-        "ci_mmf": "true",
-        "ci_mmf_after": 0.1,
-        "ci_mmf_after_rel": 0.7,
-        "ci_mmf_penalty_strength": 0.5,
-        "ci_mmf_penalty_base": 0.4,
-        "ci_mmf_angle": 0.5,
-        "ci_mmf_nsteps": 1000,
-    },
-}
-
-# Parameter sensitivity analysis is handled by scripts/optuna_param_study.py
-# using optuna TPE + fANOVA importance, replacing the earlier grid search approach.
+})
 
 
 rule do_minimization:
@@ -79,13 +67,8 @@ rule do_minimization:
 
 rule do_neb:
     input:
-        idpp_path=f"{config['paths']['idpp']}/{{system}}/idppPath.dat",
         reactant=f"{config['paths']['endpoints']}/{{system}}/reactant.con",
         product=f"{config['paths']['endpoints']}/{{system}}/product.con",
-        path_images=lambda w: expand(
-            f"{config['paths']['idpp']}/{w.system}/path/{{num:02d}}.con",
-            num=range(config["common"]["number_of_intermediate_imgs"] + 2),
-        ),
         model=f"{config['paths']['models']}/{_pet_name}.pt",
     output:
         results_dat=f"{config['paths']['neb']}/{{system}}/{{method}}/results.dat",
@@ -104,7 +87,6 @@ rule do_neb:
             "ew_ksp_max": 9.72,
             "ew_trigger": 0.5,
             "initializer": "sidpp",
-            "sidpp_growth_alpha": 0.33,
             "oversampling": "false",
             "oversampling_factor": 8,
             "minimize_endpoints": "false",
@@ -144,6 +126,5 @@ rule do_neb:
         write_eon_config(out_path, neb_settings)
         shutil.copy2(os.path.abspath(input.reactant), out_path / "reactant.con")
         shutil.copy2(os.path.abspath(input.product), out_path / "product.con")
-        shutil.copy2(os.path.abspath(input.idpp_path), out_path / "idppPath.dat")
 
         subprocess.run(["eonclient"], cwd=out_path, check=True, capture_output=True)

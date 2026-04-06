@@ -59,7 +59,7 @@ logging.basicConfig(
 )
 
 # Regex patterns
-CALLS_REGEX = re.compile(r"destroyed after (\d+) calls")
+CALLS_REGEX = re.compile(r"(\d+) total_force_calls")
 EXTREMUM_REGEX = re.compile(r"([\d.-]+)\s+extremum\d+_energy")
 TIME_REGEX = re.compile(r"time_seconds\s+([\d.]+)")
 
@@ -216,17 +216,22 @@ def parse_run(path: pathlib.Path) -> RunData | None:
         if "termination_reason" in first_line:
             term_reason = NEBStatus.from_code(first_line.split()[0])
 
-    # 2. Parse Calls from logs
+    # 2. Parse Calls from results.dat first, then fall back to logs
     calls = None
-    for log in path.glob("*.log"):
-        try:
-            l_txt = log.read_text(errors="ignore")
-            c_match = CALLS_REGEX.search(l_txt)
-            if c_match:
-                calls = int(c_match.group(1))
-                break
-        except:
-            pass
+    if results_file.exists():
+        c_match = CALLS_REGEX.search(txt)
+        if c_match:
+            calls = int(c_match.group(1))
+    if calls is None:
+        for log in path.glob("*.log"):
+            try:
+                l_txt = log.read_text(errors="ignore")
+                c_match = CALLS_REGEX.search(l_txt)
+                if c_match:
+                    calls = int(c_match.group(1))
+                    break
+            except:
+                pass
 
     # 3. Load Geometry (Saddle Point)
     atoms = None

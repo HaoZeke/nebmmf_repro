@@ -11,16 +11,15 @@
 # ///
 
 """
-Optuna parameter sensitivity study for OCI-NEB (MMF) parameters.
+Optuna 2-parameter study for OCI-NEB: after_rel + angle only.
 
-This script samples all 7 original OCI-NEB hyperparameters across 24 Baker
-systems, seeking to minimize total force calls during transition state 
-optimization. The objective function enforces a strict no-regression 
-constraint against the pure CI-NEB minimum energy pathways. 
+Fixes nsteps=1000 and stability_count=3 (insensitive per 5-param fANOVA),
+isolating the two parameters that matter most.  The 2D contour of this
+study shows angle dominates at 81% when the other three are held constant.
 
-Post-study fANOVA analysis identifies the variance contribution of each 
-parameter, empirically justifying the reduction from 7 tunable parameters 
-down to 3 for the final algorithm configuration.
+Usage:
+    CUBLAS_WORKSPACE_CONFIG=:4096:8 pixi run -e eongpu \
+        python scripts/optuna_2param.py --n-trials 200
 """
 
 import argparse
@@ -39,7 +38,6 @@ from rgpycrumbs.eon.helpers import write_eon_config
 
 CALLS_REGEX = re.compile(r"(\d+) total_force_calls")
 
-# Place highly constrained or complex topology reactions first to trigger early pruning
 BAKER_SYSTEMS = [
     "13_hf_abstraction",
     "09_parentdielsalder",
@@ -67,29 +65,15 @@ BAKER_SYSTEMS = [
     "25_hcnh2",
 ]
 
-REPRESENTATIVE_SYSTEMS = BAKER_SYSTEMS
-
-# Assign massive penalty for failed or non-converged structural optimizations
 PENALTY_FORCE_CALLS = 50000
 
-
-def copy_idpp_files(system: str, base_dir: Path, work_dir: Path) -> None:
-    """Copy IDPP initialization files (idppPath.dat + path/*.con) to the working directory."""
-    idpp_dir = base_dir / "results" / "02_idpp" / system
-    idpp_path = idpp_dir / "idppPath.dat"
-    if idpp_path.exists():
-        shutil.copy2(idpp_path, work_dir / "idppPath.dat")
-        
-    path_dir = idpp_dir / "path"
-    if path_dir.is_dir():
-        dest = work_dir / "path"
-        dest.mkdir(exist_ok=True)
-        for f in sorted(path_dir.glob("*.con")):
-            shutil.copy2(f, dest / f.name)
+# Fixed parameters (insensitive per 5-param fANOVA)
+FIXED_NSTEPS = 1000
+FIXED_AFTER = 0.3
+FIXED_STABILITY_COUNT = 3
 
 
 def find_model_path(base_dir: Path) -> Path:
-    """Auto-detect the .pt model file under results/00_models/."""
     models_dir = base_dir / "results" / "00_models"
     pts = list(models_dir.glob("*.pt"))
     if not pts:
@@ -98,27 +82,26 @@ def find_model_path(base_dir: Path) -> Path:
 
 
 def parse_eon_results(run_dir: Path) -> tuple[bool, int | None]:
-    """Extract convergence status and total force calls simultaneously."""
     results_file = run_dir / "results.dat"
     if not results_file.exists():
         return False, None
-        
+
     converged = False
     calls = None
     try:
         txt = results_file.read_text(errors="ignore")
         lines = txt.splitlines()
-        
+
         if lines and "termination_reason" in lines[0]:
             code = lines[0].split()[0]
             converged = (code == "0")
-            
+
         m = CALLS_REGEX.search(txt)
         if m:
             calls = int(m.group(1))
     except (OSError, ValueError):
         pass
-        
+
     return converged, calls
 
 
@@ -127,12 +110,9 @@ def run_single_system(
     params: dict,
     base_dir: Path,
     model_path: Path,
-    results_dir: str,
     n_images: int = 8,
 ) -> int:
-    """Execute eonclient for a single system with the specified OCI-NEB parameters."""
     endpoints_dir = base_dir / "results" / "01_endpoints" / system
-
     reactant = endpoints_dir / "reactant.con"
     product = endpoints_dir / "product.con"
 
@@ -141,7 +121,6 @@ def run_single_system(
             print(f"  [WARN] Missing input structure: {f}")
             return PENALTY_FORCE_CALLS
 
-    # Apply all 7 OCI-NEB (MMF) parameters from the trial
     neb_params = {
         "images": n_images,
         "energy_weighted": "true",
@@ -157,11 +136,11 @@ def run_single_system(
         "ci_after": 0.5,
         "ci_after_rel": 0.8,
         "ci_mmf": "true",
-        "ci_mmf_after": params["ci_mmf_after"],
+        "ci_mmf_after": FIXED_AFTER,
         "ci_mmf_after_rel": params["ci_mmf_after_rel"],
         "ci_mmf_angle": params["ci_mmf_angle"],
-        "ci_mmf_nsteps": params["ci_mmf_nsteps"],
-        "ci_mmf_ci_stability_count": params["ci_mmf_ci_stability_count"],
+        "ci_mmf_nsteps": FIXED_NSTEPS,
+        "ci_mmf_ci_stability_count": FIXED_STABILITY_COUNT,
     }
 
     neb_settings = {
@@ -186,16 +165,14 @@ def run_single_system(
         },
     }
 
-    # Utilize shared memory (RAM disk) for high-frequency trajectory I/O
     ramdisk = Path("/dev/shm")
     base_tmp = ramdisk if ramdisk.exists() and ramdisk.is_dir() else None
 
-    with tempfile.TemporaryDirectory(prefix=f"optuna_{system}_", dir=base_tmp) as tmp:
+    with tempfile.TemporaryDirectory(prefix=f"opt2p_{system}_", dir=base_tmp) as tmp:
         work_dir = Path(tmp)
         write_eon_config(work_dir, neb_settings)
         shutil.copy2(reactant, work_dir / "reactant.con")
         shutil.copy2(product, work_dir / "product.con")
-        copy_idpp_files(system, base_dir, work_dir)
 
         try:
             subprocess.run(
@@ -206,28 +183,26 @@ def run_single_system(
                 timeout=600,
             )
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
-            print(f"  [WARN] eonclient trajectory failed for {system}: {exc}")
+            print(f"  [WARN] eonclient failed for {system}: {exc}")
             return PENALTY_FORCE_CALLS
 
         converged, calls = parse_eon_results(work_dir)
-        
+
         if not converged:
             if calls is not None:
                 return calls + PENALTY_FORCE_CALLS // 2
             return PENALTY_FORCE_CALLS
-            
+
         if calls is None:
             return PENALTY_FORCE_CALLS
         return calls
 
 
-# Cache CI-NEB baselines; ensure thread safety for parallel Optuna trials
 _CI_BASELINES: dict[str, int] = {}
 _CI_LOCK = threading.Lock()
 
 
 def run_ci_neb(system: str, base_dir: Path, model_path: Path, n_images: int = 8) -> int:
-    """Execute pure CI-NEB (no MMF) to establish a performance baseline."""
     endpoints_dir = base_dir / "results" / "01_endpoints" / system
     reactant = endpoints_dir / "reactant.con"
     product = endpoints_dir / "product.con"
@@ -250,7 +225,7 @@ def run_ci_neb(system: str, base_dir: Path, model_path: Path, n_images: int = 8)
         "climbing_image_converged_only": "true",
         "ci_after": 0.5,
         "ci_after_rel": 0.8,
-        "ci_mmf": "false",  # Enforce pure CI-NEB without MMF modifications
+        "ci_mmf": "false",
     }
 
     neb_settings = {
@@ -277,7 +252,6 @@ def run_ci_neb(system: str, base_dir: Path, model_path: Path, n_images: int = 8)
         write_eon_config(work_dir, neb_settings)
         shutil.copy2(reactant, work_dir / "reactant.con")
         shutil.copy2(product, work_dir / "product.con")
-        copy_idpp_files(system, base_dir, work_dir)
 
         try:
             subprocess.run(
@@ -294,16 +268,13 @@ def run_ci_neb(system: str, base_dir: Path, model_path: Path, n_images: int = 8)
         return calls if calls is not None else PENALTY_FORCE_CALLS
 
 
-def get_ci_baseline(
-    system: str, base_dir: Path, model_path: Path, results_dir: str
-) -> int:
-    """Retrieve CI-NEB baseline force evaluations for a system (uses thread-safe caching)."""
+def get_ci_baseline(system: str, base_dir: Path, model_path: Path) -> int:
     with _CI_LOCK:
         if system in _CI_BASELINES:
             return _CI_BASELINES[system]
 
     calls = run_ci_neb(system, base_dir, model_path)
-    
+
     with _CI_LOCK:
         if system not in _CI_BASELINES:
             _CI_BASELINES[system] = calls
@@ -315,28 +286,20 @@ def objective(
     trial: optuna.Trial,
     base_dir: Path,
     model_path: Path,
-    results_dir: str,
 ) -> float:
-    """Evaluate Optuna objective: minimize total force calls against regressions."""
-    
-    # 5-parameter space: penalty params removed (hardcoded S=1, B=0.5 in eOn).
-    # Angle range starts at 0.5 to include below-Householder probes.
+    """2-parameter objective: after_rel and angle only."""
     params = {
         "ci_mmf_after_rel": trial.suggest_float("ci_mmf_after_rel", 0.2, 0.8),
-        "ci_mmf_after": trial.suggest_float("ci_mmf_after", 0.05, 0.5),
-        "ci_mmf_nsteps": trial.suggest_int("ci_mmf_nsteps", 100, 2000),
         "ci_mmf_angle": trial.suggest_float("ci_mmf_angle", 0.5, 1.0),
-        "ci_mmf_ci_stability_count": trial.suggest_int("ci_mmf_ci_stability_count", 2, 10),
     }
 
-    print(f"\n[Trial {trial.number}] Starting evaluation.")
-    print(f"[Trial {trial.number}] Parameters: {params}")
+    print(f"\n[Trial {trial.number}] Parameters: {params}")
 
     total_calls = 0
     regression_penalty = 0
-    for idx, system in enumerate(REPRESENTATIVE_SYSTEMS):
-        calls = run_single_system(system, params, base_dir, model_path, results_dir)
-        ci_baseline = get_ci_baseline(system, base_dir, model_path, results_dir)
+    for idx, system in enumerate(BAKER_SYSTEMS):
+        calls = run_single_system(system, params, base_dir, model_path)
+        ci_baseline = get_ci_baseline(system, base_dir, model_path)
 
         ratio = calls / max(ci_baseline, 1)
         if ratio > 1.0:
@@ -352,38 +315,16 @@ def objective(
             print(f"  [Trial {trial.number}] Pruned at {system}.")
             raise optuna.TrialPruned()
 
-    print(f"[Trial {trial.number}] Completed successfully with {total_calls + regression_penalty} penalized calls.")
+    print(f"[Trial {trial.number}] Completed: {total_calls + regression_penalty}")
     return total_calls + regression_penalty
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Optuna parameter sensitivity study for OCI-NEB"
+        description="Optuna 2-parameter study for OCI-NEB (after_rel + angle)"
     )
-    parser.add_argument(
-        "--n-trials",
-        type=int,
-        default=200,  # Increased slightly to properly cover 7 dimensions
-        help="Number of optuna trials (default: 200)",
-    )
-    parser.add_argument(
-        "--n-jobs",
-        type=int,
-        default=1,
-        help="Parallel jobs (default: 1 for sequential GPU runs)",
-    )
-    parser.add_argument(
-        "--results-dir",
-        type=str,
-        default="results/03_neb",
-        help="NEB results directory relative to eonRuns",
-    )
-    parser.add_argument(
-        "--model-path",
-        type=str,
-        default=None,
-        help="Path to .pt model file",
-    )
+    parser.add_argument("--n-trials", type=int, default=200)
+    parser.add_argument("--n-jobs", type=int, default=1)
     args = parser.parse_args()
 
     script_dir = Path(__file__).resolve().parent
@@ -393,20 +334,17 @@ def main():
         if (base_dir / "eonRuns").is_dir():
             base_dir = base_dir / "eonRuns"
 
-    if args.model_path:
-        model_path = Path(args.model_path).resolve()
-    else:
-        model_path = find_model_path(base_dir)
-    print(f"Executing with machine learning potential: {model_path}")
+    model_path = find_model_path(base_dir)
+    print(f"Model: {model_path}")
 
     out_dir = base_dir.parent / "results"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    db_path = out_dir / "optuna_study.db"
+    db_path = out_dir / "optuna_2param.db"
     storage = f"sqlite:///{db_path}"
 
     study = optuna.create_study(
-        study_name="oci_neb_param_sensitivity",
+        study_name="oci_neb_2param",
         storage=storage,
         direction="minimize",
         load_if_exists=True,
@@ -415,7 +353,7 @@ def main():
     )
 
     study.optimize(
-        lambda trial: objective(trial, base_dir, model_path, args.results_dir),
+        lambda trial: objective(trial, base_dir, model_path),
         n_trials=args.n_trials,
         n_jobs=args.n_jobs,
         show_progress_bar=True,
@@ -430,13 +368,12 @@ def main():
         print(f"  {param:30s}  {importance:.4f}  {bar}")
 
     print("\n" + "=" * 60)
-    print("Optimized Hyperparameters")
+    print("Best Parameters")
     print("=" * 60)
     print(f"  Total force evaluations: {study.best_value}")
     for k, v in study.best_params.items():
         print(f"  {k:30s}  {v}")
 
-    # -- Headless Matplotlib Visualizations --
     try:
         import matplotlib.pyplot as plt
         from optuna.visualization.matplotlib import plot_param_importances, plot_contour
@@ -445,50 +382,41 @@ def main():
                              "axes.titlesize": 22, "xtick.labelsize": 16,
                              "ytick.labelsize": 16})
 
-        # 1. Parameter Importance Bar Chart
         fig_imp = plot_param_importances(study)
         fig_imp.set_size_inches(10, 6)
         plt.tight_layout()
-        imp_path = out_dir / "optuna_importance.png"
+        imp_path = out_dir / "optuna_2param_importance.png"
         plt.savefig(imp_path, dpi=300, bbox_inches="tight")
-        print(f"\nSaved 1D importance visualization to: {imp_path}")
+        print(f"\nSaved importance plot: {imp_path}")
         plt.close()
 
-        # 2. Extract the top 2 parameters dynamically for the 2D Contour
-        top_two_params = list(importances.keys())[:2]
-        print(f"Plotting 2D contour for top parameters: {top_two_params}")
-        
-        fig_contour = plot_contour(study, params=top_two_params)
+        fig_contour = plot_contour(study, params=["ci_mmf_after_rel", "ci_mmf_angle"])
+        fig_contour.set_size_inches(10, 8)
         plt.tight_layout()
-        contour_path = out_dir / "optuna_contour_top2.png"
+        contour_path = out_dir / "optuna_2param_contour.png"
         plt.savefig(contour_path, dpi=300, bbox_inches="tight")
-        print(f"Saved 2D contour visualization to: {contour_path}")
+        print(f"Saved contour plot: {contour_path}")
         plt.close()
-        
-    except Exception as exc:
-        print(f"\n[WARN] Failed writing matplotlib plots: {exc}")
 
-    print(f"Persisted study database at: {db_path}")
+    except Exception as exc:
+        print(f"\n[WARN] Failed writing plots: {exc}")
+
+    print(f"Study database: {db_path}")
 
     best = study.best_params
-    params_yaml = out_dir / "optuna_best_params.yaml"
-
+    params_yaml = out_dir / "optuna_2param_best.yaml"
     best_config = {
-        "method_overrides": {
-            "cineb": {"ci_mmf": "false"},
-            "mmf": {
-                "ci_mmf": "true",
-                "ci_mmf_after_rel": round(best["ci_mmf_after_rel"], 4),
-                "ci_mmf_after": round(best["ci_mmf_after"], 4),
-                "ci_mmf_angle": round(best["ci_mmf_angle"], 4),
-                "ci_mmf_ci_stability_count": best["ci_mmf_ci_stability_count"],
-                "ci_mmf_nsteps": best["ci_mmf_nsteps"],
-            },
-        }
+        "ci_mmf_after_rel": round(best["ci_mmf_after_rel"], 4),
+        "ci_mmf_angle": round(best["ci_mmf_angle"], 4),
+        "fixed": {
+            "ci_mmf_nsteps": FIXED_NSTEPS,
+            "ci_mmf_after": FIXED_AFTER,
+            "ci_mmf_ci_stability_count": FIXED_STABILITY_COUNT,
+        },
     }
     with open(params_yaml, "w") as f:
         yaml.dump(best_config, f, default_flow_style=False)
-    print(f"Exported superior parameters to: {params_yaml}")
+    print(f"Exported best params: {params_yaml}")
 
 
 if __name__ == "__main__":

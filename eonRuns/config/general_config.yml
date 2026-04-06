@@ -770,6 +770,40 @@ methods:
   - cineb
   - mmf
   # - strict
+
+# OCI-NEB method-specific parameter overrides
+# These are applied on top of neb_defaults by run_eon.smk
+# cineb: baseline CI-NEB (no MMF)
+# mmf: OCI-NEB with optuna-optimized params (seed=42, 62 trials)
+# strict: conservative protocol for ablation study
+method_overrides:
+  cineb:
+    ci_mmf: "false"
+  mmf:
+    ci_mmf: "true"
+    ci_mmf_after: 0.1
+    ci_mmf_after_rel: 0.31
+    ci_mmf_angle: 0.85
+    ci_mmf_nsteps: 1000
+    ci_mmf_ci_stability_count: 5
+  strict:
+    ci_mmf: "true"
+    ci_mmf_after: 0.1
+    ci_mmf_after_rel: 0.2
+    ci_mmf_angle: 0.9
+    ci_mmf_nsteps: 1000
+    ci_mmf_ci_stability_count: 5
+
+# Optuna parameter sensitivity study
+optuna:
+  n_trials: 62
+  seed: 42
+  representative_systems:
+    - "05_cyclopropyl"
+    - "17_claisen"
+    - "19_hnccs"
+    - "20_hconh3_cation"
+
 paths:
   models: "results/00_models"
   endpoints: "results/01_endpoints"
@@ -800,8 +834,8 @@ plotting:
     y: 40.0
     rad: 0.1
   figure:
-    figsize: [5.37, 3.37]
+    figsize: [8, 5]
     dpi: 300
     zoom_ratio: 0.25
   fonts:
-    base: 12
+    base: 18
