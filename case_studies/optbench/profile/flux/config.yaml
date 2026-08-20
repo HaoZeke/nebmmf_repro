@@ -1,0 +1,17 @@
+# Flux step manager inside one outer Slurm allocation.
+# Same shape as TheochemUI/gpr_optim/bench/elja/profile/flux/config.yaml.
+# Outer job: elja_flux_in_slurm.sh. Inner: snakemake --executor flux.
+executor: flux
+jobs: 16
+latency-wait: 10
+restart-times: 0
+rerun-incomplete: true
+printshellcmds: true
+keep-going: true
+keep-incomplete: true
+max-jobs-per-second: 20
+default-resources:
+  - mem_mb=2000
+  - runtime=3600
+  - tasks=1
+  - cpus_per_task=1

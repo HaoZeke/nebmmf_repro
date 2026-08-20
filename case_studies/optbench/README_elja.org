@@ -23,9 +23,26 @@ sbatch --export=ALL,EONCLIENT elja_optbench.sbatch
 
 Array 0-58 is one task per pair; each task runs CI-NEB then
 OCINEB. Cap 20 concurrent (=chem-ui= MaxJobs is 30; MaxSubmit
-is 100, so do not split into 118 array slots). After the array:
+is 100, so do not split into 118 array slots).
+
+Job 1790989 finished. Force calls (destroyed-after) on all 59 pairs:
+
+| method | n | mean | median | min | max |
+| cineb | 59 | 408.9 | 357 | 172 | 1182 |
+| mmf (OCINEB) | 59 | 264.4 | 297 | 92 | 594 |
+
+The Snakefile is the real driver. Packing on Elja is Flux inside
+one Slurm allocation (same shape as
+=gpr_optim/bench/elja/scripts/sbatch_flux_in_slurm.sh=), not a
+second Slurm array:
 
 #+begin_src bash
-# force-call summary from results.dat / client logs
-rg -u "destroyed after ([0-9]+) calls" -r '$1' results/03_neb
+cd case_studies/optbench
+export EONCLIENT=$HOME/micromamba/envs/eon320/bin/eonclient
+FLUX_SBATCH_PARTITION=any_cpu FLUX_SBATCH_ACCOUNT=chem-ui \
+  FLUX_SBATCH_CPUS=16 FLUX_SNAKE_JOBS=16 \
+  bash elja_flux_in_slurm.sh
 #+end_src
+
+Needs =flux= and =snakemake --executor flux= on PATH. Completed
+=results.dat= / =neb.dat= are skipped; leftover work is plots.
