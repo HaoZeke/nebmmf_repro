@@ -1,0 +1,31 @@
+#+title: Elja OptBench (CI-NEB vs OCINEB)
+#+options: toc:nil
+
+RONEB was renamed to OCINEB. =config_roneb.ini= is the OCINEB
+(=ci_mmf = true=) method; =config_nebci.ini= is CI-NEB.
+
+Morse Pt-island, 59 endpoint pairs, shipped INI files. Runs on Elja
+(=ssh elja=, account =chem-ui=, partition =any_cpu=). Compute nodes
+do not compile; =eonclient= comes from conda-forge =eon= 3.2.0 on
+the login node.
+
+#+begin_src bash
+ssh elja
+cd ~/Git/Github/HaoZeke/nebmmf_repro
+# once:
+micromamba create -y -p ~/micromamba/envs/eon320 -c conda-forge eon=3.2.0
+export EONCLIENT=$HOME/micromamba/envs/eon320/bin/eonclient
+
+cd case_studies/optbench
+mkdir -p logs
+sbatch --export=ALL,EONCLIENT elja_optbench.sbatch
+#+end_src
+
+Array 0-58 is one task per pair; each task runs CI-NEB then
+OCINEB. Cap 20 concurrent (=chem-ui= MaxJobs is 30; MaxSubmit
+is 100, so do not split into 118 array slots). After the array:
+
+#+begin_src bash
+# force-call summary from results.dat / client logs
+rg -u "destroyed after ([0-9]+) calls" -r '$1' results/03_neb
+#+end_src
